@@ -1,0 +1,1141 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF1_Technology.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "engineering_and_technology",
+    "name": {
+      "en": "Faculty of Engineering and Technology",
+      "ar": "كلية الهندسة والتكنولوجيا"
+    },
+    "short_name": {
+      "en": "Engineering & Technology",
+      "ar": "الهندسة والتكنولوجيا"
+    },
+    "aliases": {
+      "en": [
+        "Engineering",
+        "ENG",
+        "Engineering and Technology",
+        "Faculty of Engineering",
+        "CBE",
+        "ERG",
+        "SET",
+        "MCT",
+        "Petroleum Engineering"
+      ],
+      "ar": [
+        "هندسة",
+        "كلية الهندسة",
+        "هندسة وتكنولوجيا",
+        "هندسة البرمجيات",
+        "ميكاترونكس",
+        "طاقة متجددة",
+        "بترول وغاز"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "engineering",
+      "admission",
+      "programs",
+      "departments",
+      "technology"
+    ],
+    "search_keywords": {
+      "en": [
+        "engineering",
+        "construction building",
+        "renewable energy",
+        "software engineering",
+        "mechatronics",
+        "petroleum gas",
+        "B.Sc. Engineering",
+        "5 years"
+      ],
+      "ar": [
+        "هندسة",
+        "تشييد وبناء",
+        "طاقة متجددة",
+        "هندسة برمجيات",
+        "ميكاترونكس",
+        "بترول وغاز"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Engineering and Technology at ECU, a practice-oriented faculty covering modern engineering disciplines with strong hands-on learning.",
+      "ar": "مرحباً بك في كلية الهندسة والتكنولوجيا بجامعة ECU، وهي كلية تطبيقية تغطي تخصصات هندسية حديثة مع تركيز قوي على التعلم العملي.",
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+    },
+    "description": {
+      "en": "The faculty integrates Chinese-style applied pedagogy with Egyptian standards and focuses on laboratory, workshop, and project-based learning for domestic and international engineering careers.",
+      "ar": "تجمع الكلية بين منهجية التعليم التطبيقي الصينية والمعايير المصرية، وتركز على التعلم المعملي والورش والمشروعات للمسارات المهنية المحلية والدولية.",
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+    },
+    "vision": {
+      "en": "To become a pioneering and distinguished institution in enhancing opportunities for creativity and innovation in education, scientific research, and community service across modern engineering disciplines.",
+      "ar": "أن تصبح مؤسسة رائدة ومتميزة في تعزيز فرص الإبداع والابتكار في التعليم والبحث العلمي وخدمة المجتمع عبر التخصصات الهندسية الحديثة.",
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+    },
+    "mission": {
+      "en": "To provide distinguished education in modern engineering fields through programs that comply with international standards and meet labour market needs in industrial, service, and national project sectors.",
+      "ar": "تقديم تعليم متميز في المجالات الهندسية الحديثة من خلال برامج متوافقة مع المعايير الدولية وتلبي احتياجات سوق العمل في القطاعات الصناعية والخدمية والمشروعات القومية.",
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+    },
+    "objectives": [
+      {
+        "id": "objective_001",
+        "text": {
+          "en": "Graduate engineers capable of scientific research, technological advancement, leadership, and professional contribution to industrial and national projects.",
+          "ar": "تخريج مهندسين قادرين على البحث العلمي والتطور التكنولوجي والقيادة والمساهمة المهنية في الصناعة والمشروعات القومية."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      }
+    ]
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": 5,
+    "credit_hours": "145-180",
+    "language_of_instruction": [
+      "English",
+      "Chinese language modules as supplementary electives"
+    ],
+    "departments": [
+      {
+        "department_id": "construction_and_building_engineering",
+        "name": {
+          "en": "Construction and Building Engineering",
+          "ar": "هندسة التشييد والبناء"
+        },
+        "aliases": {
+          "en": [
+            "CBE",
+            "Construction Engineering"
+          ],
+          "ar": [
+            "تشييد وبناء",
+            "مدني"
+          ]
+        },
+        "description": {
+          "en": "Prepares graduates to design, construct, and manage built facilities with focus on sustainability, smart materials, infrastructure, BIM, structural systems, environmental systems, and construction management.",
+          "ar": "يؤهل الطلاب لتصميم وتنفيذ وإدارة المنشآت مع التركيز على الاستدامة والمواد الذكية والبنية التحتية ونمذجة معلومات البناء والأنظمة الإنشائية وإدارة التشييد."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "department_id": "energy_and_renewable_energy_engineering",
+        "name": {
+          "en": "Energy and Renewable Energy Engineering",
+          "ar": "هندسة الطاقة والطاقة المتجددة"
+        },
+        "aliases": {
+          "en": [
+            "ERG",
+            "Renewable Energy"
+          ],
+          "ar": [
+            "طاقة",
+            "طاقة متجددة"
+          ]
+        },
+        "description": {
+          "en": "Covers solar, wind, conventional power systems, energy storage, smart grids, energy auditing, biomass, waste-to-energy, and green hydrogen.",
+          "ar": "يغطي الطاقة الشمسية والرياح ومحطات الطاقة التقليدية وتخزين الطاقة والشبكات الذكية ومراجعة كفاءة الطاقة والكتلة الحيوية والهيدروجين الأخضر."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "department_id": "software_engineering_and_information_technology",
+        "name": {
+          "en": "Software Engineering and Information Technology",
+          "ar": "هندسة البرمجيات وتكنولوجيا المعلومات"
+        },
+        "aliases": {
+          "en": [
+            "SET",
+            "Software Engineering",
+            "Information Technology"
+          ],
+          "ar": [
+            "سوفتوير",
+            "هندسة برمجيات",
+            "تكنولوجيا معلومات"
+          ]
+        },
+        "description": {
+          "en": "Combines computer engineering foundations, software engineering, cloud/distributed systems, mobile computing, embedded systems, security, multimedia, and HCI.",
+          "ar": "يجمع بين أساسيات هندسة الحاسب وهندسة البرمجيات والأنظمة السحابية والموزعة وتطبيقات الموبايل والأنظمة المدمجة والأمن والوسائط المتعددة."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "department_id": "mechatronics_engineering_and_automation",
+        "name": {
+          "en": "Mechatronics Engineering and Automation",
+          "ar": "هندسة الميكاترونكس والأتمتة"
+        },
+        "aliases": {
+          "en": [
+            "MCT",
+            "Mechatronics",
+            "Automation"
+          ],
+          "ar": [
+            "ميكاترونكس",
+            "أتمتة",
+            "روبوتات"
+          ]
+        },
+        "description": {
+          "en": "An interdisciplinary programme combining mechanical systems, electronics, control engineering, robotics, automation, and four sub-specialisations: Autotronics, Nanomechatronics, Industrial Mechatronics, and Bio-Mechatronics.",
+          "ar": "برنامج متعدد التخصصات يجمع بين الميكانيكا والإلكترونيات والتحكم والروبوتات والأتمتة مع مسارات الأوتوترونكس والنانو ميكاترونكس والميكاترونكس الصناعي والبيو-ميكاترونكس."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "department_id": "petroleum_and_gas_engineering",
+        "name": {
+          "en": "Petroleum and Gas Engineering",
+          "ar": "هندسة البترول والغاز"
+        },
+        "aliases": {
+          "en": [
+            "Petroleum Engineering",
+            "Gas Engineering"
+          ],
+          "ar": [
+            "بترول",
+            "غاز",
+            "هندسة بترول"
+          ]
+        },
+        "description": {
+          "en": "Prepares graduates for reservoir engineering, drilling, petrophysics, production, petroleum geomechanics, HSE, sustainability, and oil and gas industry roles.",
+          "ar": "يؤهل الطلاب لمجالات هندسة الخزانات والحفر والبتروفيزياء والإنتاج والجيوميكانيكا والسلامة والاستدامة وصناعة النفط والغاز."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "construction_and_building_engineering",
+        "name": {
+          "en": "Construction and Building Engineering",
+          "ar": "هندسة التشييد والبناء"
+        },
+        "program_type": "engineering_program",
+        "department_id": "construction_and_building_engineering",
+        "description": {
+          "en": "Prepares graduates to design, construct, and manage built facilities with focus on sustainability, smart materials, infrastructure, BIM, structural systems, environmental systems, and construction management.",
+          "ar": "يؤهل الطلاب لتصميم وتنفيذ وإدارة المنشآت مع التركيز على الاستدامة والمواد الذكية والبنية التحتية ونمذجة معلومات البناء والأنظمة الإنشائية وإدارة التشييد."
+        },
+        "career_paths": {
+          "en": [
+            "Project engineer",
+            "Design engineer",
+            "Site engineer",
+            "Energy engineer",
+            "Software engineer",
+            "Automation engineer",
+            "Petroleum engineer"
+          ],
+          "ar": [
+            "مهندس مشروعات",
+            "مهندس تصميم",
+            "مهندس موقع",
+            "مهندس طاقة",
+            "مهندس برمجيات",
+            "مهندس أتمتة",
+            "مهندس بترول"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "program_id": "energy_and_renewable_energy_engineering",
+        "name": {
+          "en": "Energy and Renewable Energy Engineering",
+          "ar": "هندسة الطاقة والطاقة المتجددة"
+        },
+        "program_type": "engineering_program",
+        "department_id": "energy_and_renewable_energy_engineering",
+        "description": {
+          "en": "Covers solar, wind, conventional power systems, energy storage, smart grids, energy auditing, biomass, waste-to-energy, and green hydrogen.",
+          "ar": "يغطي الطاقة الشمسية والرياح ومحطات الطاقة التقليدية وتخزين الطاقة والشبكات الذكية ومراجعة كفاءة الطاقة والكتلة الحيوية والهيدروجين الأخضر."
+        },
+        "career_paths": {
+          "en": [
+            "Project engineer",
+            "Design engineer",
+            "Site engineer",
+            "Energy engineer",
+            "Software engineer",
+            "Automation engineer",
+            "Petroleum engineer"
+          ],
+          "ar": [
+            "مهندس مشروعات",
+            "مهندس تصميم",
+            "مهندس موقع",
+            "مهندس طاقة",
+            "مهندس برمجيات",
+            "مهندس أتمتة",
+            "مهندس بترول"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "program_id": "software_engineering_and_information_technology",
+        "name": {
+          "en": "Software Engineering and Information Technology",
+          "ar": "هندسة البرمجيات وتكنولوجيا المعلومات"
+        },
+        "program_type": "engineering_program",
+        "department_id": "software_engineering_and_information_technology",
+        "description": {
+          "en": "Combines computer engineering foundations, software engineering, cloud/distributed systems, mobile computing, embedded systems, security, multimedia, and HCI.",
+          "ar": "يجمع بين أساسيات هندسة الحاسب وهندسة البرمجيات والأنظمة السحابية والموزعة وتطبيقات الموبايل والأنظمة المدمجة والأمن والوسائط المتعددة."
+        },
+        "career_paths": {
+          "en": [
+            "Project engineer",
+            "Design engineer",
+            "Site engineer",
+            "Energy engineer",
+            "Software engineer",
+            "Automation engineer",
+            "Petroleum engineer"
+          ],
+          "ar": [
+            "مهندس مشروعات",
+            "مهندس تصميم",
+            "مهندس موقع",
+            "مهندس طاقة",
+            "مهندس برمجيات",
+            "مهندس أتمتة",
+            "مهندس بترول"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "program_id": "mechatronics_engineering_and_automation",
+        "name": {
+          "en": "Mechatronics Engineering and Automation",
+          "ar": "هندسة الميكاترونكس والأتمتة"
+        },
+        "program_type": "engineering_program",
+        "department_id": "mechatronics_engineering_and_automation",
+        "description": {
+          "en": "An interdisciplinary programme combining mechanical systems, electronics, control engineering, robotics, automation, and four sub-specialisations: Autotronics, Nanomechatronics, Industrial Mechatronics, and Bio-Mechatronics.",
+          "ar": "برنامج متعدد التخصصات يجمع بين الميكانيكا والإلكترونيات والتحكم والروبوتات والأتمتة مع مسارات الأوتوترونكس والنانو ميكاترونكس والميكاترونكس الصناعي والبيو-ميكاترونكس."
+        },
+        "career_paths": {
+          "en": [
+            "Project engineer",
+            "Design engineer",
+            "Site engineer",
+            "Energy engineer",
+            "Software engineer",
+            "Automation engineer",
+            "Petroleum engineer"
+          ],
+          "ar": [
+            "مهندس مشروعات",
+            "مهندس تصميم",
+            "مهندس موقع",
+            "مهندس طاقة",
+            "مهندس برمجيات",
+            "مهندس أتمتة",
+            "مهندس بترول"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "program_id": "petroleum_and_gas_engineering",
+        "name": {
+          "en": "Petroleum and Gas Engineering",
+          "ar": "هندسة البترول والغاز"
+        },
+        "program_type": "engineering_program",
+        "department_id": "petroleum_and_gas_engineering",
+        "description": {
+          "en": "Prepares graduates for reservoir engineering, drilling, petrophysics, production, petroleum geomechanics, HSE, sustainability, and oil and gas industry roles.",
+          "ar": "يؤهل الطلاب لمجالات هندسة الخزانات والحفر والبتروفيزياء والإنتاج والجيوميكانيكا والسلامة والاستدامة وصناعة النفط والغاز."
+        },
+        "career_paths": {
+          "en": [
+            "Project engineer",
+            "Design engineer",
+            "Site engineer",
+            "Energy engineer",
+            "Software engineer",
+            "Automation engineer",
+            "Petroleum engineer"
+          ],
+          "ar": [
+            "مهندس مشروعات",
+            "مهندس تصميم",
+            "مهندس موقع",
+            "مهندس طاقة",
+            "مهندس برمجيات",
+            "مهندس أتمتة",
+            "مهندس بترول"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": []
+  },
+  "facilities": {
+    "labs": [
+      {
+        "lab_id": "energy_lab_tools",
+        "name": {
+          "en": "Energy Engineering Laboratory Tools",
+          "ar": "أدوات معامل هندسة الطاقة"
+        },
+        "description": {
+          "en": "Includes PV simulation tools, energy audit instruments, and wind tunnel testing equipment as stated for the Energy and Renewable Energy programme.",
+          "ar": "تشمل أدوات محاكاة الخلايا الشمسية وأجهزة مراجعة الطاقة ومعدات اختبار نفق الرياح كما ورد في برنامج الطاقة والطاقة المتجددة."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      },
+      {
+        "lab_id": "bim_and_design_tools",
+        "name": {
+          "en": "BIM and Computer-Aided Design Tools",
+          "ar": "أدوات نمذجة معلومات البناء والتصميم بالحاسب"
+        },
+        "description": {
+          "en": "AutoCAD, Revit/BIM, and structural analysis software are integrated throughout practical construction and building engineering modules.",
+          "ar": "يتم دمج AutoCAD وRevit/BIM وبرامج التحليل الإنشائي ضمن التطبيقات العملية في هندسة التشييد والبناء."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      }
+    ],
+    "clinics_or_studios": [],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "Capstone projects in Year 4 and Year 5 involve real client briefs for deployable software products in SET.",
+        "ar": "مشروعات التخرج في السنتين الرابعة والخامسة في SET تشمل مشروعات لعملاء حقيقيين لإنتاج منتجات برمجية قابلة للتشغيل."
+      }
+    ],
+    "partnerships": [
+      {
+        "en": "Partnerships with Chinese universities support solar and wind engineering research and exchange opportunities.",
+        "ar": "تدعم الشراكات مع جامعات صينية فرص البحث والتبادل في هندسة الطاقة الشمسية والرياح."
+      }
+    ],
+    "international_opportunities": [
+      {
+        "en": "Chinese language modules support Sino-Egyptian professional links.",
+        "ar": "تدعم مقررات اللغة الصينية الروابط المهنية الصينية المصرية."
+      }
+    ]
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "engineering_and_technology_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Engineering and Technology about?"
+        ],
+        "ar": [
+          "كلية الهندسة والتكنولوجيا بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It is a practice-oriented engineering faculty with five main engineering tracks: Construction & Building, Energy & Renewable Energy, Software Engineering & IT, Mechatronics & Automation, and Petroleum & Gas.",
+        "ar": "هي كلية هندسة تطبيقية تضم مسارات التشييد والبناء، الطاقة والطاقة المتجددة، هندسة البرمجيات وتكنولوجيا المعلومات، الميكاترونكس والأتمتة، والبترول والغاز."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "engineering_and_technology_overview_001",
+        "engineering_and_technology_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "engineering_and_technology_departments_002",
+      "intent_id": "faculty_departments",
+      "topic": "departments",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are the Engineering departments?"
+        ],
+        "ar": [
+          "أقسام هندسة ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The departments are Construction & Building Engineering, Energy & Renewable Energy Engineering, Software Engineering & IT, Mechatronics Engineering & Automation, and Petroleum & Gas Engineering.",
+        "ar": "الأقسام هي التشييد والبناء، الطاقة والطاقة المتجددة، هندسة البرمجيات وتكنولوجيا المعلومات، الميكاترونكس والأتمتة، والبترول والغاز."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "engineering_and_technology_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "engineering_and_technology_duration_003",
+      "intent_id": "faculty_duration",
+      "topic": "duration",
+      "priority": 2,
+      "questions": {
+        "en": [
+          "How many years is Engineering?"
+        ],
+        "ar": [
+          "هندسة كام سنة؟"
+        ]
+      },
+      "answer": {
+        "en": "Engineering programs are five academic years, with 145 to 180 credit hours depending on the specialization.",
+        "ar": "برامج الهندسة خمس سنوات أكاديمية، وعدد الساعات يتراوح من 145 إلى 180 حسب التخصص."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "engineering_and_technology_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/engineering-and-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "engineering_and_technology_fees_004",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Engineering fees?"
+        ],
+        "ar": [
+          "مصروفات هندسة كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "engineering_and_technology_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Engineering and Technology Overview",
+        "ar": "نبذة عن كلية الهندسة والتكنولوجيا"
+      },
+      "content": {
+        "en": "The Faculty of Engineering and Technology delivers practice-oriented engineering education. Its engineering programs run across five academic years, with 145 to 180 credit hours depending on specialization. The PDF states that around 50% of the study load is practical, laboratory, or project-based, and instruction is in English with Chinese language modules offered as supplementary electives.",
+        "ar": "تقدم كلية الهندسة والتكنولوجيا تعليماً هندسياً تطبيقياً. تمتد البرامج الهندسية لخمس سنوات أكاديمية بعدد ساعات يتراوح بين 145 و180 ساعة حسب التخصص، ويذكر المصدر أن حوالي 50% من العبء الدراسي عملي أو معملي أو قائم على المشروعات، مع التدريس باللغة الإنجليزية وإتاحة مقررات صينية اختيارية."
+      },
+      "tags": [
+        "engineering",
+        "overview",
+        "duration",
+        "credit_hours",
+        "language"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Technology, Engineering & Computer Sciences",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Engineering and Technology about?",
+          "How long is Engineering at ECU?"
+        ],
+        "ar": [
+          "كلية الهندسة بتدرس ايه؟",
+          "هندسة كام سنة في ECU؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Engineering Departments",
+        "ar": "أقسام كلية الهندسة"
+      },
+      "content": {
+        "en": "The faculty includes Construction and Building Engineering, Energy and Renewable Energy Engineering, Software Engineering and Information Technology, Mechatronics Engineering and Automation, and Petroleum and Gas Engineering.",
+        "ar": "تضم الكلية أقسام هندسة التشييد والبناء، هندسة الطاقة والطاقة المتجددة، هندسة البرمجيات وتكنولوجيا المعلومات، هندسة الميكاترونكس والأتمتة، وهندسة البترول والغاز."
+      },
+      "tags": [
+        "engineering",
+        "departments",
+        "programs"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "construction_and_building_engineering",
+          "energy_and_renewable_energy_engineering",
+          "software_engineering_and_information_technology",
+          "mechatronics_engineering_and_automation",
+          "petroleum_and_gas_engineering"
+        ],
+        "program_ids": [
+          "construction_and_building_engineering",
+          "energy_and_renewable_energy_engineering",
+          "software_engineering_and_information_technology",
+          "mechatronics_engineering_and_automation",
+          "petroleum_and_gas_engineering"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Programme Summary",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What departments are in Engineering?"
+        ],
+        "ar": [
+          "أقسام هندسة ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_construction_and_building_engineering_001",
+      "section_type": "department",
+      "title": {
+        "en": "Construction and Building Engineering",
+        "ar": "هندسة التشييد والبناء"
+      },
+      "content": {
+        "en": "Prepares graduates to design, construct, and manage built facilities with focus on sustainability, smart materials, infrastructure, BIM, structural systems, environmental systems, and construction management.",
+        "ar": "يؤهل الطلاب لتصميم وتنفيذ وإدارة المنشآت مع التركيز على الاستدامة والمواد الذكية والبنية التحتية ونمذجة معلومات البناء والأنظمة الإنشائية وإدارة التشييد."
+      },
+      "tags": [
+        "engineering",
+        "department",
+        "construction_and_building_engineering"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "construction_and_building_engineering"
+        ],
+        "program_ids": [
+          "construction_and_building_engineering"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Engineering Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Construction and Building Engineering study?"
+        ],
+        "ar": [
+          "هندسة التشييد والبناء بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_energy_and_renewable_energy_engineering_001",
+      "section_type": "department",
+      "title": {
+        "en": "Energy and Renewable Energy Engineering",
+        "ar": "هندسة الطاقة والطاقة المتجددة"
+      },
+      "content": {
+        "en": "Covers solar, wind, conventional power systems, energy storage, smart grids, energy auditing, biomass, waste-to-energy, and green hydrogen.",
+        "ar": "يغطي الطاقة الشمسية والرياح ومحطات الطاقة التقليدية وتخزين الطاقة والشبكات الذكية ومراجعة كفاءة الطاقة والكتلة الحيوية والهيدروجين الأخضر."
+      },
+      "tags": [
+        "engineering",
+        "department",
+        "energy_and_renewable_energy_engineering"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "energy_and_renewable_energy_engineering"
+        ],
+        "program_ids": [
+          "energy_and_renewable_energy_engineering"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Engineering Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Energy and Renewable Energy Engineering study?"
+        ],
+        "ar": [
+          "هندسة الطاقة والطاقة المتجددة بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_software_engineering_and_information_technology_001",
+      "section_type": "department",
+      "title": {
+        "en": "Software Engineering and Information Technology",
+        "ar": "هندسة البرمجيات وتكنولوجيا المعلومات"
+      },
+      "content": {
+        "en": "Combines computer engineering foundations, software engineering, cloud/distributed systems, mobile computing, embedded systems, security, multimedia, and HCI.",
+        "ar": "يجمع بين أساسيات هندسة الحاسب وهندسة البرمجيات والأنظمة السحابية والموزعة وتطبيقات الموبايل والأنظمة المدمجة والأمن والوسائط المتعددة."
+      },
+      "tags": [
+        "engineering",
+        "department",
+        "software_engineering_and_information_technology"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "software_engineering_and_information_technology"
+        ],
+        "program_ids": [
+          "software_engineering_and_information_technology"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Engineering Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Software Engineering and Information Technology study?"
+        ],
+        "ar": [
+          "هندسة البرمجيات وتكنولوجيا المعلومات بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_mechatronics_engineering_and_automation_001",
+      "section_type": "department",
+      "title": {
+        "en": "Mechatronics Engineering and Automation",
+        "ar": "هندسة الميكاترونكس والأتمتة"
+      },
+      "content": {
+        "en": "An interdisciplinary programme combining mechanical systems, electronics, control engineering, robotics, automation, and four sub-specialisations: Autotronics, Nanomechatronics, Industrial Mechatronics, and Bio-Mechatronics.",
+        "ar": "برنامج متعدد التخصصات يجمع بين الميكانيكا والإلكترونيات والتحكم والروبوتات والأتمتة مع مسارات الأوتوترونكس والنانو ميكاترونكس والميكاترونكس الصناعي والبيو-ميكاترونكس."
+      },
+      "tags": [
+        "engineering",
+        "department",
+        "mechatronics_engineering_and_automation"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "mechatronics_engineering_and_automation"
+        ],
+        "program_ids": [
+          "mechatronics_engineering_and_automation"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Engineering Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Mechatronics Engineering and Automation study?"
+        ],
+        "ar": [
+          "هندسة الميكاترونكس والأتمتة بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "engineering_and_technology_petroleum_and_gas_engineering_001",
+      "section_type": "department",
+      "title": {
+        "en": "Petroleum and Gas Engineering",
+        "ar": "هندسة البترول والغاز"
+      },
+      "content": {
+        "en": "Prepares graduates for reservoir engineering, drilling, petrophysics, production, petroleum geomechanics, HSE, sustainability, and oil and gas industry roles.",
+        "ar": "يؤهل الطلاب لمجالات هندسة الخزانات والحفر والبتروفيزياء والإنتاج والجيوميكانيكا والسلامة والاستدامة وصناعة النفط والغاز."
+      },
+      "tags": [
+        "engineering",
+        "department",
+        "petroleum_and_gas_engineering"
+      ],
+      "entities": {
+        "faculty_id": "engineering_and_technology",
+        "department_ids": [
+          "petroleum_and_gas_engineering"
+        ],
+        "program_ids": [
+          "petroleum_and_gas_engineering"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/engineering-and-technology/",
+      "source_title": "ECU PDF 1 - Engineering Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Petroleum and Gas Engineering study?"
+        ],
+        "ar": [
+          "هندسة البترول والغاز بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Engineering data is strong for departments, programmes, duration, credit hour range, language, vision and mission."
+  }
+}

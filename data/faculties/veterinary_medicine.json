@@ -1,0 +1,1224 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF2_Medical.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "veterinary_medicine",
+    "name": {
+      "en": "Faculty of Veterinary Medicine",
+      "ar": "كلية الطب البيطري"
+    },
+    "short_name": {
+      "en": "Veterinary Medicine",
+      "ar": "الطب البيطري"
+    },
+    "aliases": {
+      "en": [
+        "Veterinary",
+        "Vet",
+        "B.V.Sc.",
+        "Animal Medicine",
+        "Vet Medicine"
+      ],
+      "ar": [
+        "طب بيطري",
+        "كلية الطب البيطري",
+        "بيطري",
+        "حيوانات"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "veterinary",
+      "animal_health",
+      "food_safety",
+      "aquatic_medicine"
+    ],
+    "search_keywords": {
+      "en": [
+        "veterinary medicine",
+        "B.V.Sc.",
+        "pet animal",
+        "poultry",
+        "food safety",
+        "fish farming",
+        "animal medicine"
+      ],
+      "ar": [
+        "طب بيطري",
+        "حيوانات",
+        "دواجن",
+        "سلامة الغذاء",
+        "استزراع سمكي"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Veterinary Medicine, ECU’s faculty for animal health, public veterinary hygiene, food safety, and veterinary clinical training.",
+      "ar": "مرحباً بك في كلية الطب البيطري، كلية ECU لصحة الحيوان والصحة العامة البيطرية وسلامة الغذاء والتدريب الإكلينيكي البيطري.",
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+    },
+    "description": {
+      "en": "The faculty offers a B.V.Sc. route with five academic years, one year of field training, six specialisation programmes, and eight scientific departments.",
+      "ar": "تقدم الكلية مسار بكالوريوس العلوم البيطرية بخمس سنوات أكاديمية وعام تدريب ميداني وستة برامج تخصصية وثمانية أقسام علمية.",
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": 5,
+    "credit_hours": null,
+    "language_of_instruction": [],
+    "departments": [
+      {
+        "department_id": "anatomy_and_histology",
+        "name": {
+          "en": "Anatomy and Histology",
+          "ar": "التشريح والأنسجة"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Gross and microscopic anatomy of domestic animals, surgical topographic anatomy, histological techniques, and microscopy.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "biochemistry_and_physiology",
+        "name": {
+          "en": "Biochemistry and Physiology",
+          "ar": "الكيمياء الحيوية والفسيولوجيا"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Molecular basis of animal metabolism, organ system physiology across species, and clinical biochemistry markers.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "development_of_animal_wealth",
+        "name": {
+          "en": "Development of Animal Wealth",
+          "ar": "تنمية الثروة الحيوانية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Animal nutrition, breeding, genetics, production systems, and genetic improvement for livestock and poultry.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "pathology_microbiology_and_parasitology",
+        "name": {
+          "en": "Pathology, Microbiology and Parasitology",
+          "ar": "الباثولوجيا والميكروبيولوجيا والطفيليات"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Systematic pathology, bacteriology, virology, mycology, veterinary parasitology, and diagnostic laboratory techniques.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "pharmacology_and_toxicology",
+        "name": {
+          "en": "Pharmacology and Toxicology",
+          "ar": "الأدوية والسموم"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Drug mechanisms in animals, clinical pharmacokinetics, poisoning diagnosis and treatment, and drug residue analysis.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "public_veterinary_hygiene",
+        "name": {
+          "en": "Public Veterinary Hygiene",
+          "ar": "الصحة العامة البيطرية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Zoonotic disease surveillance, food hygiene inspection, HACCP, slaughterhouse operations, and epidemiological investigation.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "animal_medicine",
+        "name": {
+          "en": "Animal Medicine",
+          "ar": "طب الحيوان"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Clinical diagnosis and treatment of internal diseases across domestic animal species, supported by clinical skills laboratories and case-based learning.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "department_id": "surgery_and_theriogenology",
+        "name": {
+          "en": "Surgery and Theriogenology",
+          "ar": "الجراحة والتوليد والتناسل"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Surgical techniques, anaesthesia, reproductive medicine, gynaecology, obstetrics, artificial insemination, and embryo transfer.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "general_programme",
+        "name": {
+          "en": "General Programme",
+          "ar": "البرنامج العام"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Broad training across equines, bovines, ovines, caprines, and companion animals covering clinical medicine, surgery, reproduction, and preventive medicine.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "program_id": "pet_animal_programme",
+        "name": {
+          "en": "Pet Animal Programme",
+          "ar": "برنامج الحيوانات الأليفة"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Specialised companion animal medicine covering small animal internal medicine, surgery, dermatology, dentistry, and behavioural medicine for dogs, cats, rabbits, and exotic species.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "program_id": "poultry_and_rabbits_programme",
+        "name": {
+          "en": "Poultry and Rabbits Programme",
+          "ar": "برنامج الدواجن والأرانب"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Targets poultry pathology, avian influenza management, vaccination programmes, biosecurity, rabbit production diseases, and commercial herd management.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "program_id": "food_health_and_safety_programme",
+        "name": {
+          "en": "Food Health and Safety Programme",
+          "ar": "برنامج صحة وسلامة الغذاء"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Covers meat, poultry, fish, dairy, processed food safety, HACCP, ante- and post-mortem inspection, zoonotic pathogen detection, food microbiology, and regulatory compliance.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "program_id": "clinical_veterinary_pharmacology_programme",
+        "name": {
+          "en": "Clinical Veterinary Pharmacology Programme",
+          "ar": "برنامج الفارماكولوجيا البيطرية الإكلينيكية"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Covers pharmacokinetics across species, withdrawal periods, antimicrobial resistance management, compounding and dispensing, and toxicological investigation.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "program_id": "fish_diseases_and_fish_farming_programme",
+        "name": {
+          "en": "Fish Diseases and Fish Farming (Aquatic Medicine) Programme",
+          "ar": "برنامج أمراض الأسماك والاستزراع السمكي"
+        },
+        "program_type": "specialisation_track",
+        "department_id": null,
+        "description": {
+          "en": "Addresses fish pathology, parasitology, bacterial and viral fish diseases, water quality management, aquaculture nutrition, and disease prevention programmes.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Veterinarian",
+            "Animal clinic practitioner",
+            "Farm veterinarian",
+            "Food safety inspector",
+            "Veterinary pharmacology specialist",
+            "Aquatic medicine specialist"
+          ],
+          "ar": [
+            "طبيب بيطري",
+            "طبيب عيادة حيوانات",
+            "طبيب مزارع",
+            "مفتش سلامة غذاء",
+            "متخصص فارماكولوجيا بيطرية",
+            "متخصص طب مائي"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": []
+  },
+  "facilities": {
+    "labs": [
+      {
+        "lab_id": "clinical_skills_laboratories",
+        "name": {
+          "en": "Clinical Skills Laboratories",
+          "ar": "معامل المهارات الإكلينيكية"
+        },
+        "description": {
+          "en": "The Animal Medicine department mentions clinical skills laboratories with case-based learning.",
+          "ar": "يذكر قسم طب الحيوان معامل مهارات إكلينيكية مع تعلم قائم على الحالات."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      },
+      {
+        "lab_id": "food_hygiene_laboratories",
+        "name": {
+          "en": "Food Hygiene Laboratories",
+          "ar": "معامل صحة وسلامة الغذاء"
+        },
+        "description": {
+          "en": "The internship includes food hygiene laboratories as one of the rotational training locations.",
+          "ar": "يشمل التدريب الميداني معامل صحة وسلامة الغذاء ضمن أماكن التدريب الدورية."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      }
+    ],
+    "clinics_or_studios": [
+      {
+        "facility_id": "field_training_locations",
+        "name": {
+          "en": "Field Training Locations",
+          "ar": "أماكن التدريب الميداني"
+        },
+        "description": {
+          "en": "Rotations include companion animal clinics, large animal farms, government veterinary units, slaughterhouse inspection, and food hygiene laboratories.",
+          "ar": "تشمل الدورات عيادات الحيوانات الأليفة ومزارع الحيوانات الكبيرة والوحدات البيطرية الحكومية والتفتيش بالمجازر ومعامل صحة الغذاء."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      }
+    ],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "One-year field training internship after the five-year programme.",
+        "ar": "عام تدريب ميداني بعد البرنامج الأكاديمي الممتد لخمس سنوات."
+      }
+    ],
+    "partnerships": [],
+    "international_opportunities": []
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "veterinary_medicine_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Veterinary Medicine about?"
+        ],
+        "ar": [
+          "كلية الطب البيطري بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It trains students in animal health, clinical veterinary medicine, surgery, reproduction, food safety, pharmacology, poultry/rabbits, pet medicine, and aquatic medicine.",
+        "ar": "تؤهل الطلاب في صحة الحيوان والطب البيطري الإكلينيكي والجراحة والتناسل وسلامة الغذاء والفارماكولوجيا والدواجن والأرانب وطب الحيوانات الأليفة والطب المائي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "veterinary_medicine_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "veterinary_medicine_duration_002",
+      "intent_id": "faculty_duration",
+      "topic": "duration",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "How many years is Veterinary Medicine?"
+        ],
+        "ar": [
+          "طب بيطري كام سنة؟"
+        ]
+      },
+      "answer": {
+        "en": "It is five academic years followed by one year of structured field training internship.",
+        "ar": "خمس سنوات أكاديمية يليها عام تدريب ميداني منظم."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "veterinary_medicine_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "veterinary_medicine_programs_003",
+      "intent_id": "faculty_programs",
+      "topic": "programs",
+      "priority": 2,
+      "questions": {
+        "en": [
+          "What are Veterinary Medicine specialisations?"
+        ],
+        "ar": [
+          "تخصصات طب بيطري ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The six programmes are General, Pet Animal, Poultry and Rabbits, Food Health and Safety, Clinical Veterinary Pharmacology, and Aquatic Medicine.",
+        "ar": "البرامج الستة هي العام، الحيوانات الأليفة، الدواجن والأرانب، صحة وسلامة الغذاء، الفارماكولوجيا البيطرية الإكلينيكية، والطب المائي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "veterinary_medicine_programmes_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/veterinary-medicine/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "veterinary_medicine_fees_004",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Veterinary fees?"
+        ],
+        "ar": [
+          "مصروفات طب بيطري كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "veterinary_medicine_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Veterinary Medicine Overview",
+        "ar": "نبذة عن كلية الطب البيطري"
+      },
+      "content": {
+        "en": "The Faculty of Veterinary Medicine started instruction in the 2023/2024 fall semester. It offers a five-academic-year programme followed by one year of structured field training internship, across eight scientific departments and six specialisation programmes.",
+        "ar": "بدأت كلية الطب البيطري الدراسة في فصل خريف 2023/2024. تقدم الكلية برنامجاً أكاديمياً مدته خمس سنوات يليه عام تدريب ميداني منظم، عبر ثمانية أقسام علمية وستة برامج تخصصية."
+      },
+      "tags": [
+        "veterinary",
+        "overview",
+        "duration"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Medicine Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Veterinary Medicine about?",
+          "How long is Veterinary Medicine?"
+        ],
+        "ar": [
+          "طب بيطري بتدرس ايه؟",
+          "طب بيطري كام سنة؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_programmes_001",
+      "section_type": "programs",
+      "title": {
+        "en": "Veterinary Specialisation Programmes",
+        "ar": "برامج تخصص الطب البيطري"
+      },
+      "content": {
+        "en": "The six specialisation programmes are General Programme, Pet Animal Programme, Poultry and Rabbits Programme, Food Health and Safety Programme, Clinical Veterinary Pharmacology Programme, and Fish Diseases and Fish Farming (Aquatic Medicine) Programme.",
+        "ar": "البرامج التخصصية الستة هي البرنامج العام، برنامج الحيوانات الأليفة، برنامج الدواجن والأرانب، برنامج صحة وسلامة الغذاء، برنامج الفارماكولوجيا البيطرية الإكلينيكية، وبرنامج أمراض الأسماك والاستزراع السمكي."
+      },
+      "tags": [
+        "veterinary",
+        "programs",
+        "specialisations"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "general_programme",
+          "pet_animal_programme",
+          "poultry_and_rabbits_programme",
+          "food_health_and_safety_programme",
+          "clinical_veterinary_pharmacology_programme",
+          "fish_diseases_and_fish_farming_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Six Specialisation Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are the Veterinary specialisations?"
+        ],
+        "ar": [
+          "تخصصات طب بيطري ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Veterinary Scientific Departments",
+        "ar": "الأقسام العلمية للطب البيطري"
+      },
+      "content": {
+        "en": "The eight scientific departments are Anatomy and Histology; Biochemistry and Physiology; Development of Animal Wealth; Pathology, Microbiology and Parasitology; Pharmacology and Toxicology; Public Veterinary Hygiene; Animal Medicine; and Surgery and Theriogenology.",
+        "ar": "الأقسام العلمية الثمانية هي التشريح والأنسجة، الكيمياء الحيوية والفسيولوجيا، تنمية الثروة الحيوانية، الباثولوجيا والميكروبيولوجيا والطفيليات، الأدوية والسموم، الصحة العامة البيطرية، طب الحيوان، والجراحة والتوليد والتناسل."
+      },
+      "tags": [
+        "veterinary",
+        "departments"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [
+          "anatomy_and_histology",
+          "biochemistry_and_physiology",
+          "development_of_animal_wealth",
+          "pathology_microbiology_and_parasitology",
+          "pharmacology_and_toxicology",
+          "public_veterinary_hygiene",
+          "animal_medicine",
+          "surgery_and_theriogenology"
+        ],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Eight Scientific Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are Veterinary departments?"
+        ],
+        "ar": [
+          "أقسام طب بيطري ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_general_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "General Programme",
+        "ar": "البرنامج العام"
+      },
+      "content": {
+        "en": "Broad training across equines, bovines, ovines, caprines, and companion animals covering clinical medicine, surgery, reproduction, and preventive medicine.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "general_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "general_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is General Programme?"
+        ],
+        "ar": [
+          "البرنامج العام هو ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_pet_animal_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Pet Animal Programme",
+        "ar": "برنامج الحيوانات الأليفة"
+      },
+      "content": {
+        "en": "Specialised companion animal medicine covering small animal internal medicine, surgery, dermatology, dentistry, and behavioural medicine for dogs, cats, rabbits, and exotic species.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "pet_animal_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "pet_animal_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Pet Animal Programme?"
+        ],
+        "ar": [
+          "برنامج الحيوانات الأليفة هو ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_poultry_and_rabbits_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Poultry and Rabbits Programme",
+        "ar": "برنامج الدواجن والأرانب"
+      },
+      "content": {
+        "en": "Targets poultry pathology, avian influenza management, vaccination programmes, biosecurity, rabbit production diseases, and commercial herd management.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "poultry_and_rabbits_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "poultry_and_rabbits_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Poultry and Rabbits Programme?"
+        ],
+        "ar": [
+          "برنامج الدواجن والأرانب هو ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_food_health_and_safety_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Food Health and Safety Programme",
+        "ar": "برنامج صحة وسلامة الغذاء"
+      },
+      "content": {
+        "en": "Covers meat, poultry, fish, dairy, processed food safety, HACCP, ante- and post-mortem inspection, zoonotic pathogen detection, food microbiology, and regulatory compliance.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "food_health_and_safety_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "food_health_and_safety_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Food Health and Safety Programme?"
+        ],
+        "ar": [
+          "برنامج صحة وسلامة الغذاء هو ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_clinical_veterinary_pharmacology_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Clinical Veterinary Pharmacology Programme",
+        "ar": "برنامج الفارماكولوجيا البيطرية الإكلينيكية"
+      },
+      "content": {
+        "en": "Covers pharmacokinetics across species, withdrawal periods, antimicrobial resistance management, compounding and dispensing, and toxicological investigation.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "clinical_veterinary_pharmacology_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "clinical_veterinary_pharmacology_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Clinical Veterinary Pharmacology Programme?"
+        ],
+        "ar": [
+          "برنامج الفارماكولوجيا البيطرية الإكلينيكية هو ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "veterinary_medicine_fish_diseases_and_fish_farming_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Fish Diseases and Fish Farming (Aquatic Medicine) Programme",
+        "ar": "برنامج أمراض الأسماك والاستزراع السمكي"
+      },
+      "content": {
+        "en": "Addresses fish pathology, parasitology, bacterial and viral fish diseases, water quality management, aquaculture nutrition, and disease prevention programmes.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "veterinary",
+        "program",
+        "fish_diseases_and_fish_farming_programme"
+      ],
+      "entities": {
+        "faculty_id": "veterinary_medicine",
+        "department_ids": [],
+        "program_ids": [
+          "fish_diseases_and_fish_farming_programme"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/veterinary-medicine/",
+      "source_title": "ECU PDF 2 - Veterinary Programmes",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Fish Diseases and Fish Farming (Aquatic Medicine) Programme?"
+        ],
+        "ar": [
+          "برنامج أمراض الأسماك والاستزراع السمكي هو ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.language_of_instruction",
+      "academic_structure.credit_hours"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Veterinary data is strong for duration, internship, departments, and specialisation tracks."
+  }
+}

@@ -5,15 +5,17 @@ Current complete modules:
 1. Text Intelligence Layer
 2. Session Memory
 3. FAQ Routing
+4. Local Knowledge Base Search
 
 Next modules:
-- Knowledge base / RAG
+- LLM answer generation from retrieved context
 - Registration engine
 - TTS engine
 """
 
 from config import SUPPORTED_LANGUAGES, SUPPORTED_MODES
 from faq_router import FAQRouter
+from knowledge_base import KnowledgeBase
 from memory import MemoryManager
 from models import BrainInput, BrainOutput
 from text_processor import TextProcessor
@@ -28,6 +30,7 @@ class ECUBrain:
         self.text_processor = TextProcessor()
         self.memory_manager = MemoryManager(max_turns=3)
         self.faq_router = FAQRouter()
+        self.knowledge_base = KnowledgeBase()
 
     def process(self, brain_input: BrainInput) -> BrainOutput:
         """
@@ -83,11 +86,39 @@ class ECUBrain:
                 ],
             )
 
+        knowledge_match = self.knowledge_base.search(
+            processed_text=processed_text,
+            language=brain_input.language,
+        )
+
+        if knowledge_match["matched"]:
+            return BrainOutput(
+                mode=brain_input.mode,
+                answer_text=knowledge_match["answer_text"],
+                speech_text=knowledge_match["speech_text"],
+                confidence=knowledge_match["confidence"],
+                current_topic=session.current_topic,
+                audio_path=None,
+                form_updates={},
+                route_taken=[
+                    "input_received",
+                    "basic_validation_done",
+                    *processed_text.route_notes,
+                    "session_memory_updated",
+                    "faq_router_checked",
+                    "no_faq_match_found",
+                    "knowledge_base_checked",
+                    "knowledge_base_match_found",
+                    f"section_id:{knowledge_match['section_id']}",
+                    *knowledge_match["reasons"],
+                ],
+            )
+
         return BrainOutput(
             mode=brain_input.mode,
-            answer_text=faq_match["answer_text"],
-            speech_text=faq_match["speech_text"],
-            confidence=faq_match["confidence"],
+            answer_text=knowledge_match["answer_text"],
+            speech_text=knowledge_match["speech_text"],
+            confidence=knowledge_match["confidence"],
             current_topic=session.current_topic,
             audio_path=None,
             form_updates={},
@@ -98,8 +129,10 @@ class ECUBrain:
                 "session_memory_updated",
                 "faq_router_checked",
                 "no_faq_match_found",
-                "next_step_should_be_rag",
-                *faq_match["reasons"],
+                "knowledge_base_checked",
+                "no_knowledge_base_match_found",
+                "safe_fallback_returned",
+                *knowledge_match["reasons"],
             ],
         )
 

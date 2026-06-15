@@ -1,0 +1,1097 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF1_Technology.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "computers_and_information_systems",
+    "name": {
+      "en": "Faculty of Computers and Information Systems",
+      "ar": "كلية الحاسبات ونظم المعلومات"
+    },
+    "short_name": {
+      "en": "Computers & IS",
+      "ar": "حاسبات ونظم معلومات"
+    },
+    "aliases": {
+      "en": [
+        "Computers",
+        "Computer Science",
+        "CIS",
+        "Computers and Information Systems",
+        "AI",
+        "Cybersecurity",
+        "Data Science"
+      ],
+      "ar": [
+        "حاسبات",
+        "حاسبات ومعلومات",
+        "كلية الحاسبات",
+        "ذكاء اصطناعي",
+        "أمن سيبراني",
+        "داتا ساينس"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "computing",
+      "computer_science",
+      "information_systems",
+      "artificial_intelligence",
+      "cybersecurity",
+      "data_science"
+    ],
+    "search_keywords": {
+      "en": [
+        "computers",
+        "information systems",
+        "computer science",
+        "artificial intelligence",
+        "cybersecurity",
+        "data science",
+        "programming",
+        "database"
+      ],
+      "ar": [
+        "حاسبات",
+        "نظم معلومات",
+        "علوم حاسب",
+        "ذكاء اصطناعي",
+        "أمن سيبراني",
+        "علم بيانات"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Computers and Information Systems, ECU’s computing faculty for software, systems, AI, cybersecurity, and data science.",
+      "ar": "مرحباً بك في كلية الحاسبات ونظم المعلومات، كلية ECU للحوسبة والبرمجيات والنظم والذكاء الاصطناعي والأمن السيبراني وعلم البيانات.",
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+    },
+    "description": {
+      "en": "Students build a shared foundation in mathematics, programming, databases, networks, and systems analysis during the first two years, then declare a major from Year 3.",
+      "ar": "يبني الطلاب أساساً مشتركاً في الرياضيات والبرمجة وقواعد البيانات والشبكات وتحليل النظم في أول سنتين، ثم يختارون التخصص من السنة الثالثة.",
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": 4,
+    "credit_hours": null,
+    "language_of_instruction": [],
+    "departments": [
+      {
+        "department_id": "computer_science",
+        "name": {
+          "en": "Computer Science",
+          "ar": "علوم الحاسب"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Provides rigorous grounding in algorithm design, advanced programming, compiler design, operating systems, networks, theory of computation, software architecture, DevOps, and formal foundations.",
+          "ar": "يوفر أساساً قوياً في الخوارزميات والبرمجة المتقدمة وتصميم المترجمات ونظم التشغيل والشبكات ونظرية الحوسبة وهندسة البرمجيات وDevOps."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "department_id": "information_systems",
+        "name": {
+          "en": "Information Systems",
+          "ar": "نظم المعلومات"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Bridges technology and business through enterprise systems, database management, IT governance, e-commerce, systems integration, and business analytics.",
+          "ar": "يربط بين التكنولوجيا والأعمال من خلال أنظمة المؤسسات وإدارة قواعد البيانات وحوكمة تكنولوجيا المعلومات والتجارة الإلكترونية وتكامل الأنظمة وتحليلات الأعمال."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "department_id": "artificial_intelligence",
+        "name": {
+          "en": "Artificial Intelligence",
+          "ar": "الذكاء الاصطناعي"
+        },
+        "aliases": {
+          "en": [
+            "AI"
+          ],
+          "ar": [
+            "ذكاء اصطناعي"
+          ]
+        },
+        "description": {
+          "en": "Covers machine learning, deep learning, NLP, computer vision, explainable AI, AI ethics, reinforcement learning, and AI platforms such as TensorFlow, PyTorch, Scikit-learn, HuggingFace, and cloud AI tools.",
+          "ar": "يغطي تعلم الآلة والتعلم العميق ومعالجة اللغة الطبيعية والرؤية الحاسوبية والذكاء الاصطناعي القابل للتفسير والأخلاقيات والتعلم المعزز ومنصات الذكاء الاصطناعي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "department_id": "cybersecurity",
+        "name": {
+          "en": "Cybersecurity",
+          "ar": "الأمن السيبراني"
+        },
+        "aliases": {
+          "en": [
+            "Cyber Security"
+          ],
+          "ar": [
+            "سايبر سيكيورتي",
+            "أمن معلومات"
+          ]
+        },
+        "description": {
+          "en": "Covers network security, digital forensics, ethical hacking, cryptography, security operations, malware analysis, SIEM/SOC workflows, and certification alignment with CEH, Security+, and CISSP bodies of knowledge.",
+          "ar": "يغطي أمن الشبكات والطب الشرعي الرقمي والاختراق الأخلاقي والتشفير وعمليات الأمن وتحليل البرمجيات الخبيثة وعمليات SOC/SIEM ومسارات الشهادات."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "department_id": "data_science",
+        "name": {
+          "en": "Data Science",
+          "ar": "علم البيانات"
+        },
+        "aliases": {
+          "en": [
+            "Data Analytics"
+          ],
+          "ar": [
+            "داتا ساينس",
+            "تحليل بيانات"
+          ]
+        },
+        "description": {
+          "en": "Combines statistics, data engineering, big data platforms, machine learning, visualisation, domain applications, and reproducible research methods.",
+          "ar": "يجمع بين الإحصاء وهندسة البيانات ومنصات البيانات الضخمة وتعلم الآلة وتصور البيانات والتطبيقات المتخصصة ومنهجيات البحث القابل للتكرار."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "computer_science",
+        "name": {
+          "en": "Computer Science",
+          "ar": "علوم الحاسب"
+        },
+        "program_type": "bachelor_track",
+        "department_id": "computer_science",
+        "description": {
+          "en": "Provides rigorous grounding in algorithm design, advanced programming, compiler design, operating systems, networks, theory of computation, software architecture, DevOps, and formal foundations.",
+          "ar": "يوفر أساساً قوياً في الخوارزميات والبرمجة المتقدمة وتصميم المترجمات ونظم التشغيل والشبكات ونظرية الحوسبة وهندسة البرمجيات وDevOps."
+        },
+        "career_paths": {
+          "en": [
+            "Software developer",
+            "Data analyst",
+            "AI engineer",
+            "Cybersecurity analyst",
+            "Business analyst",
+            "Systems analyst"
+          ],
+          "ar": [
+            "مطور برمجيات",
+            "محلل بيانات",
+            "مهندس ذكاء اصطناعي",
+            "محلل أمن سيبراني",
+            "محلل أعمال",
+            "محلل نظم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "program_id": "information_systems",
+        "name": {
+          "en": "Information Systems",
+          "ar": "نظم المعلومات"
+        },
+        "program_type": "bachelor_track",
+        "department_id": "information_systems",
+        "description": {
+          "en": "Bridges technology and business through enterprise systems, database management, IT governance, e-commerce, systems integration, and business analytics.",
+          "ar": "يربط بين التكنولوجيا والأعمال من خلال أنظمة المؤسسات وإدارة قواعد البيانات وحوكمة تكنولوجيا المعلومات والتجارة الإلكترونية وتكامل الأنظمة وتحليلات الأعمال."
+        },
+        "career_paths": {
+          "en": [
+            "Software developer",
+            "Data analyst",
+            "AI engineer",
+            "Cybersecurity analyst",
+            "Business analyst",
+            "Systems analyst"
+          ],
+          "ar": [
+            "مطور برمجيات",
+            "محلل بيانات",
+            "مهندس ذكاء اصطناعي",
+            "محلل أمن سيبراني",
+            "محلل أعمال",
+            "محلل نظم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "program_id": "artificial_intelligence",
+        "name": {
+          "en": "Artificial Intelligence",
+          "ar": "الذكاء الاصطناعي"
+        },
+        "program_type": "bachelor_track",
+        "department_id": "artificial_intelligence",
+        "description": {
+          "en": "Covers machine learning, deep learning, NLP, computer vision, explainable AI, AI ethics, reinforcement learning, and AI platforms such as TensorFlow, PyTorch, Scikit-learn, HuggingFace, and cloud AI tools.",
+          "ar": "يغطي تعلم الآلة والتعلم العميق ومعالجة اللغة الطبيعية والرؤية الحاسوبية والذكاء الاصطناعي القابل للتفسير والأخلاقيات والتعلم المعزز ومنصات الذكاء الاصطناعي."
+        },
+        "career_paths": {
+          "en": [
+            "Software developer",
+            "Data analyst",
+            "AI engineer",
+            "Cybersecurity analyst",
+            "Business analyst",
+            "Systems analyst"
+          ],
+          "ar": [
+            "مطور برمجيات",
+            "محلل بيانات",
+            "مهندس ذكاء اصطناعي",
+            "محلل أمن سيبراني",
+            "محلل أعمال",
+            "محلل نظم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "program_id": "cybersecurity",
+        "name": {
+          "en": "Cybersecurity",
+          "ar": "الأمن السيبراني"
+        },
+        "program_type": "bachelor_track",
+        "department_id": "cybersecurity",
+        "description": {
+          "en": "Covers network security, digital forensics, ethical hacking, cryptography, security operations, malware analysis, SIEM/SOC workflows, and certification alignment with CEH, Security+, and CISSP bodies of knowledge.",
+          "ar": "يغطي أمن الشبكات والطب الشرعي الرقمي والاختراق الأخلاقي والتشفير وعمليات الأمن وتحليل البرمجيات الخبيثة وعمليات SOC/SIEM ومسارات الشهادات."
+        },
+        "career_paths": {
+          "en": [
+            "Software developer",
+            "Data analyst",
+            "AI engineer",
+            "Cybersecurity analyst",
+            "Business analyst",
+            "Systems analyst"
+          ],
+          "ar": [
+            "مطور برمجيات",
+            "محلل بيانات",
+            "مهندس ذكاء اصطناعي",
+            "محلل أمن سيبراني",
+            "محلل أعمال",
+            "محلل نظم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      },
+      {
+        "program_id": "data_science",
+        "name": {
+          "en": "Data Science",
+          "ar": "علم البيانات"
+        },
+        "program_type": "bachelor_track",
+        "department_id": "data_science",
+        "description": {
+          "en": "Combines statistics, data engineering, big data platforms, machine learning, visualisation, domain applications, and reproducible research methods.",
+          "ar": "يجمع بين الإحصاء وهندسة البيانات ومنصات البيانات الضخمة وتعلم الآلة وتصور البيانات والتطبيقات المتخصصة ومنهجيات البحث القابل للتكرار."
+        },
+        "career_paths": {
+          "en": [
+            "Software developer",
+            "Data analyst",
+            "AI engineer",
+            "Cybersecurity analyst",
+            "Business analyst",
+            "Systems analyst"
+          ],
+          "ar": [
+            "مطور برمجيات",
+            "محلل بيانات",
+            "مهندس ذكاء اصطناعي",
+            "محلل أمن سيبراني",
+            "محلل أعمال",
+            "محلل نظم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": []
+  },
+  "facilities": {
+    "labs": [],
+    "clinics_or_studios": [],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "Students use professional computing tooling such as Python, TensorFlow, PyTorch, Scikit-learn, HuggingFace, Jupyter, Colab, Power BI, Tableau, Docker and cloud AI platforms across relevant tracks.",
+        "ar": "يستخدم الطلاب أدوات حوسبة مهنية مثل Python وTensorFlow وPyTorch وScikit-learn وHuggingFace وJupyter وColab وPower BI وTableau وDocker ومنصات الذكاء الاصطناعي السحابية حسب التخصص."
+      }
+    ],
+    "partnerships": [],
+    "international_opportunities": []
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "computers_and_information_systems_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is CIS about?"
+        ],
+        "ar": [
+          "كلية حاسبات بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It is a computing faculty with tracks in Computer Science, Information Systems, Artificial Intelligence, Cybersecurity, and Data Science.",
+        "ar": "هي كلية حوسبة تضم تخصصات علوم الحاسب، نظم المعلومات، الذكاء الاصطناعي، الأمن السيبراني، وعلم البيانات."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "computers_and_information_systems_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "computers_and_information_systems_departments_002",
+      "intent_id": "faculty_tracks",
+      "topic": "departments",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are the CIS tracks?"
+        ],
+        "ar": [
+          "تخصصات حاسبات ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The tracks are Computer Science, Information Systems, Artificial Intelligence, Cybersecurity, and Data Science.",
+        "ar": "التخصصات هي علوم الحاسب، نظم المعلومات، الذكاء الاصطناعي، الأمن السيبراني، وعلم البيانات."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "computers_and_information_systems_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "computers_and_information_systems_duration_003",
+      "intent_id": "faculty_duration",
+      "topic": "duration",
+      "priority": 2,
+      "questions": {
+        "en": [
+          "How many years is CIS?"
+        ],
+        "ar": [
+          "حاسبات كام سنة؟"
+        ]
+      },
+      "answer": {
+        "en": "The programme summary lists the CIS B.Sc. tracks as four years.",
+        "ar": "ملخص البرامج يذكر أن مسارات بكالوريوس حاسبات ونظم معلومات مدتها أربع سنوات."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "computers_and_information_systems_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/computers-and-information-systems/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "computers_and_information_systems_fees_004",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are CIS fees?"
+        ],
+        "ar": [
+          "مصروفات حاسبات كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "computers_and_information_systems_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Computers and Information Systems Overview",
+        "ar": "نبذة عن كلية الحاسبات ونظم المعلومات"
+      },
+      "content": {
+        "en": "The Faculty of Computers and Information Systems is a computing education and innovation hub. Students complete unified General Levels in the first two years, then declare a major at the start of Year 3. The programme summary lists Computer Science, Information Systems, Artificial Intelligence, Cybersecurity, and Data Science as B.Sc. tracks over four years.",
+        "ar": "كلية الحاسبات ونظم المعلومات مركز لتعليم الحوسبة والابتكار. يدرس الطلاب مستويات عامة موحدة في أول سنتين ثم يختارون التخصص في بداية السنة الثالثة. يوضح ملخص البرامج مسارات علوم الحاسب ونظم المعلومات والذكاء الاصطناعي والأمن السيبراني وعلم البيانات لمدة أربع سنوات."
+      },
+      "tags": [
+        "computers",
+        "overview",
+        "duration",
+        "tracks"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - Computers and IS Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Computers and Information Systems about?",
+          "When do students choose a major?"
+        ],
+        "ar": [
+          "حاسبات ونظم معلومات بتدرس ايه؟",
+          "اختيار التخصص بيكون امتى؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_foundation_001",
+      "section_type": "curriculum",
+      "title": {
+        "en": "General Foundation Levels",
+        "ar": "المستويات العامة التأسيسية"
+      },
+      "content": {
+        "en": "Years 1 and 2 cover mathematics and logic, programming fundamentals, computer organisation, database foundations, networking basics, and systems analysis and design before major declaration.",
+        "ar": "السنتان الأولى والثانية تغطيان الرياضيات والمنطق وأساسيات البرمجة وتنظيم الحاسب وقواعد البيانات والشبكات وتحليل وتصميم النظم قبل اختيار التخصص."
+      },
+      "tags": [
+        "computers",
+        "foundation",
+        "curriculum"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - General Foundation Levels",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What do CIS students study in the first two years?"
+        ],
+        "ar": [
+          "طلاب حاسبات بيدرسوا ايه في أول سنتين؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Computing Tracks",
+        "ar": "مسارات الحاسبات"
+      },
+      "content": {
+        "en": "The faculty includes five major tracks: Computer Science, Information Systems, Artificial Intelligence, Cybersecurity, and Data Science.",
+        "ar": "تضم الكلية خمسة مسارات: علوم الحاسب، نظم المعلومات، الذكاء الاصطناعي، الأمن السيبراني، وعلم البيانات."
+      },
+      "tags": [
+        "computers",
+        "departments",
+        "tracks"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "computer_science",
+          "information_systems",
+          "artificial_intelligence",
+          "cybersecurity",
+          "data_science"
+        ],
+        "program_ids": [
+          "computer_science",
+          "information_systems",
+          "artificial_intelligence",
+          "cybersecurity",
+          "data_science"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - Programme Summary",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are the CIS tracks?"
+        ],
+        "ar": [
+          "تخصصات حاسبات ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_computer_science_001",
+      "section_type": "department",
+      "title": {
+        "en": "Computer Science",
+        "ar": "علوم الحاسب"
+      },
+      "content": {
+        "en": "Provides rigorous grounding in algorithm design, advanced programming, compiler design, operating systems, networks, theory of computation, software architecture, DevOps, and formal foundations.",
+        "ar": "يوفر أساساً قوياً في الخوارزميات والبرمجة المتقدمة وتصميم المترجمات ونظم التشغيل والشبكات ونظرية الحوسبة وهندسة البرمجيات وDevOps."
+      },
+      "tags": [
+        "computers",
+        "department",
+        "computer_science"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "computer_science"
+        ],
+        "program_ids": [
+          "computer_science"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - CIS Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Computer Science?"
+        ],
+        "ar": [
+          "علوم الحاسب بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_information_systems_001",
+      "section_type": "department",
+      "title": {
+        "en": "Information Systems",
+        "ar": "نظم المعلومات"
+      },
+      "content": {
+        "en": "Bridges technology and business through enterprise systems, database management, IT governance, e-commerce, systems integration, and business analytics.",
+        "ar": "يربط بين التكنولوجيا والأعمال من خلال أنظمة المؤسسات وإدارة قواعد البيانات وحوكمة تكنولوجيا المعلومات والتجارة الإلكترونية وتكامل الأنظمة وتحليلات الأعمال."
+      },
+      "tags": [
+        "computers",
+        "department",
+        "information_systems"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "information_systems"
+        ],
+        "program_ids": [
+          "information_systems"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - CIS Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Information Systems?"
+        ],
+        "ar": [
+          "نظم المعلومات بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_artificial_intelligence_001",
+      "section_type": "department",
+      "title": {
+        "en": "Artificial Intelligence",
+        "ar": "الذكاء الاصطناعي"
+      },
+      "content": {
+        "en": "Covers machine learning, deep learning, NLP, computer vision, explainable AI, AI ethics, reinforcement learning, and AI platforms such as TensorFlow, PyTorch, Scikit-learn, HuggingFace, and cloud AI tools.",
+        "ar": "يغطي تعلم الآلة والتعلم العميق ومعالجة اللغة الطبيعية والرؤية الحاسوبية والذكاء الاصطناعي القابل للتفسير والأخلاقيات والتعلم المعزز ومنصات الذكاء الاصطناعي."
+      },
+      "tags": [
+        "computers",
+        "department",
+        "artificial_intelligence"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "artificial_intelligence"
+        ],
+        "program_ids": [
+          "artificial_intelligence"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - CIS Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Artificial Intelligence?"
+        ],
+        "ar": [
+          "الذكاء الاصطناعي بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_cybersecurity_001",
+      "section_type": "department",
+      "title": {
+        "en": "Cybersecurity",
+        "ar": "الأمن السيبراني"
+      },
+      "content": {
+        "en": "Covers network security, digital forensics, ethical hacking, cryptography, security operations, malware analysis, SIEM/SOC workflows, and certification alignment with CEH, Security+, and CISSP bodies of knowledge.",
+        "ar": "يغطي أمن الشبكات والطب الشرعي الرقمي والاختراق الأخلاقي والتشفير وعمليات الأمن وتحليل البرمجيات الخبيثة وعمليات SOC/SIEM ومسارات الشهادات."
+      },
+      "tags": [
+        "computers",
+        "department",
+        "cybersecurity"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "cybersecurity"
+        ],
+        "program_ids": [
+          "cybersecurity"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - CIS Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Cybersecurity?"
+        ],
+        "ar": [
+          "الأمن السيبراني بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "computers_and_information_systems_data_science_001",
+      "section_type": "department",
+      "title": {
+        "en": "Data Science",
+        "ar": "علم البيانات"
+      },
+      "content": {
+        "en": "Combines statistics, data engineering, big data platforms, machine learning, visualisation, domain applications, and reproducible research methods.",
+        "ar": "يجمع بين الإحصاء وهندسة البيانات ومنصات البيانات الضخمة وتعلم الآلة وتصور البيانات والتطبيقات المتخصصة ومنهجيات البحث القابل للتكرار."
+      },
+      "tags": [
+        "computers",
+        "department",
+        "data_science"
+      ],
+      "entities": {
+        "faculty_id": "computers_and_information_systems",
+        "department_ids": [
+          "data_science"
+        ],
+        "program_ids": [
+          "data_science"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/computers-and-information-systems/",
+      "source_title": "ECU PDF 1 - CIS Department Sections",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Data Science?"
+        ],
+        "ar": [
+          "علم البيانات بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.language_of_instruction",
+      "academic_structure.credit_hours"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "CIS data is strong for tracks, curriculum scope, major declaration timing, and duration."
+  }
+}

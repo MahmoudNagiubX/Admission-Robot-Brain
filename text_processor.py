@@ -512,7 +512,7 @@ class TextProcessor:
             for alias in aliases:
                 alias_normalized = self._normalize_text(alias, "en").lower()
 
-                if f" {alias_normalized} " in text_for_match or alias_normalized in text.lower():
+                if self._contains_alias(text_for_match, alias_normalized):
                     return {
                         "id": canonical_id,
                         "matched_alias": alias,
@@ -546,6 +546,9 @@ class TextProcessor:
             return best_match
 
         return None
+
+    def _contains_alias(self, text: str, alias: str) -> bool:
+        return re.search(rf"(?<!\w){re.escape(alias)}(?!\w)", text) is not None
 
     def _generate_ngrams(self, words: list[str], max_size: int) -> list[str]:
         ngrams: list[str] = []

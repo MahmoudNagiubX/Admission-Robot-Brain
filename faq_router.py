@@ -10,6 +10,8 @@ Why this exists:
 """
 
 import json
+import re
+from collections import Counter
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -172,7 +174,12 @@ class FAQRouter:
             if phrase_normalized == text_normalized:
                 return 0.98, f"exact_paraphrase_match:{phrase}"
 
-            if phrase_normalized in text_normalized or text_normalized in phrase_normalized:
+            if (
+                phrase_normalized in text_normalized
+                or text_normalized in phrase_normalized
+            ) and self._substring_tokens(text_normalized) == self._substring_tokens(
+                phrase_normalized
+            ):
                 best_score = max(best_score, 0.92)
                 best_reason = f"substring_paraphrase_match:{phrase}"
                 continue
@@ -181,15 +188,68 @@ class FAQRouter:
                 None, text_normalized, phrase_normalized
             ).ratio()
 
+            if fuzzy_score >= 0.86 and not self._has_safe_token_overlap(
+                text_normalized,
+                phrase_normalized,
+            ):
+                continue
+
             if fuzzy_score > best_score:
                 best_score = fuzzy_score
                 best_reason = f"fuzzy_paraphrase_match:{phrase}"
 
         # Do not allow weak fuzzy matches to trigger FAQ.
-        if best_score >= 0.86:
+        if best_score >= 0.90:
             return min(best_score, 0.88), best_reason
 
         return 0.0, "no_safe_paraphrase_match"
+
+    def _has_safe_token_overlap(self, text: str, phrase: str) -> bool:
+        """
+        Keep fuzzy FAQ matches from jumping to a different subject.
+        """
+
+        text_tokens = self._meaningful_tokens(text)
+        phrase_tokens = self._meaningful_tokens(phrase)
+
+        if not text_tokens or not phrase_tokens:
+            return False
+
+        overlap = text_tokens.intersection(phrase_tokens)
+
+        return len(overlap) >= 2 or (
+            len(overlap) == 1
+            and len(text_tokens) == 1
+            and len(phrase_tokens) == 1
+        )
+
+    def _meaningful_tokens(self, text: str) -> set[str]:
+        text = re.sub(r"[^\w\u0600-\u06FF]+", " ", text.lower())
+        tokens = {token for token in text.split() if len(token) >= 2}
+
+        stopwords = {
+            "the", "is", "are", "and", "or", "of", "to", "in", "for", "what",
+            "where", "how", "can", "i", "me", "my", "a", "an", "does", "have",
+            "about", "tell", "faculty", "engineering",
+            "في", "من", "عن", "على", "الى", "إلى", "ايه", "ما", "هو", "هي",
+            "عايز", "اعرف", "كام", "فين", "كلية", "هندسة",
+        }
+
+        return tokens.difference(stopwords)
+
+    def _substring_tokens(self, text: str) -> Counter[str]:
+        text = re.sub(r"[^\w\u0600-\u06FF]+", " ", text.lower())
+        tokens = [token for token in text.split() if len(token) >= 2]
+
+        stopwords = {
+            "the", "is", "are", "and", "or", "of", "to", "in", "for", "what",
+            "where", "how", "can", "i", "me", "my", "a", "an", "does", "have",
+            "about", "tell",
+            "في", "من", "عن", "على", "الى", "إلى", "ايه", "ما", "هو", "هي",
+            "عايز", "اعرف", "كام", "فين",
+        }
+
+        return Counter(token for token in tokens if token not in stopwords)
 
     def _get_language_value(
         self,

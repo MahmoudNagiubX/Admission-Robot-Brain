@@ -1,0 +1,1172 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF2_Medical.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "pharmacy_and_drug_technology",
+    "name": {
+      "en": "Faculty of Pharmacy and Drug Technology",
+      "ar": "كلية الصيدلة وتكنولوجيا الدواء"
+    },
+    "short_name": {
+      "en": "Pharmacy & Drug Technology",
+      "ar": "الصيدلة وتكنولوجيا الدواء"
+    },
+    "aliases": {
+      "en": [
+        "Pharmacy",
+        "Pharm.D.",
+        "Drug Technology",
+        "Clinical Pharmacy"
+      ],
+      "ar": [
+        "صيدلة",
+        "كلية الصيدلة",
+        "فارم دي",
+        "تكنولوجيا الدواء"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "pharmacy",
+      "pharmd",
+      "drug_technology",
+      "health",
+      "admission"
+    ],
+    "search_keywords": {
+      "en": [
+        "pharmacy",
+        "pharm.d",
+        "drug technology",
+        "clinical pharmacy",
+        "pharmacognosy",
+        "pharmaceutics",
+        "Chinese medicine"
+      ],
+      "ar": [
+        "صيدلة",
+        "فارم دي",
+        "تكنولوجيا الدواء",
+        "صيدلة إكلينيكية",
+        "عقاقير",
+        "طب صيني"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Pharmacy and Drug Technology, home of ECU’s six-year Doctor of Pharmacy programme.",
+      "ar": "مرحباً بك في كلية الصيدلة وتكنولوجيا الدواء، مقر برنامج دكتور صيدلة بجامعة ECU لمدة ست سنوات.",
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+    },
+    "description": {
+      "en": "The faculty combines pharmaceutical sciences, clinical pharmacy, residency training, and Chinese university partnerships in herbal and traditional medicine.",
+      "ar": "تجمع الكلية بين العلوم الصيدلية والصيدلة الإكلينيكية والتدريب الإقامي وشراكات جامعية صينية في الطب العشبي والتقليدي.",
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": 6,
+    "credit_hours": null,
+    "language_of_instruction": [
+      "English",
+      "Arabic for clinical communication and pharmacy practice contexts"
+    ],
+    "departments": [
+      {
+        "department_id": "pharmaceutics",
+        "name": {
+          "en": "Pharmaceutics",
+          "ar": "الصيدلانيات"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers dosage form science, drug delivery engineering, tablets, capsules, suspensions, emulsions, semi-solid formulations, controlled-release systems, nanoparticles, transdermal patches, biologics, GMP, scale-up, and quality control.",
+          "ar": "يغطي علم الأشكال الصيدلية وهندسة توصيل الدواء والأقراص والكبسولات والمعلقات والمستحلبات والمستحضرات شبه الصلبة وأنظمة التحرر المتحكم به والجسيمات النانوية واللاصقات الحيوية وGMP والتوسع الصناعي وضبط الجودة."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "pharmacognosy",
+        "name": {
+          "en": "Pharmacognosy",
+          "ar": "العقاقير"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Studies drugs of natural origin, extraction, isolation, standardisation of natural bioactive compounds, phytochemistry, ethnopharmacology, and natural product drug discovery with Egyptian and Chinese herbal medicine focus.",
+          "ar": "يدرس الأدوية ذات الأصل الطبيعي والاستخلاص والعزل وتوحيد المركبات الحيوية والكيمياء النباتية والطب الشعبي واكتشاف الأدوية الطبيعية مع تركيز على التراث المصري والصيني."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "pharmaceutical_chemistry",
+        "name": {
+          "en": "Pharmaceutical Chemistry",
+          "ar": "الكيمياء الصيدلية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Studies drug molecular structure, chemical synthesis, structure-activity relationships, analytical chemistry techniques, medicinal chemistry, and computer-aided drug design at postgraduate level.",
+          "ar": "يدرس التركيب الجزيئي للأدوية والتخليق الكيميائي وعلاقات التركيب بالنشاط وتقنيات التحليل والكيمياء الدوائية وتصميم الدواء بالحاسب على مستوى الدراسات العليا."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "pharmacology_and_toxicology",
+        "name": {
+          "en": "Pharmacology & Toxicology",
+          "ar": "الأدوية والسموم"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers drug mechanisms, receptor pharmacology, pharmacokinetics, pharmacodynamics, clinical pharmacology, acute and chronic toxicity, environmental toxicology, and forensic toxicology principles.",
+          "ar": "يغطي آليات عمل الأدوية وفارماكولوجيا المستقبلات والحركية والديناميكية الدوائية والفارماكولوجيا الإكلينيكية والسمية الحادة والمزمنة والبيئية والشرعية."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "microbiology_and_immunology",
+        "name": {
+          "en": "Microbiology & Immunology",
+          "ar": "الميكروبيولوجيا والمناعة"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers pharmaceutical microbiology, sterility testing, aseptic manufacturing, microbial genetics, antibiotic resistance, innate and adaptive immunity, vaccines, monoclonal antibodies, and immunodeficiency disorders.",
+          "ar": "يغطي الميكروبيولوجيا الصيدلية واختبارات التعقيم والتصنيع العقيم والجينات الميكروبية ومقاومة المضادات والمناعة الفطرية والمكتسبة واللقاحات والأجسام المضادة وحالات نقص المناعة."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "biochemistry",
+        "name": {
+          "en": "Biochemistry",
+          "ar": "الكيمياء الحيوية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers molecular basis of drug action, enzyme kinetics, metabolic pathway pharmacology, molecular biology techniques, clinical biochemistry, diagnostic markers, therapeutic drug monitoring, and pharmaceutical biotechnology.",
+          "ar": "يغطي الأساس الجزيئي لعمل الدواء وحركية الإنزيمات ومسارات الأيض وتقنيات البيولوجيا الجزيئية والكيمياء الحيوية الإكلينيكية ومؤشرات التشخيص ومراقبة الدواء والتكنولوجيا الحيوية الصيدلية."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "department_id": "pharmacy_practice",
+        "name": {
+          "en": "Pharmacy Practice",
+          "ar": "ممارسة الصيدلة"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Focuses on patient-centred pharmaceutical care, medication therapy management, clinical pharmacokinetic monitoring, drug information services, counselling, interprofessional collaboration, community pharmacy, hospital formulary management, pharmacoeconomics, and medication error prevention.",
+          "ar": "يركز على الرعاية الصيدلية المتمحورة حول المريض وإدارة العلاج الدوائي ومتابعة الحركية الدوائية الإكلينيكية وخدمات معلومات الدواء والإرشاد والتعاون الصحي والصيدلة المجتمعية وإدارة قوائم الأدوية واقتصاديات الدواء ومنع أخطاء الدواء."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "doctor_of_pharmacy_pharmd",
+        "name": {
+          "en": "Doctor of Pharmacy (Pharm.D.)",
+          "ar": "دكتور صيدلة Pharm.D."
+        },
+        "program_type": "main_program",
+        "department_id": null,
+        "description": {
+          "en": "A six-year programme with five academic years followed by a mandatory 9-month residency rotation year across hospital pharmacy, community pharmacy, industrial pharmacy, and clinical research settings.",
+          "ar": "برنامج مدته ست سنوات: خمس سنوات أكاديمية ثم سنة امتياز/إقامة إلزامية مدتها 9 أشهر تشمل صيدلة المستشفيات والصيدلة المجتمعية والصيدلة الصناعية والبحث الإكلينيكي."
+        },
+        "career_paths": {
+          "en": [
+            "Clinical pharmacist",
+            "Community pharmacist",
+            "Hospital pharmacist",
+            "Industrial pharmacist",
+            "Clinical research associate",
+            "Drug information pharmacist"
+          ],
+          "ar": [
+            "صيدلي إكلينيكي",
+            "صيدلي مجتمعي",
+            "صيدلي مستشفى",
+            "صيدلي صناعي",
+            "باحث إكلينيكي",
+            "صيدلي معلومات دوائية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": [
+      {
+        "name": {
+          "en": "Prof. Shadeed Gad",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "pharmaceutics",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Prof. Farid Noshy",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "pharmacognosy",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Dr. Peter Amir",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "pharmaceutical_chemistry",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Dr. Ahmed Seif El-Din",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "pharmacology_and_toxicology",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Dr. Nora Elkenawy",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "microbiology_and_immunology",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Dr. Mahmoud Senousy",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "biochemistry",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      },
+      {
+        "name": {
+          "en": "Dr. Reham Atef",
+          "ar": null
+        },
+        "title": {
+          "en": "Department Head",
+          "ar": null
+        },
+        "department_id": "pharmacy_practice",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      }
+    ]
+  },
+  "facilities": {
+    "labs": [
+      {
+        "lab_id": "pharmacy_practical_laboratories",
+        "name": {
+          "en": "Pharmacy Practical Laboratories",
+          "ar": "معامل الصيدلة العملية"
+        },
+        "description": {
+          "en": "Practical laboratory sessions form a substantial component of each academic year across the seven internal departments.",
+          "ar": "تمثل الجلسات المعملية العملية جزءاً مهماً من كل عام دراسي عبر الأقسام الداخلية السبعة."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      }
+    ],
+    "clinics_or_studios": [],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "Mandatory Year 6 rotations across hospital pharmacy, community pharmacy, industrial pharmacy, and clinical research settings.",
+        "ar": "تدريبات إلزامية في السنة السادسة تشمل صيدلة المستشفيات والصيدلة المجتمعية والصيدلة الصناعية والبحث الإكلينيكي."
+      }
+    ],
+    "partnerships": [
+      {
+        "en": "Hebei University of Chinese Medicine and Shandong University of Chinese Medicine partnerships support herbal medicine and natural product research.",
+        "ar": "تدعم شراكات جامعة خبي للطب الصيني وجامعة شاندونغ للطب الصيني أبحاث الطب العشبي والمنتجات الطبيعية."
+      }
+    ],
+    "international_opportunities": [
+      {
+        "en": "Mandarin/HSK modules support access to Chinese pharmaceutical literature and exchange opportunities.",
+        "ar": "تدعم مقررات الماندرين وHSK الوصول إلى الأدبيات الصيدلية الصينية وفرص التبادل."
+      }
+    ]
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "pharmacy_and_drug_technology_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Pharmacy and Drug Technology about?"
+        ],
+        "ar": [
+          "كلية الصيدلة وتكنولوجيا الدواء بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It offers a six-year Doctor of Pharmacy programme with seven internal departments and integration with Chinese herbal medicine partnerships.",
+        "ar": "تقدم برنامج دكتور صيدلة لمدة ست سنوات مع سبعة أقسام داخلية وتكامل مع شراكات الطب الصيني والعلاج بالأعشاب."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "pharmacy_and_drug_technology_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "pharmacy_and_drug_technology_duration_002",
+      "intent_id": "faculty_duration",
+      "topic": "duration",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "How many years is Pharmacy?"
+        ],
+        "ar": [
+          "صيدلة كام سنة؟"
+        ]
+      },
+      "answer": {
+        "en": "The Pharm.D. programme is six years: five academic years plus a mandatory 9-month residency rotation year.",
+        "ar": "برنامج دكتور صيدلة ست سنوات: خمس سنوات أكاديمية وسنة إقامة/امتياز إلزامية مدتها 9 أشهر."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "pharmacy_and_drug_technology_programme_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "pharmacy_and_drug_technology_departments_003",
+      "intent_id": "faculty_departments",
+      "topic": "departments",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are the pharmacy departments?"
+        ],
+        "ar": [
+          "أقسام صيدلة ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The seven departments are Pharmaceutics, Pharmacognosy, Pharmaceutical Chemistry, Pharmacology & Toxicology, Microbiology & Immunology, Biochemistry, and Pharmacy Practice.",
+        "ar": "الأقسام السبعة هي الصيدلانيات، العقاقير، الكيمياء الصيدلية، الأدوية والسموم، الميكروبيولوجيا والمناعة، الكيمياء الحيوية، وممارسة الصيدلة."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "pharmacy_and_drug_technology_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/pharmacy-drug-technology/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "pharmacy_and_drug_technology_fees_004",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Pharmacy fees?"
+        ],
+        "ar": [
+          "مصروفات صيدلة كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "pharmacy_and_drug_technology_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Pharmacy and Drug Technology Overview",
+        "ar": "نبذة عن كلية الصيدلة وتكنولوجيا الدواء"
+      },
+      "content": {
+        "en": "The Faculty of Pharmacy and Drug Technology was established following Ministerial Decree No. 3165 on 2 September 2020, with instruction starting in the 2020/2021 fall semester. It offers a six-year Doctor of Pharmacy programme combining a Pharm.D. framework with Chinese university partnerships in traditional and herbal medicine.",
+        "ar": "تأسست كلية الصيدلة وتكنولوجيا الدواء بقرار وزاري رقم 3165 في 2 سبتمبر 2020 وبدأت الدراسة في فصل خريف 2020/2021. تقدم الكلية برنامج دكتور صيدلة لمدة ست سنوات يجمع بين إطار Pharm.D. وشراكات جامعات صينية في الطب التقليدي والعشبي."
+      },
+      "tags": [
+        "pharmacy",
+        "overview",
+        "pharmd"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Pharmacy and Drug Technology about?"
+        ],
+        "ar": [
+          "كلية الصيدلة وتكنولوجيا الدواء بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_programme_001",
+      "section_type": "program",
+      "title": {
+        "en": "Doctor of Pharmacy Structure",
+        "ar": "هيكل برنامج دكتور صيدلة"
+      },
+      "content": {
+        "en": "The Pharm.D. programme lasts six years: five full academic years followed by one mandatory 9-month residency rotation year. Instruction is in English for scientific and clinical modules, with Arabic retained for clinical communication and pharmacy practice in Egyptian healthcare contexts.",
+        "ar": "برنامج Pharm.D. مدته ست سنوات: خمس سنوات أكاديمية كاملة ثم سنة إقامة/امتياز إلزامية مدتها 9 أشهر. لغة التدريس الإنجليزية في المواد العلمية والإكلينيكية، مع استخدام العربية لمهارات التواصل الإكلينيكي وممارسة الصيدلة في السياق الصحي المصري."
+      },
+      "tags": [
+        "pharmacy",
+        "duration",
+        "language",
+        "residency"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharm.D. Programme",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "How long is Pharm.D.?"
+        ],
+        "ar": [
+          "صيدلة كام سنة؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Pharmacy Departments",
+        "ar": "أقسام كلية الصيدلة"
+      },
+      "content": {
+        "en": "The faculty has seven internal departments: Pharmaceutics, Pharmacognosy, Pharmaceutical Chemistry, Pharmacology & Toxicology, Microbiology & Immunology, Biochemistry, and Pharmacy Practice.",
+        "ar": "تضم الكلية سبعة أقسام داخلية: الصيدلانيات، العقاقير، الكيمياء الصيدلية، الأدوية والسموم، الميكروبيولوجيا والمناعة، الكيمياء الحيوية، وممارسة الصيدلة."
+      },
+      "tags": [
+        "pharmacy",
+        "departments"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmaceutics",
+          "pharmacognosy",
+          "pharmaceutical_chemistry",
+          "pharmacology_and_toxicology",
+          "microbiology_and_immunology",
+          "biochemistry",
+          "pharmacy_practice"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Seven Internal Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are the pharmacy departments?"
+        ],
+        "ar": [
+          "أقسام صيدلة ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_pharmaceutics_001",
+      "section_type": "department",
+      "title": {
+        "en": "Pharmaceutics",
+        "ar": "الصيدلانيات"
+      },
+      "content": {
+        "en": "Covers dosage form science, drug delivery engineering, tablets, capsules, suspensions, emulsions, semi-solid formulations, controlled-release systems, nanoparticles, transdermal patches, biologics, GMP, scale-up, and quality control.",
+        "ar": "يغطي علم الأشكال الصيدلية وهندسة توصيل الدواء والأقراص والكبسولات والمعلقات والمستحلبات والمستحضرات شبه الصلبة وأنظمة التحرر المتحكم به والجسيمات النانوية واللاصقات الحيوية وGMP والتوسع الصناعي وضبط الجودة."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "pharmaceutics"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmaceutics"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Pharmaceutics cover?"
+        ],
+        "ar": [
+          "الصيدلانيات بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_pharmacognosy_001",
+      "section_type": "department",
+      "title": {
+        "en": "Pharmacognosy",
+        "ar": "العقاقير"
+      },
+      "content": {
+        "en": "Studies drugs of natural origin, extraction, isolation, standardisation of natural bioactive compounds, phytochemistry, ethnopharmacology, and natural product drug discovery with Egyptian and Chinese herbal medicine focus.",
+        "ar": "يدرس الأدوية ذات الأصل الطبيعي والاستخلاص والعزل وتوحيد المركبات الحيوية والكيمياء النباتية والطب الشعبي واكتشاف الأدوية الطبيعية مع تركيز على التراث المصري والصيني."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "pharmacognosy"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmacognosy"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Pharmacognosy cover?"
+        ],
+        "ar": [
+          "العقاقير بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_pharmaceutical_chemistry_001",
+      "section_type": "department",
+      "title": {
+        "en": "Pharmaceutical Chemistry",
+        "ar": "الكيمياء الصيدلية"
+      },
+      "content": {
+        "en": "Studies drug molecular structure, chemical synthesis, structure-activity relationships, analytical chemistry techniques, medicinal chemistry, and computer-aided drug design at postgraduate level.",
+        "ar": "يدرس التركيب الجزيئي للأدوية والتخليق الكيميائي وعلاقات التركيب بالنشاط وتقنيات التحليل والكيمياء الدوائية وتصميم الدواء بالحاسب على مستوى الدراسات العليا."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "pharmaceutical_chemistry"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmaceutical_chemistry"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Pharmaceutical Chemistry cover?"
+        ],
+        "ar": [
+          "الكيمياء الصيدلية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_pharmacology_and_toxicology_001",
+      "section_type": "department",
+      "title": {
+        "en": "Pharmacology & Toxicology",
+        "ar": "الأدوية والسموم"
+      },
+      "content": {
+        "en": "Covers drug mechanisms, receptor pharmacology, pharmacokinetics, pharmacodynamics, clinical pharmacology, acute and chronic toxicity, environmental toxicology, and forensic toxicology principles.",
+        "ar": "يغطي آليات عمل الأدوية وفارماكولوجيا المستقبلات والحركية والديناميكية الدوائية والفارماكولوجيا الإكلينيكية والسمية الحادة والمزمنة والبيئية والشرعية."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "pharmacology_and_toxicology"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmacology_and_toxicology"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Pharmacology & Toxicology cover?"
+        ],
+        "ar": [
+          "الأدوية والسموم بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_microbiology_and_immunology_001",
+      "section_type": "department",
+      "title": {
+        "en": "Microbiology & Immunology",
+        "ar": "الميكروبيولوجيا والمناعة"
+      },
+      "content": {
+        "en": "Covers pharmaceutical microbiology, sterility testing, aseptic manufacturing, microbial genetics, antibiotic resistance, innate and adaptive immunity, vaccines, monoclonal antibodies, and immunodeficiency disorders.",
+        "ar": "يغطي الميكروبيولوجيا الصيدلية واختبارات التعقيم والتصنيع العقيم والجينات الميكروبية ومقاومة المضادات والمناعة الفطرية والمكتسبة واللقاحات والأجسام المضادة وحالات نقص المناعة."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "microbiology_and_immunology"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "microbiology_and_immunology"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Microbiology & Immunology cover?"
+        ],
+        "ar": [
+          "الميكروبيولوجيا والمناعة بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_biochemistry_001",
+      "section_type": "department",
+      "title": {
+        "en": "Biochemistry",
+        "ar": "الكيمياء الحيوية"
+      },
+      "content": {
+        "en": "Covers molecular basis of drug action, enzyme kinetics, metabolic pathway pharmacology, molecular biology techniques, clinical biochemistry, diagnostic markers, therapeutic drug monitoring, and pharmaceutical biotechnology.",
+        "ar": "يغطي الأساس الجزيئي لعمل الدواء وحركية الإنزيمات ومسارات الأيض وتقنيات البيولوجيا الجزيئية والكيمياء الحيوية الإكلينيكية ومؤشرات التشخيص ومراقبة الدواء والتكنولوجيا الحيوية الصيدلية."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "biochemistry"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "biochemistry"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Biochemistry cover?"
+        ],
+        "ar": [
+          "الكيمياء الحيوية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "pharmacy_and_drug_technology_pharmacy_practice_001",
+      "section_type": "department",
+      "title": {
+        "en": "Pharmacy Practice",
+        "ar": "ممارسة الصيدلة"
+      },
+      "content": {
+        "en": "Focuses on patient-centred pharmaceutical care, medication therapy management, clinical pharmacokinetic monitoring, drug information services, counselling, interprofessional collaboration, community pharmacy, hospital formulary management, pharmacoeconomics, and medication error prevention.",
+        "ar": "يركز على الرعاية الصيدلية المتمحورة حول المريض وإدارة العلاج الدوائي ومتابعة الحركية الدوائية الإكلينيكية وخدمات معلومات الدواء والإرشاد والتعاون الصحي والصيدلة المجتمعية وإدارة قوائم الأدوية واقتصاديات الدواء ومنع أخطاء الدواء."
+      },
+      "tags": [
+        "pharmacy",
+        "department",
+        "pharmacy_practice"
+      ],
+      "entities": {
+        "faculty_id": "pharmacy_and_drug_technology",
+        "department_ids": [
+          "pharmacy_practice"
+        ],
+        "program_ids": [
+          "doctor_of_pharmacy_pharmd"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/pharmacy-drug-technology/",
+      "source_title": "ECU PDF 2 - Pharmacy Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What does Pharmacy Practice cover?"
+        ],
+        "ar": [
+          "ممارسة الصيدلة بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.credit_hours"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Pharmacy data is strong for establishment, duration, departments, department heads, language, rotations, and Chinese partnerships."
+  }
+}

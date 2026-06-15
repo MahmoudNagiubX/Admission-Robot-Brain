@@ -1,0 +1,894 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/media/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF3_Humanities_Business_Creative.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "mass_communication",
+    "name": {
+      "en": "Faculty of Mass Communication",
+      "ar": "كلية الإعلام"
+    },
+    "short_name": {
+      "en": "Mass Communication",
+      "ar": "الإعلام"
+    },
+    "aliases": {
+      "en": [
+        "Mass Communication",
+        "Media",
+        "Mass Comm",
+        "Digital Journalism",
+        "IMC",
+        "Audio-Visual Production"
+      ],
+      "ar": [
+        "إعلام",
+        "كلية الإعلام",
+        "صحافة رقمية",
+        "إنتاج مرئي ومسموع",
+        "اتصال تسويقي"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/media/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "media",
+      "journalism",
+      "production",
+      "imc",
+      "communication"
+    ],
+    "search_keywords": {
+      "en": [
+        "mass communication",
+        "media",
+        "digital journalism",
+        "graphic design",
+        "audio visual production",
+        "IMC",
+        "advertising",
+        "public relations"
+      ],
+      "ar": [
+        "إعلام",
+        "صحافة رقمية",
+        "تصميم جرافيك",
+        "إنتاج سمعي بصري",
+        "اتصالات تسويقية",
+        "إعلان",
+        "علاقات عامة"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Mass Communication, ECU’s media faculty for journalism, production, design, advertising, PR, and IMC.",
+      "ar": "مرحباً بك في كلية الإعلام، كلية ECU للصحافة والإنتاج والتصميم والإعلان والعلاقات العامة والاتصالات التسويقية المتكاملة.",
+      "source_url": "https://ecu.edu.eg/faculties/media/"
+    },
+    "description": {
+      "en": "The faculty combines media theory, journalism, media law and ethics, visual communication, digital production, and bilingual media language before specialisation.",
+      "ar": "تجمع الكلية بين نظريات الإعلام والصحافة وقانون وأخلاقيات الإعلام والتواصل البصري والإنتاج الرقمي واللغة الإعلامية بالعربية والإنجليزية قبل التخصص.",
+      "source_url": "https://ecu.edu.eg/faculties/media/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/media/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/media/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": 4,
+    "credit_hours": null,
+    "language_of_instruction": [
+      "Arabic and English language for media"
+    ],
+    "departments": [
+      {
+        "department_id": "digital_journalism_and_graphic_design",
+        "name": {
+          "en": "Digital Journalism & Graphic Design",
+          "ar": "الصحافة الرقمية والتصميم الجرافيكي"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Specialises in digital journalism, data journalism, multimedia storytelling, investigative reporting, social media journalism, Adobe Creative Suite, motion graphics, and UI/UX for news platforms.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      },
+      {
+        "department_id": "audio_visual_production",
+        "name": {
+          "en": "Audio-Visual Production",
+          "ar": "الإنتاج السمعي البصري"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Trains media producers for television, radio, streaming, and studio recording through camera operation, cinematography, editing, post-production, sound engineering, radio programming, voice-over, podcasting, and streaming media.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      },
+      {
+        "department_id": "integrated_marketing_communications",
+        "name": {
+          "en": "Integrated Marketing Communications (IMC)",
+          "ar": "الاتصالات التسويقية المتكاملة"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Combines advertising, public relations, branding, event management, digital performance marketing, and a capstone IMC campaign for a real client brief.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "digital_journalism_and_graphic_design",
+        "name": {
+          "en": "Digital Journalism & Graphic Design",
+          "ar": "الصحافة الرقمية والتصميم الجرافيكي"
+        },
+        "program_type": "specialisation",
+        "department_id": "digital_journalism_and_graphic_design",
+        "description": {
+          "en": "Specialises in digital journalism, data journalism, multimedia storytelling, investigative reporting, social media journalism, Adobe Creative Suite, motion graphics, and UI/UX for news platforms.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Journalist",
+            "Graphic designer",
+            "Video editor",
+            "Producer",
+            "Sound engineer",
+            "PR specialist",
+            "Advertising specialist",
+            "Content strategist"
+          ],
+          "ar": [
+            "صحفي",
+            "مصمم جرافيك",
+            "مونتير فيديو",
+            "منتج",
+            "مهندس صوت",
+            "أخصائي علاقات عامة",
+            "أخصائي إعلان",
+            "استراتيجي محتوى"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      },
+      {
+        "program_id": "audio_visual_production",
+        "name": {
+          "en": "Audio-Visual Production",
+          "ar": "الإنتاج السمعي البصري"
+        },
+        "program_type": "specialisation",
+        "department_id": "audio_visual_production",
+        "description": {
+          "en": "Trains media producers for television, radio, streaming, and studio recording through camera operation, cinematography, editing, post-production, sound engineering, radio programming, voice-over, podcasting, and streaming media.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Journalist",
+            "Graphic designer",
+            "Video editor",
+            "Producer",
+            "Sound engineer",
+            "PR specialist",
+            "Advertising specialist",
+            "Content strategist"
+          ],
+          "ar": [
+            "صحفي",
+            "مصمم جرافيك",
+            "مونتير فيديو",
+            "منتج",
+            "مهندس صوت",
+            "أخصائي علاقات عامة",
+            "أخصائي إعلان",
+            "استراتيجي محتوى"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      },
+      {
+        "program_id": "integrated_marketing_communications",
+        "name": {
+          "en": "Integrated Marketing Communications (IMC)",
+          "ar": "الاتصالات التسويقية المتكاملة"
+        },
+        "program_type": "specialisation",
+        "department_id": "integrated_marketing_communications",
+        "description": {
+          "en": "Combines advertising, public relations, branding, event management, digital performance marketing, and a capstone IMC campaign for a real client brief.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Journalist",
+            "Graphic designer",
+            "Video editor",
+            "Producer",
+            "Sound engineer",
+            "PR specialist",
+            "Advertising specialist",
+            "Content strategist"
+          ],
+          "ar": [
+            "صحفي",
+            "مصمم جرافيك",
+            "مونتير فيديو",
+            "منتج",
+            "مهندس صوت",
+            "أخصائي علاقات عامة",
+            "أخصائي إعلان",
+            "استراتيجي محتوى"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": []
+  },
+  "facilities": {
+    "labs": [],
+    "clinics_or_studios": [
+      {
+        "facility_id": "media_studio_production",
+        "name": {
+          "en": "Studio Production and Media Production Facilities",
+          "ar": "استوديوهات ومرافق الإنتاج الإعلامي"
+        },
+        "description": {
+          "en": "The curriculum includes studio production, live studio direction, teleprompter operation, sound engineering, radio programming, podcasting, and streaming media production.",
+          "ar": "يشمل المنهج الإنتاج الاستوديوي والإخراج الحي والتليبرومبتر وهندسة الصوت والبرمجة الإذاعية والبودكاست والإنتاج للبث الرقمي."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/media/"
+      }
+    ],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "Year 4 IMC capstone project for a real client brief.",
+        "ar": "مشروع تخرج IMC في السنة الرابعة لحالة عميل حقيقية."
+      }
+    ],
+    "partnerships": [],
+    "international_opportunities": []
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "mass_communication_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Mass Communication about?"
+        ],
+        "ar": [
+          "إعلام بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It prepares students for digital journalism, graphic design, audio-visual production, advertising, PR, branding, and integrated marketing communications.",
+        "ar": "تؤهل الطلاب للصحافة الرقمية والتصميم الجرافيكي والإنتاج السمعي البصري والإعلان والعلاقات العامة والبراندنج والاتصالات التسويقية المتكاملة."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "mass_communication_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/media/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "mass_communication_duration_002",
+      "intent_id": "faculty_duration",
+      "topic": "duration",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "How many years is Mass Communication?"
+        ],
+        "ar": [
+          "إعلام كام سنة؟"
+        ]
+      },
+      "answer": {
+        "en": "The programme is four years: two general foundation years followed by two specialisation years.",
+        "ar": "البرنامج أربع سنوات: سنتان تأسيسيتان ثم سنتان تخصصيتان."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "mass_communication_overview_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/media/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "mass_communication_departments_003",
+      "intent_id": "faculty_departments",
+      "topic": "departments",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are Mass Communication departments?"
+        ],
+        "ar": [
+          "أقسام إعلام ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The departments are Digital Journalism & Graphic Design, Audio-Visual Production, and Integrated Marketing Communications.",
+        "ar": "الأقسام هي الصحافة الرقمية والتصميم الجرافيكي، الإنتاج السمعي البصري، والاتصالات التسويقية المتكاملة."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "mass_communication_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/media/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "mass_communication_fees_004",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Mass Communication fees?"
+        ],
+        "ar": [
+          "مصروفات إعلام كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "mass_communication_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Mass Communication Overview",
+        "ar": "نبذة عن كلية الإعلام"
+      },
+      "content": {
+        "en": "The Faculty of Mass Communication is a four-year programme split into two phases: two general foundation years for broad media literacy followed by two specialisation years in the chosen department. It aims to produce media professionals combining journalistic integrity, creative production skill, and strategic communication.",
+        "ar": "كلية الإعلام برنامج مدته أربع سنوات مقسم إلى مرحلتين: سنتان تأسيسيتان في الثقافة الإعلامية ثم سنتان تخصصيتان في القسم المختار. تهدف لإعداد إعلاميين يجمعون بين النزاهة الصحفية والمهارة الإنتاجية والإتصال الاستراتيجي."
+      },
+      "tags": [
+        "mass_communication",
+        "overview",
+        "duration"
+      ],
+      "entities": {
+        "faculty_id": "mass_communication",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/media/",
+      "source_title": "ECU PDF 3 - Mass Communication Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Mass Communication about?",
+          "How long is Mass Communication?"
+        ],
+        "ar": [
+          "كلية الإعلام بتدرس ايه؟",
+          "إعلام كام سنة؟"
+        ]
+      }
+    },
+    {
+      "section_id": "mass_communication_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Mass Communication Departments",
+        "ar": "أقسام الإعلام"
+      },
+      "content": {
+        "en": "The departments are Digital Journalism & Graphic Design, Audio-Visual Production, and Integrated Marketing Communications (IMC).",
+        "ar": "الأقسام هي الصحافة الرقمية والتصميم الجرافيكي، الإنتاج السمعي البصري، والاتصالات التسويقية المتكاملة IMC."
+      },
+      "tags": [
+        "mass_communication",
+        "departments",
+        "media"
+      ],
+      "entities": {
+        "faculty_id": "mass_communication",
+        "department_ids": [
+          "digital_journalism_and_graphic_design",
+          "audio_visual_production",
+          "integrated_marketing_communications"
+        ],
+        "program_ids": [
+          "digital_journalism_and_graphic_design",
+          "audio_visual_production",
+          "integrated_marketing_communications"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/media/",
+      "source_title": "ECU PDF 3 - Programme Summary",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are Mass Communication departments?"
+        ],
+        "ar": [
+          "أقسام إعلام ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "mass_communication_digital_journalism_and_graphic_design_001",
+      "section_type": "program",
+      "title": {
+        "en": "Digital Journalism & Graphic Design",
+        "ar": "الصحافة الرقمية والتصميم الجرافيكي"
+      },
+      "content": {
+        "en": "Specialises in digital journalism, data journalism, multimedia storytelling, investigative reporting, social media journalism, Adobe Creative Suite, motion graphics, and UI/UX for news platforms.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "mass_communication",
+        "department",
+        "digital_journalism_and_graphic_design"
+      ],
+      "entities": {
+        "faculty_id": "mass_communication",
+        "department_ids": [
+          "digital_journalism_and_graphic_design"
+        ],
+        "program_ids": [
+          "digital_journalism_and_graphic_design"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/media/",
+      "source_title": "ECU PDF 3 - Mass Communication Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Digital Journalism & Graphic Design?"
+        ],
+        "ar": [
+          "الصحافة الرقمية والتصميم الجرافيكي بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "mass_communication_audio_visual_production_001",
+      "section_type": "program",
+      "title": {
+        "en": "Audio-Visual Production",
+        "ar": "الإنتاج السمعي البصري"
+      },
+      "content": {
+        "en": "Trains media producers for television, radio, streaming, and studio recording through camera operation, cinematography, editing, post-production, sound engineering, radio programming, voice-over, podcasting, and streaming media.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "mass_communication",
+        "department",
+        "audio_visual_production"
+      ],
+      "entities": {
+        "faculty_id": "mass_communication",
+        "department_ids": [
+          "audio_visual_production"
+        ],
+        "program_ids": [
+          "audio_visual_production"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/media/",
+      "source_title": "ECU PDF 3 - Mass Communication Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Audio-Visual Production?"
+        ],
+        "ar": [
+          "الإنتاج السمعي البصري بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "mass_communication_integrated_marketing_communications_001",
+      "section_type": "program",
+      "title": {
+        "en": "Integrated Marketing Communications (IMC)",
+        "ar": "الاتصالات التسويقية المتكاملة"
+      },
+      "content": {
+        "en": "Combines advertising, public relations, branding, event management, digital performance marketing, and a capstone IMC campaign for a real client brief.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "mass_communication",
+        "department",
+        "integrated_marketing_communications"
+      ],
+      "entities": {
+        "faculty_id": "mass_communication",
+        "department_ids": [
+          "integrated_marketing_communications"
+        ],
+        "program_ids": [
+          "integrated_marketing_communications"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/media/",
+      "source_title": "ECU PDF 3 - Mass Communication Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Integrated Marketing Communications (IMC)?"
+        ],
+        "ar": [
+          "الاتصالات التسويقية المتكاملة بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.credit_hours"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Mass Communication data is strong for departments, 4-year structure, foundation curriculum, and media specialisations."
+  }
+}

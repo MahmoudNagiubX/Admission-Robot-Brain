@@ -1,0 +1,1167 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF3_Humanities_Business_Creative.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "arts_and_design",
+    "name": {
+      "en": "Faculty of Arts and Design",
+      "ar": "كلية الفنون والتصميم"
+    },
+    "short_name": {
+      "en": "Arts & Design",
+      "ar": "الفنون والتصميم"
+    },
+    "aliases": {
+      "en": [
+        "Arts",
+        "Art and Design",
+        "Arts and Design",
+        "Design",
+        "Fashion Design",
+        "Graphic Design",
+        "Interior Design"
+      ],
+      "ar": [
+        "فنون",
+        "فنون وتصميم",
+        "كلية الفنون والتصميم",
+        "تصميم",
+        "تصميم أزياء",
+        "جرافيك",
+        "تصميم داخلي"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "design",
+      "creative",
+      "arts",
+      "fashion",
+      "graphic_design",
+      "interior_design"
+    ],
+    "search_keywords": {
+      "en": [
+        "arts and design",
+        "interior design",
+        "industrial product design",
+        "cinema",
+        "visual arts",
+        "graphic multimedia",
+        "fashion design"
+      ],
+      "ar": [
+        "فنون وتصميم",
+        "تصميم داخلي",
+        "تصميم منتجات",
+        "سينما",
+        "فنون بصرية",
+        "جرافيك وملتيميديا",
+        "تصميم أزياء"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Arts and Design, ECU’s creative faculty for design, cinema, visual arts, graphics, multimedia, and fashion.",
+      "ar": "مرحباً بك في كلية الفنون والتصميم، كلية ECU الإبداعية للتصميم والسينما والفنون البصرية والجرافيك والملتيميديا والأزياء.",
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+    },
+    "description": {
+      "en": "The faculty blends artistic sensibility with technical production mastery across six departments after a shared first-year foundation.",
+      "ar": "تمزج الكلية بين الحس الفني والتمكن التقني في الإنتاج عبر ستة أقسام بعد سنة تأسيسية مشتركة.",
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": null,
+    "credit_hours": null,
+    "language_of_instruction": [],
+    "departments": [
+      {
+        "department_id": "interior_design_and_furniture",
+        "name": {
+          "en": "Interior Design and Furniture",
+          "ar": "التصميم الداخلي والأثاث"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers spatial planning, traffic flow, ergonomics, interior architecture detailing, lighting, furniture construction, materials, CAD/BIM, kitchen and bathroom design, retail and hospitality design.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "department_id": "industrial_product_design",
+        "name": {
+          "en": "Industrial Product Design",
+          "ar": "تصميم المنتجات الصناعية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers product concept development, UI/UX, CAD/CAM, SolidWorks, Fusion 360, CNC, design for manufacturing, prototyping, materials engineering, ergonomics, and sustainability.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "department_id": "cinema_and_tv_film_production",
+        "name": {
+          "en": "Cinema and TV Film Production",
+          "ar": "إنتاج أفلام السينما والتلفزيون"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers screenwriting, directing, cinematography, editing, production design, production management, and documentary filmmaking.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "department_id": "visual_arts",
+        "name": {
+          "en": "Visual Arts",
+          "ar": "الفنون البصرية"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers drawing, painting, sculpture, printmaking, contemporary art theory, digital art, new media, generative art, interactive installations, and NFT art fundamentals.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "department_id": "graphic_and_multimedia_design",
+        "name": {
+          "en": "Graphic and Multimedia Design",
+          "ar": "تصميم الجرافيك والوسائط المتعددة"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers layout, typography, brand identity, publication design, motion design, animation, web and app design, and digital illustration.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "department_id": "fashion_design",
+        "name": {
+          "en": "Fashion Design",
+          "ar": "تصميم الأزياء"
+        },
+        "aliases": {
+          "en": [],
+          "ar": []
+        },
+        "description": {
+          "en": "Covers fashion drawing, pattern making, garment construction, textile science, fashion history, collection development, fashion business, merchandising, and CAD for fashion such as CLO3D and Browzwear.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والقسم يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "interior_design_and_furniture",
+        "name": {
+          "en": "Interior Design and Furniture",
+          "ar": "التصميم الداخلي والأثاث"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "interior_design_and_furniture",
+        "description": {
+          "en": "Covers spatial planning, traffic flow, ergonomics, interior architecture detailing, lighting, furniture construction, materials, CAD/BIM, kitchen and bathroom design, retail and hospitality design.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "program_id": "industrial_product_design",
+        "name": {
+          "en": "Industrial Product Design",
+          "ar": "تصميم المنتجات الصناعية"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "industrial_product_design",
+        "description": {
+          "en": "Covers product concept development, UI/UX, CAD/CAM, SolidWorks, Fusion 360, CNC, design for manufacturing, prototyping, materials engineering, ergonomics, and sustainability.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "program_id": "cinema_and_tv_film_production",
+        "name": {
+          "en": "Cinema and TV Film Production",
+          "ar": "إنتاج أفلام السينما والتلفزيون"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "cinema_and_tv_film_production",
+        "description": {
+          "en": "Covers screenwriting, directing, cinematography, editing, production design, production management, and documentary filmmaking.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "program_id": "visual_arts",
+        "name": {
+          "en": "Visual Arts",
+          "ar": "الفنون البصرية"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "visual_arts",
+        "description": {
+          "en": "Covers drawing, painting, sculpture, printmaking, contemporary art theory, digital art, new media, generative art, interactive installations, and NFT art fundamentals.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "program_id": "graphic_and_multimedia_design",
+        "name": {
+          "en": "Graphic and Multimedia Design",
+          "ar": "تصميم الجرافيك والوسائط المتعددة"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "graphic_and_multimedia_design",
+        "description": {
+          "en": "Covers layout, typography, brand identity, publication design, motion design, animation, web and app design, and digital illustration.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      },
+      {
+        "program_id": "fashion_design",
+        "name": {
+          "en": "Fashion Design",
+          "ar": "تصميم الأزياء"
+        },
+        "program_type": "department_specialisation",
+        "department_id": "fashion_design",
+        "description": {
+          "en": "Covers fashion drawing, pattern making, garment construction, textile science, fashion history, collection development, fashion business, merchandising, and CAD for fashion such as CLO3D and Browzwear.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Interior designer",
+            "Product designer",
+            "Filmmaker",
+            "Visual artist",
+            "Graphic designer",
+            "Motion designer",
+            "Fashion designer",
+            "UI/UX designer"
+          ],
+          "ar": [
+            "مصمم داخلي",
+            "مصمم منتجات",
+            "صانع أفلام",
+            "فنان بصري",
+            "مصمم جرافيك",
+            "مصمم موشن",
+            "مصمم أزياء",
+            "مصمم واجهات وتجربة مستخدم"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": []
+  },
+  "facilities": {
+    "labs": [
+      {
+        "lab_id": "cad_bim_and_rendering_tools",
+        "name": {
+          "en": "CAD, BIM and Rendering Tools",
+          "ar": "أدوات CAD وBIM والرندر"
+        },
+        "description": {
+          "en": "Interior Design and Furniture uses AutoCAD, Revit, SketchUp, Lumion and V-Ray. Industrial Product Design uses SolidWorks, Fusion 360, CNC, 3D printing, laser cutting and other prototyping tools.",
+          "ar": "يستخدم قسم التصميم الداخلي AutoCAD وRevit وSketchUp وLumion وV-Ray. ويستخدم تصميم المنتجات SolidWorks وFusion 360 وCNC والطباعة ثلاثية الأبعاد والليزر وأدوات النمذجة الأولية."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      }
+    ],
+    "clinics_or_studios": [
+      {
+        "facility_id": "film_and_design_studios",
+        "name": {
+          "en": "Film and Design Studios",
+          "ar": "استوديوهات السينما والتصميم"
+        },
+        "description": {
+          "en": "The cinema and TV curriculum covers production design, cinematography, editing, directing, and production management; design departments use digital tools, prototyping, motion design, and fashion CAD.",
+          "ar": "يغطي منهج السينما والتلفزيون تصميم الإنتاج والتصوير والمونتاج والإخراج وإدارة الإنتاج، وتستخدم أقسام التصميم الأدوات الرقمية والنمذجة والموشن وبرامج الأزياء الرقمية."
+        },
+        "source_url": "https://ecu.edu.eg/faculties/arts-and-design/"
+      }
+    ],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [],
+    "training_opportunities": [
+      {
+        "en": "Project-based creative work across design, film, graphics, multimedia, fashion, and product prototyping.",
+        "ar": "عمل إبداعي قائم على المشروعات في التصميم والسينما والجرافيك والملتيميديا والأزياء ونمذجة المنتجات."
+      }
+    ],
+    "partnerships": [],
+    "international_opportunities": []
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "arts_and_design_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Arts and Design about?"
+        ],
+        "ar": [
+          "فنون وتصميم بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It is a creative faculty covering interior design, product design, cinema and TV production, visual arts, graphic and multimedia design, and fashion design.",
+        "ar": "هي كلية إبداعية تغطي التصميم الداخلي وتصميم المنتجات وإنتاج السينما والتلفزيون والفنون البصرية والجرافيك والوسائط المتعددة وتصميم الأزياء."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "arts_and_design_overview_001",
+        "arts_and_design_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/arts-and-design/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "arts_and_design_departments_002",
+      "intent_id": "faculty_departments",
+      "topic": "departments",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are Arts and Design departments?"
+        ],
+        "ar": [
+          "أقسام فنون وتصميم ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The departments are Interior Design & Furniture, Industrial Product Design, Cinema & TV Film Production, Visual Arts, Graphic & Multimedia Design, and Fashion Design.",
+        "ar": "الأقسام هي التصميم الداخلي والأثاث، تصميم المنتجات الصناعية، إنتاج أفلام السينما والتلفزيون، الفنون البصرية، الجرافيك والوسائط المتعددة، وتصميم الأزياء."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "arts_and_design_departments_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/arts-and-design/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "arts_and_design_fees_003",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Arts and Design fees?"
+        ],
+        "ar": [
+          "مصروفات فنون وتصميم كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "arts_and_design_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Arts and Design Overview",
+        "ar": "نبذة عن كلية الفنون والتصميم"
+      },
+      "content": {
+        "en": "The Faculty of Arts and Design blends visual aesthetics with practical industrial and production principles. All students share a foundational first year covering drawing fundamentals, colour theory, design principles, art history, digital tools introduction, and 2D/3D design basics before entering a chosen department.",
+        "ar": "تمزج كلية الفنون والتصميم بين الجماليات البصرية والمبادئ الصناعية والإنتاجية العملية. يدرس جميع الطلاب سنة أولى تأسيسية تشمل أساسيات الرسم ونظرية اللون ومبادئ التصميم وتاريخ الفن ومقدمة للأدوات الرقمية وأساسيات التصميم ثنائي وثلاثي الأبعاد قبل التخصص."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "overview",
+        "foundation"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Arts and Design about?"
+        ],
+        "ar": [
+          "فنون وتصميم بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_departments_001",
+      "section_type": "departments",
+      "title": {
+        "en": "Arts and Design Departments",
+        "ar": "أقسام الفنون والتصميم"
+      },
+      "content": {
+        "en": "The faculty includes Interior Design and Furniture, Industrial Product Design, Cinema and TV Film Production, Visual Arts, Graphic and Multimedia Design, and Fashion Design.",
+        "ar": "تضم الكلية التصميم الداخلي والأثاث، تصميم المنتجات الصناعية، إنتاج أفلام السينما والتلفزيون، الفنون البصرية، تصميم الجرافيك والوسائط المتعددة، وتصميم الأزياء."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "departments"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "interior_design_and_furniture",
+          "industrial_product_design",
+          "cinema_and_tv_film_production",
+          "visual_arts",
+          "graphic_and_multimedia_design",
+          "fashion_design"
+        ],
+        "program_ids": [
+          "interior_design_and_furniture",
+          "industrial_product_design",
+          "cinema_and_tv_film_production",
+          "visual_arts",
+          "graphic_and_multimedia_design",
+          "fashion_design"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Programme Summary",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What are Arts and Design departments?"
+        ],
+        "ar": [
+          "أقسام فنون وتصميم ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_interior_design_and_furniture_001",
+      "section_type": "department",
+      "title": {
+        "en": "Interior Design and Furniture",
+        "ar": "التصميم الداخلي والأثاث"
+      },
+      "content": {
+        "en": "Covers spatial planning, traffic flow, ergonomics, interior architecture detailing, lighting, furniture construction, materials, CAD/BIM, kitchen and bathroom design, retail and hospitality design.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "interior_design_and_furniture"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "interior_design_and_furniture"
+        ],
+        "program_ids": [
+          "interior_design_and_furniture"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Interior Design and Furniture?"
+        ],
+        "ar": [
+          "التصميم الداخلي والأثاث بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_industrial_product_design_001",
+      "section_type": "department",
+      "title": {
+        "en": "Industrial Product Design",
+        "ar": "تصميم المنتجات الصناعية"
+      },
+      "content": {
+        "en": "Covers product concept development, UI/UX, CAD/CAM, SolidWorks, Fusion 360, CNC, design for manufacturing, prototyping, materials engineering, ergonomics, and sustainability.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "industrial_product_design"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "industrial_product_design"
+        ],
+        "program_ids": [
+          "industrial_product_design"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Industrial Product Design?"
+        ],
+        "ar": [
+          "تصميم المنتجات الصناعية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_cinema_and_tv_film_production_001",
+      "section_type": "department",
+      "title": {
+        "en": "Cinema and TV Film Production",
+        "ar": "إنتاج أفلام السينما والتلفزيون"
+      },
+      "content": {
+        "en": "Covers screenwriting, directing, cinematography, editing, production design, production management, and documentary filmmaking.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "cinema_and_tv_film_production"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "cinema_and_tv_film_production"
+        ],
+        "program_ids": [
+          "cinema_and_tv_film_production"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Cinema and TV Film Production?"
+        ],
+        "ar": [
+          "إنتاج أفلام السينما والتلفزيون بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_visual_arts_001",
+      "section_type": "department",
+      "title": {
+        "en": "Visual Arts",
+        "ar": "الفنون البصرية"
+      },
+      "content": {
+        "en": "Covers drawing, painting, sculpture, printmaking, contemporary art theory, digital art, new media, generative art, interactive installations, and NFT art fundamentals.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "visual_arts"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "visual_arts"
+        ],
+        "program_ids": [
+          "visual_arts"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Visual Arts?"
+        ],
+        "ar": [
+          "الفنون البصرية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_graphic_and_multimedia_design_001",
+      "section_type": "department",
+      "title": {
+        "en": "Graphic and Multimedia Design",
+        "ar": "تصميم الجرافيك والوسائط المتعددة"
+      },
+      "content": {
+        "en": "Covers layout, typography, brand identity, publication design, motion design, animation, web and app design, and digital illustration.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "graphic_and_multimedia_design"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "graphic_and_multimedia_design"
+        ],
+        "program_ids": [
+          "graphic_and_multimedia_design"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Graphic and Multimedia Design?"
+        ],
+        "ar": [
+          "تصميم الجرافيك والوسائط المتعددة بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "arts_and_design_fashion_design_001",
+      "section_type": "department",
+      "title": {
+        "en": "Fashion Design",
+        "ar": "تصميم الأزياء"
+      },
+      "content": {
+        "en": "Covers fashion drawing, pattern making, garment construction, textile science, fashion history, collection development, fashion business, merchandising, and CAD for fashion such as CLO3D and Browzwear.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "arts",
+        "design",
+        "department",
+        "fashion_design"
+      ],
+      "entities": {
+        "faculty_id": "arts_and_design",
+        "department_ids": [
+          "fashion_design"
+        ],
+        "program_ids": [
+          "fashion_design"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/arts-and-design/",
+      "source_title": "ECU PDF 3 - Art and Design Departments",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Fashion Design?"
+        ],
+        "ar": [
+          "تصميم الأزياء بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.study_duration_years",
+      "academic_structure.credit_hours",
+      "academic_structure.language_of_instruction"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Arts and Design data is strong for departments, first-year foundation, tools, and core curriculum descriptions."
+  }
+}

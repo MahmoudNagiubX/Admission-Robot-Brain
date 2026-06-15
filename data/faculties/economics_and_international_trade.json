@@ -1,0 +1,1116 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "faculty_profile",
+  "language_policy": {
+    "primary_language": "en",
+    "supported_languages": [
+      "en",
+      "ar"
+    ],
+    "rule": "Every user-facing answer should have both English and Arabic when possible. Arabic fields in this draft are interaction-support translations unless an official Arabic source is later added."
+  },
+  "source_control": {
+    "official_website_root": "https://ecu.edu.eg/",
+    "faculty_source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+    "collected_by": "Mahmoud Nagib / ChatGPT extraction draft",
+    "collected_at": "2026-06-15",
+    "last_verified_at": "2026-06-15",
+    "verification_status": "draft",
+    "approved_by": null,
+    "notes": "Extracted from uploaded source PDF ECU_PDF3_Humanities_Business_Creative.pdf, which states source ecu.edu.eg/faculties/. Fees, minimum percentages, admission steps, dean/contact data, building/floor/navigation data require staff verification."
+  },
+  "faculty_identity": {
+    "faculty_id": "economics_and_international_trade",
+    "name": {
+      "en": "Faculty of Economics and International Trade",
+      "ar": "كلية الاقتصاد والتجارة الدولية"
+    },
+    "short_name": {
+      "en": "Economics & International Trade",
+      "ar": "الاقتصاد والتجارة الدولية"
+    },
+    "aliases": {
+      "en": [
+        "Economics",
+        "International Trade",
+        "Business",
+        "Accounting",
+        "Finance",
+        "Marketing"
+      ],
+      "ar": [
+        "اقتصاد",
+        "تجارة دولية",
+        "اقتصاد وتجارة دولية",
+        "محاسبة",
+        "تمويل",
+        "تسويق"
+      ]
+    },
+    "website_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+    "status": "active",
+    "campus": "nasr_city",
+    "building": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "code": null,
+      "floor": null,
+      "landmarks": {
+        "en": [],
+        "ar": []
+      },
+      "robot_navigation_hint": {
+        "en": null,
+        "ar": null
+      }
+    }
+  },
+  "rag_metadata": {
+    "topics": [
+      "faculty",
+      "business",
+      "economics",
+      "trade",
+      "accounting",
+      "finance",
+      "marketing"
+    ],
+    "search_keywords": {
+      "en": [
+        "economics",
+        "international trade",
+        "accounting",
+        "finance investment",
+        "international business",
+        "marketing innovation",
+        "entrepreneurial"
+      ],
+      "ar": [
+        "اقتصاد",
+        "تجارة دولية",
+        "محاسبة",
+        "تمويل واستثمار",
+        "أعمال دولية",
+        "تسويق وابتكار"
+      ]
+    },
+    "priority": 1,
+    "safe_to_answer_without_staff": true,
+    "sensitive_topics_require_staff": [
+      "exact_fees_if_not_verified",
+      "final_acceptance_decision",
+      "minimum_percentage_if_current_year_not_verified"
+    ]
+  },
+  "overview": {
+    "welcome_summary": {
+      "en": "Welcome to the Faculty of Economics and International Trade, ECU’s business-focused faculty for economics, finance, accounting, international business, and marketing innovation.",
+      "ar": "مرحباً بك في كلية الاقتصاد والتجارة الدولية، كلية ECU للأعمال والاقتصاد والتمويل والمحاسبة والأعمال الدولية والتسويق والابتكار.",
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+    },
+    "description": {
+      "en": "The faculty uses an entrepreneurial business design approach and combines business foundations with specialised tracks linked to global trade, finance, economics, and digital marketing.",
+      "ar": "تعتمد الكلية على منهج ريادي في تصميم الأعمال وتجمع بين أساسيات الأعمال ومسارات متخصصة مرتبطة بالتجارة العالمية والتمويل والاقتصاد والتسويق الرقمي.",
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+    },
+    "vision": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+    },
+    "mission": {
+      "en": null,
+      "ar": null,
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+    },
+    "objectives": []
+  },
+  "academic_structure": {
+    "degree_level": "undergraduate",
+    "study_duration_years": null,
+    "credit_hours": null,
+    "language_of_instruction": [
+      "Chinese language and culture modules are part of the foundation"
+    ],
+    "departments": [
+      {
+        "department_id": "accounting",
+        "name": {
+          "en": "Accounting",
+          "ar": "المحاسبة"
+        },
+        "aliases": {
+          "en": [
+            "Accounting"
+          ],
+          "ar": [
+            "المحاسبة"
+          ]
+        },
+        "description": {
+          "en": "Produces technically proficient accountants aligned to international accounting standards, covering advanced financial accounting, management accounting, auditing, taxation, accounting information systems, and forensic accounting.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "department_id": "finance_and_investment",
+        "name": {
+          "en": "Finance and Investment",
+          "ar": "التمويل والاستثمار"
+        },
+        "aliases": {
+          "en": [
+            "Finance"
+          ],
+          "ar": [
+            "التمويل والاستثمار"
+          ]
+        },
+        "description": {
+          "en": "Develops financial analysts and investment professionals through financial management, portfolio management, derivatives, Islamic finance, banking, and financial modelling.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "department_id": "international_business",
+        "name": {
+          "en": "International Business",
+          "ar": "إدارة الأعمال الدولية"
+        },
+        "aliases": {
+          "en": [
+            "International"
+          ],
+          "ar": [
+            "إدارة الأعمال الدولية"
+          ]
+        },
+        "description": {
+          "en": "Prepares graduates for global commerce, market entry strategy, export-import operations, cross-cultural management, international supply chains, and trade compliance.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "department_id": "international_economics",
+        "name": {
+          "en": "International Economics",
+          "ar": "الاقتصاد الدولي"
+        },
+        "aliases": {
+          "en": [
+            "International"
+          ],
+          "ar": [
+            "الاقتصاد الدولي"
+          ]
+        },
+        "description": {
+          "en": "Develops analytical economists through econometrics, development economics, monetary economics, international finance, trade policy, applied research, and environmental economics.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "department_id": "marketing_and_innovation",
+        "name": {
+          "en": "Marketing and Innovation",
+          "ar": "التسويق والابتكار"
+        },
+        "aliases": {
+          "en": [
+            "Marketing"
+          ],
+          "ar": [
+            "التسويق والابتكار"
+          ]
+        },
+        "description": {
+          "en": "Prepares creative data-driven marketers through consumer behaviour, digital marketing, brand management, innovation management, marketing research, and marketing analytics.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "website_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      }
+    ],
+    "programs": [
+      {
+        "program_id": "accounting",
+        "name": {
+          "en": "Accounting",
+          "ar": "المحاسبة"
+        },
+        "program_type": "track",
+        "department_id": "accounting",
+        "description": {
+          "en": "Produces technically proficient accountants aligned to international accounting standards, covering advanced financial accounting, management accounting, auditing, taxation, accounting information systems, and forensic accounting.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Accountant",
+            "Financial analyst",
+            "Investment analyst",
+            "International trade specialist",
+            "Marketing specialist",
+            "Economic policy analyst"
+          ],
+          "ar": [
+            "محاسب",
+            "محلل مالي",
+            "محلل استثمار",
+            "أخصائي تجارة دولية",
+            "أخصائي تسويق",
+            "محلل سياسات اقتصادية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "program_id": "finance_and_investment",
+        "name": {
+          "en": "Finance and Investment",
+          "ar": "التمويل والاستثمار"
+        },
+        "program_type": "track",
+        "department_id": "finance_and_investment",
+        "description": {
+          "en": "Develops financial analysts and investment professionals through financial management, portfolio management, derivatives, Islamic finance, banking, and financial modelling.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Accountant",
+            "Financial analyst",
+            "Investment analyst",
+            "International trade specialist",
+            "Marketing specialist",
+            "Economic policy analyst"
+          ],
+          "ar": [
+            "محاسب",
+            "محلل مالي",
+            "محلل استثمار",
+            "أخصائي تجارة دولية",
+            "أخصائي تسويق",
+            "محلل سياسات اقتصادية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "program_id": "international_business",
+        "name": {
+          "en": "International Business",
+          "ar": "إدارة الأعمال الدولية"
+        },
+        "program_type": "track",
+        "department_id": "international_business",
+        "description": {
+          "en": "Prepares graduates for global commerce, market entry strategy, export-import operations, cross-cultural management, international supply chains, and trade compliance.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Accountant",
+            "Financial analyst",
+            "Investment analyst",
+            "International trade specialist",
+            "Marketing specialist",
+            "Economic policy analyst"
+          ],
+          "ar": [
+            "محاسب",
+            "محلل مالي",
+            "محلل استثمار",
+            "أخصائي تجارة دولية",
+            "أخصائي تسويق",
+            "محلل سياسات اقتصادية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "program_id": "international_economics",
+        "name": {
+          "en": "International Economics",
+          "ar": "الاقتصاد الدولي"
+        },
+        "program_type": "track",
+        "department_id": "international_economics",
+        "description": {
+          "en": "Develops analytical economists through econometrics, development economics, monetary economics, international finance, trade policy, applied research, and environmental economics.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Accountant",
+            "Financial analyst",
+            "Investment analyst",
+            "International trade specialist",
+            "Marketing specialist",
+            "Economic policy analyst"
+          ],
+          "ar": [
+            "محاسب",
+            "محلل مالي",
+            "محلل استثمار",
+            "أخصائي تجارة دولية",
+            "أخصائي تسويق",
+            "محلل سياسات اقتصادية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "program_id": "marketing_and_innovation",
+        "name": {
+          "en": "Marketing and Innovation",
+          "ar": "التسويق والابتكار"
+        },
+        "program_type": "track",
+        "department_id": "marketing_and_innovation",
+        "description": {
+          "en": "Prepares creative data-driven marketers through consumer behaviour, digital marketing, brand management, innovation management, marketing research, and marketing analytics.",
+          "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+        },
+        "career_paths": {
+          "en": [
+            "Accountant",
+            "Financial analyst",
+            "Investment analyst",
+            "International trade specialist",
+            "Marketing specialist",
+            "Economic policy analyst"
+          ],
+          "ar": [
+            "محاسب",
+            "محلل مالي",
+            "محلل استثمار",
+            "أخصائي تجارة دولية",
+            "أخصائي تسويق",
+            "محلل سياسات اقتصادية"
+          ]
+        },
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      }
+    ]
+  },
+  "admission_information": {
+    "general_note": {
+      "en": "Admission requirements can change by year and must be verified with the Admission Office.",
+      "ar": "قد تتغير شروط القبول حسب العام ويجب تأكيدها من إدارة القبول."
+    },
+    "accepted_certificate_tracks": [
+      {
+        "track_id": "thanaweya_amma",
+        "track_name": {
+          "en": "Egyptian Secondary School Certificate",
+          "ar": "الثانوية العامة المصرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "arab_countries_secondary_certificate",
+        "track_name": {
+          "en": "Secondary Certificate from Arab Countries",
+          "ar": "الشهادة الثانوية من الدول العربية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "igcse",
+        "track_name": {
+          "en": "IGCSE",
+          "ar": "IGCSE"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "american_diploma",
+        "track_name": {
+          "en": "American Diploma",
+          "ar": "الدبلومة الأمريكية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "ib",
+        "track_name": {
+          "en": "International Baccalaureate",
+          "ar": "البكالوريا الدولية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "canadian_diploma",
+        "track_name": {
+          "en": "Canadian High School Diploma",
+          "ar": "الدبلومة الكندية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "abitur",
+        "track_name": {
+          "en": "Abitur Certificate",
+          "ar": "شهادة Abitur"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      },
+      {
+        "track_id": "nigerian_secondary_certificate",
+        "track_name": {
+          "en": "Nigerian Secondary Certificate",
+          "ar": "الشهادة الثانوية النيجيرية"
+        },
+        "eligible": null,
+        "requirements_summary": {
+          "en": null,
+          "ar": null
+        },
+        "required_documents": {
+          "en": [],
+          "ar": []
+        },
+        "source_url": "https://ecu.edu.eg/about-ecu/admission/",
+        "needs_staff_verification": true
+      }
+    ],
+    "minimum_percentage": {
+      "value": null,
+      "academic_year": null,
+      "source_url": null,
+      "needs_staff_verification": true,
+      "safe_answer": {
+        "en": "The minimum percentage changes by year. Please check with the Admission Office for the current official minimum.",
+        "ar": "الحد الأدنى للقبول بيتغير حسب السنة. من فضلك راجع إدارة القبول للتأكيد الرسمي."
+      }
+    },
+    "admission_steps": [],
+    "application_links": [
+      {
+        "label": {
+          "en": "Apply Now",
+          "ar": "قدم الآن"
+        },
+        "url": "https://ecu.edu.eg/",
+        "source_url": "https://ecu.edu.eg/"
+      }
+    ]
+  },
+  "fees": {
+    "academic_year": null,
+    "currency": "EGP",
+    "tuition_fee": null,
+    "admin_fees": null,
+    "total_estimated": null,
+    "installments_available": null,
+    "notes": {
+      "en": "Do not fill this unless officially verified.",
+      "ar": "لا يتم ملء هذا الجزء إلا بعد التأكد الرسمي."
+    },
+    "source_url": null,
+    "needs_staff_verification": true,
+    "safe_answer": {
+      "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+      "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+    }
+  },
+  "people": {
+    "dean": {
+      "name": {
+        "en": null,
+        "ar": null
+      },
+      "title": {
+        "en": "Dean",
+        "ar": "عميد الكلية"
+      },
+      "profile_url": null,
+      "source_url": null
+    },
+    "vice_deans": [],
+    "staff_members": [
+      {
+        "name": {
+          "en": "Assoc. Prof. Sameh Reyad",
+          "ar": null
+        },
+        "title": {
+          "en": "Track Supervisor",
+          "ar": null
+        },
+        "department_id": "accounting",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "name": {
+          "en": "Assist. Prof. Ihab Petro",
+          "ar": null
+        },
+        "title": {
+          "en": "Track Supervisor",
+          "ar": null
+        },
+        "department_id": "finance_and_investment",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "name": {
+          "en": "Assoc. Prof. Amira Omar",
+          "ar": null
+        },
+        "title": {
+          "en": "Track Supervisor",
+          "ar": null
+        },
+        "department_id": "international_business",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "name": {
+          "en": "Prof. Ashraf Helmy",
+          "ar": null
+        },
+        "title": {
+          "en": "Track Supervisor",
+          "ar": null
+        },
+        "department_id": "international_economics",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      },
+      {
+        "name": {
+          "en": "Assoc. Prof. Mayar Farrag",
+          "ar": null
+        },
+        "title": {
+          "en": "Track Supervisor",
+          "ar": null
+        },
+        "department_id": "marketing_and_innovation",
+        "profile_url": null,
+        "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      }
+    ]
+  },
+  "facilities": {
+    "labs": [],
+    "clinics_or_studios": [],
+    "student_services": []
+  },
+  "student_life": {
+    "activities": [
+      {
+        "en": "Entrepreneurial communities, competitions, and real-world case studies from Year 1.",
+        "ar": "مجتمعات ومسابقات ريادية وحالات عملية من السنة الأولى."
+      }
+    ],
+    "training_opportunities": [],
+    "partnerships": [],
+    "international_opportunities": [
+      {
+        "en": "Chinese language and culture modules support Sino-Egyptian commercial ties.",
+        "ar": "تدعم مقررات اللغة والثقافة الصينية العلاقات التجارية الصينية المصرية."
+      }
+    ]
+  },
+  "contact_and_location": {
+    "faculty_email": null,
+    "faculty_phone": null,
+    "admission_office_phone": null,
+    "admission_office_location": {
+      "en": null,
+      "ar": null
+    },
+    "campus_addresses": [
+      {
+        "branch_id": "nasr_city",
+        "address": {
+          "en": "Al Hay Al Asher, Nasr City, Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      },
+      {
+        "branch_id": "heliopolis",
+        "address": {
+          "en": "Gesr ElSuez st. behind Tagneed Bridge Cairo, Egypt",
+          "ar": null
+        },
+        "source_url": "https://ecu.edu.eg/contact-us/"
+      }
+    ]
+  },
+  "faq_items": [
+    {
+      "faq_id": "economics_and_international_trade_overview_001",
+      "intent_id": "faculty_overview",
+      "topic": "overview",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What is Economics and International Trade about?"
+        ],
+        "ar": [
+          "اقتصاد وتجارة دولية بتدرس ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "It is a business and economics faculty with tracks in Accounting, Finance & Investment, International Business, International Economics, and Marketing & Innovation.",
+        "ar": "هي كلية للأعمال والاقتصاد وتضم مسارات المحاسبة، التمويل والاستثمار، إدارة الأعمال الدولية، الاقتصاد الدولي، والتسويق والابتكار."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "economics_and_international_trade_overview_001",
+        "economics_and_international_trade_tracks_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "economics_and_international_trade_programs_002",
+      "intent_id": "faculty_tracks",
+      "topic": "programs",
+      "priority": 1,
+      "questions": {
+        "en": [
+          "What are the tracks?"
+        ],
+        "ar": [
+          "المسارات ايه؟"
+        ]
+      },
+      "answer": {
+        "en": "The tracks are Accounting, Finance & Investment, International Business, International Economics, and Marketing & Innovation.",
+        "ar": "المسارات هي المحاسبة، التمويل والاستثمار، إدارة الأعمال الدولية، الاقتصاد الدولي، والتسويق والابتكار."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [
+        "economics_and_international_trade_tracks_001"
+      ],
+      "source_urls": [
+        "https://ecu.edu.eg/faculties/economics-and-international-trade/"
+      ],
+      "tts_cacheable": true,
+      "safe_to_answer": true,
+      "needs_staff_verification": false
+    },
+    {
+      "faq_id": "economics_and_international_trade_fees_003",
+      "intent_id": "faculty_fees",
+      "topic": "fees",
+      "priority": 5,
+      "questions": {
+        "en": [
+          "What are Economics fees?"
+        ],
+        "ar": [
+          "مصروفات اقتصاد كام؟"
+        ]
+      },
+      "answer": {
+        "en": "Fees must be confirmed from the Admission Office because they may change by academic year.",
+        "ar": "المصروفات لازم تتأكد من إدارة القبول لأنها قد تتغير حسب العام الدراسي."
+      },
+      "answer_style": "short_structured",
+      "source_section_ids": [],
+      "source_urls": [],
+      "tts_cacheable": true,
+      "safe_to_answer": false,
+      "needs_staff_verification": true
+    }
+  ],
+  "rag_sections": [
+    {
+      "section_id": "economics_and_international_trade_overview_001",
+      "section_type": "overview",
+      "title": {
+        "en": "Economics and International Trade Overview",
+        "ar": "نبذة عن كلية الاقتصاد والتجارة الدولية"
+      },
+      "content": {
+        "en": "The Faculty of Economics and International Trade uses an entrepreneurial business design framework. Students are exposed to entrepreneurial communities, competitions, and real-world case studies from Year 1. Foundation years cover economics, business mathematics and statistics, management, financial accounting, Chinese language and culture, and business communication.",
+        "ar": "تستخدم كلية الاقتصاد والتجارة الدولية إطاراً تعليمياً قائماً على التصميم الريادي للأعمال. يتعرض الطلاب لمجتمعات ومسابقات ريادية وحالات واقعية من السنة الأولى. تشمل السنوات التأسيسية الاقتصاد والرياضيات والإحصاء للأعمال والإدارة والمحاسبة المالية واللغة والثقافة الصينية والتواصل التجاري."
+      },
+      "tags": [
+        "economics",
+        "overview",
+        "business",
+        "foundation"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [],
+        "program_ids": [],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Section",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Economics and International Trade about?"
+        ],
+        "ar": [
+          "كلية الاقتصاد والتجارة الدولية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_tracks_001",
+      "section_type": "programs",
+      "title": {
+        "en": "Economics and International Trade Tracks",
+        "ar": "مسارات الاقتصاد والتجارة الدولية"
+      },
+      "content": {
+        "en": "The faculty includes Accounting, Finance and Investment, International Business, International Economics, and Marketing and Innovation.",
+        "ar": "تضم الكلية مسارات المحاسبة، التمويل والاستثمار، إدارة الأعمال الدولية، الاقتصاد الدولي، والتسويق والابتكار."
+      },
+      "tags": [
+        "economics",
+        "tracks",
+        "programs"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "accounting",
+          "finance_and_investment",
+          "international_business",
+          "international_economics",
+          "marketing_and_innovation"
+        ],
+        "program_ids": [
+          "accounting",
+          "finance_and_investment",
+          "international_business",
+          "international_economics",
+          "marketing_and_innovation"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Programme Summary",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What tracks are in Economics and International Trade?"
+        ],
+        "ar": [
+          "مسارات اقتصاد وتجارة دولية ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_accounting_001",
+      "section_type": "program",
+      "title": {
+        "en": "Accounting",
+        "ar": "المحاسبة"
+      },
+      "content": {
+        "en": "Produces technically proficient accountants aligned to international accounting standards, covering advanced financial accounting, management accounting, auditing, taxation, accounting information systems, and forensic accounting.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "economics",
+        "business",
+        "track",
+        "accounting"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "accounting"
+        ],
+        "program_ids": [
+          "accounting"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Tracks",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Accounting?"
+        ],
+        "ar": [
+          "المحاسبة بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_finance_and_investment_001",
+      "section_type": "program",
+      "title": {
+        "en": "Finance and Investment",
+        "ar": "التمويل والاستثمار"
+      },
+      "content": {
+        "en": "Develops financial analysts and investment professionals through financial management, portfolio management, derivatives, Islamic finance, banking, and financial modelling.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "economics",
+        "business",
+        "track",
+        "finance_and_investment"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "finance_and_investment"
+        ],
+        "program_ids": [
+          "finance_and_investment"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Tracks",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Finance and Investment?"
+        ],
+        "ar": [
+          "التمويل والاستثمار بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_international_business_001",
+      "section_type": "program",
+      "title": {
+        "en": "International Business",
+        "ar": "إدارة الأعمال الدولية"
+      },
+      "content": {
+        "en": "Prepares graduates for global commerce, market entry strategy, export-import operations, cross-cultural management, international supply chains, and trade compliance.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "economics",
+        "business",
+        "track",
+        "international_business"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "international_business"
+        ],
+        "program_ids": [
+          "international_business"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Tracks",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is International Business?"
+        ],
+        "ar": [
+          "إدارة الأعمال الدولية بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_international_economics_001",
+      "section_type": "program",
+      "title": {
+        "en": "International Economics",
+        "ar": "الاقتصاد الدولي"
+      },
+      "content": {
+        "en": "Develops analytical economists through econometrics, development economics, monetary economics, international finance, trade policy, applied research, and environmental economics.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "economics",
+        "business",
+        "track",
+        "international_economics"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "international_economics"
+        ],
+        "program_ids": [
+          "international_economics"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Tracks",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is International Economics?"
+        ],
+        "ar": [
+          "الاقتصاد الدولي بتدرس ايه؟"
+        ]
+      }
+    },
+    {
+      "section_id": "economics_and_international_trade_marketing_and_innovation_001",
+      "section_type": "program",
+      "title": {
+        "en": "Marketing and Innovation",
+        "ar": "التسويق والابتكار"
+      },
+      "content": {
+        "en": "Prepares creative data-driven marketers through consumer behaviour, digital marketing, brand management, innovation management, marketing research, and marketing analytics.",
+        "ar": "وصف عربي تفصيلي يحتاج مراجعة، والمسار يغطي المجالات المذكورة في المصدر الإنجليزي."
+      },
+      "tags": [
+        "economics",
+        "business",
+        "track",
+        "marketing_and_innovation"
+      ],
+      "entities": {
+        "faculty_id": "economics_and_international_trade",
+        "department_ids": [
+          "marketing_and_innovation"
+        ],
+        "program_ids": [
+          "marketing_and_innovation"
+        ],
+        "certificate_tracks": []
+      },
+      "source_url": "https://ecu.edu.eg/faculties/economics-and-international-trade/",
+      "source_title": "ECU PDF 3 - Economics Tracks",
+      "last_verified_at": "2026-06-15",
+      "answerable_questions": {
+        "en": [
+          "What is Marketing and Innovation?"
+        ],
+        "ar": [
+          "التسويق والابتكار بتدرس ايه؟"
+        ]
+      }
+    }
+  ],
+  "data_quality": {
+    "required_fields_completed": false,
+    "missing_data": [
+      "faculty_identity.building",
+      "people.dean",
+      "people.vice_deans",
+      "contact_and_location.faculty_email",
+      "contact_and_location.faculty_phone",
+      "contact_and_location.admission_office_phone",
+      "admission_information.accepted_certificate_tracks.requirements_summary",
+      "admission_information.accepted_certificate_tracks.required_documents",
+      "admission_information.minimum_percentage",
+      "admission_information.admission_steps",
+      "fees",
+      "overview.vision",
+      "overview.mission",
+      "academic_structure.study_duration_years",
+      "academic_structure.credit_hours"
+    ],
+    "suspected_outdated_data": [],
+    "needs_manual_review": [
+      "Verify all official Arabic names and Arabic user-facing translations.",
+      "Verify faculty-specific admission requirements, current minimum percentages, fees, deadlines, contacts, and exact faculty location/building before production use.",
+      "PDF reports are dated June 2026 and reference ecu.edu.eg/faculties/; confirm against live official ECU pages before final approval."
+    ],
+    "collector_notes": "Economics data is strong for tracks, foundation curriculum, and track supervisors."
+  }
+}
