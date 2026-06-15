@@ -4,14 +4,19 @@ Small regression test runner for Admission Robot AI Brain.
 Uses only the Python standard library.
 """
 
+import json
 import os
 import sys
+from pathlib import Path
 
 os.environ["ENABLE_LLM_RAG"] = "false"
 os.environ["ENABLE_LLM_REGISTRATION_EXTRACTION"] = "false"
 
 from brain import ECUBrain
 from models import BrainInput
+
+
+REGISTRATION_FIELDS_PATH = Path("data/registration_fields.json")
 
 
 def run_test(name: str, check) -> bool:
@@ -43,6 +48,14 @@ def process_text(
             mode=mode,
         )
     )
+
+
+def load_registration_fields() -> list[dict]:
+    with REGISTRATION_FIELDS_PATH.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    assert isinstance(data, list)
+    return data
 
 
 def test_qa_faq() -> None:
@@ -465,6 +478,166 @@ def test_registration_status_shape() -> None:
     assert "student_mobile_no" in status["unconfirmed_sensitive_fields"]
 
 
+def test_registration_fields_json_valid() -> None:
+    fields = load_registration_fields()
+
+    assert fields, "registration_fields.json should contain fields"
+
+
+def test_registration_fields_have_ui_contract_keys() -> None:
+    fields = load_registration_fields()
+    required_keys = {"field_id", "section", "label_en", "label_ar", "input_method"}
+
+    for field in fields:
+        missing_keys = required_keys - set(field)
+        assert not missing_keys, f"{field.get('field_id') or field}: {missing_keys}"
+
+
+def test_registration_fields_no_duplicate_field_id() -> None:
+    fields = load_registration_fields()
+    field_ids = [field["field_id"] for field in fields]
+
+    assert len(field_ids) == len(set(field_ids))
+
+
+def test_registration_schema_sections_present() -> None:
+    fields = load_registration_fields()
+    sections = {field["section"] for field in fields}
+
+    assert "Personal Data" in sections
+    assert "Family Information" in sections
+    assert "Received Papers" in sections
+    assert "College Preferences" in sections
+    assert "Final bottom fields" in sections
+
+
+def test_registration_required_fields_are_basic_voice_fields_only() -> None:
+    fields = load_registration_fields()
+    required_fields = {field["field_id"] for field in fields if field.get("required")}
+    expected_required = {
+        "id_or_passport",
+        "student_mobile_no",
+        "email_address",
+        "school_name",
+        "certificate",
+        "year_of_completion",
+        "percentage",
+        "college_preference_1",
+        "guardian_name",
+        "relationship",
+        "guardian_mobile_no",
+        "address",
+        "city",
+        "country",
+    }
+    name_group_fields = {
+        field["field_id"]
+        for field in fields
+        if field.get("required_group") == "student_name"
+    }
+
+    assert required_fields == expected_required
+    assert name_group_fields == {"full_name_en", "full_name_ar"}
+    assert all(
+        field["input_method"] == "voice"
+        for field in fields
+        if field["field_id"] in expected_required or field["field_id"] in name_group_fields
+    )
+
+
+def test_password_is_ui_and_sensitive() -> None:
+    fields = load_registration_fields()
+    password = next(field for field in fields if field["field_id"] == "password")
+
+    assert password["input_method"] == "ui"
+    assert password.get("sensitive") is True
+
+
+def test_received_paper_fields_are_not_voice() -> None:
+    fields = load_registration_fields()
+    received_fields = [
+        field for field in fields if field["section"] == "Received Papers"
+    ]
+
+    assert received_fields
+    assert all(field["input_method"] in {"staff", "ui"} for field in received_fields)
+
+
+def test_final_fields_are_auto() -> None:
+    fields = load_registration_fields()
+    field_map = {field["field_id"]: field for field in fields}
+
+    for field_id in {"final_student_name", "academic_year", "final_college"}:
+        assert field_map[field_id]["input_method"] == "auto"
+        assert field_map[field_id].get("required") is False
+
+
+def test_export_form_state_includes_metadata() -> None:
+    brain = ECUBrain()
+    session_id = "export-state-metadata-session"
+    process_text(
+        brain,
+        "my name is Ahmed Mohamed and my phone is 01012345678",
+        mode="registration",
+        session_id=session_id,
+    )
+    state = brain.registration_engine.export_form_state(session_id)
+
+    assert "fields" in state
+    assert "student_mobile_no" in state["fields"]
+    assert state["fields"]["student_mobile_no"]["value"] == "01012345678"
+    assert "confidence" in state["fields"]["student_mobile_no"]
+    assert "confirmed" in state["fields"]["student_mobile_no"]
+    assert "needs_confirmation" in state["fields"]["student_mobile_no"]
+    assert "source" in state["fields"]["student_mobile_no"]
+
+
+def test_get_registration_status_required_keys() -> None:
+    brain = ECUBrain()
+    status = brain.registration_engine.get_registration_status("empty-status-session")
+
+    assert set(status) == {
+        "is_basic_registration_complete",
+        "completion_percentage",
+        "missing_required_fields",
+        "unconfirmed_sensitive_fields",
+    }
+
+
+def test_auto_final_fields_exported() -> None:
+    brain = ECUBrain()
+    session_id = "auto-final-fields-session"
+    process_text(
+        brain,
+        "my name is Ahmed Mohamed and I want engineering as first choice",
+        mode="registration",
+        session_id=session_id,
+    )
+    values = brain.registration_engine.export_form_values(session_id)
+    state = brain.registration_engine.export_form_state(session_id)
+
+    assert values.get("final_student_name") == "Ahmed Mohamed"
+    assert values.get("final_college") == "engineering_and_technology"
+    assert "academic_year" not in values
+    assert state["fields"]["final_student_name"]["source"] == "auto"
+    assert state["fields"]["final_college"]["source"] == "auto"
+
+
+def test_registration_name_requirement_accepts_either_language() -> None:
+    brain = ECUBrain()
+    session_id = "name-requirement-session"
+    process_text(
+        brain,
+        "my name is Ahmed Mohamed",
+        mode="registration",
+        session_id=session_id,
+    )
+    status = brain.registration_engine.get_registration_status(session_id)
+
+    assert "full_name_en" not in status["missing_required_fields"]
+    assert "full_name_ar" not in status["missing_required_fields"]
+
+
 def main() -> int:
     tests = [
         ("QA FAQ", test_qa_faq),
@@ -516,6 +689,39 @@ def main() -> int:
         ("Registration multiple college preferences", test_multiple_college_preferences),
         ("Registration export values flat", test_export_values_flat),
         ("Registration status shape", test_registration_status_shape),
+        ("Registration fields JSON valid", test_registration_fields_json_valid),
+        (
+            "Registration field UI contract keys",
+            test_registration_fields_have_ui_contract_keys,
+        ),
+        (
+            "Registration no duplicate field IDs",
+            test_registration_fields_no_duplicate_field_id,
+        ),
+        ("Registration schema sections present", test_registration_schema_sections_present),
+        (
+            "Registration required fields are basic voice fields only",
+            test_registration_required_fields_are_basic_voice_fields_only,
+        ),
+        ("Registration password is UI sensitive", test_password_is_ui_and_sensitive),
+        (
+            "Registration received paper fields are not voice",
+            test_received_paper_fields_are_not_voice,
+        ),
+        ("Registration final fields are auto", test_final_fields_are_auto),
+        (
+            "Registration export state includes metadata",
+            test_export_form_state_includes_metadata,
+        ),
+        (
+            "Registration status returns required keys",
+            test_get_registration_status_required_keys,
+        ),
+        ("Registration auto final fields exported", test_auto_final_fields_exported),
+        (
+            "Registration name requirement accepts either language",
+            test_registration_name_requirement_accepts_either_language,
+        ),
         ("Registration skips FAQ/KB/RAG", test_registration_skips_qa_stack),
     ]
     results = [run_test(name, check) for name, check in tests]

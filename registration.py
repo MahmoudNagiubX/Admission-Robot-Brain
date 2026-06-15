@@ -21,9 +21,8 @@ class RegistrationEngine:
     Fill a fixed registration form using rule-based extraction.
     """
 
+    REQUIRED_NAME_FIELDS = ("full_name_en", "full_name_ar")
     REQUIRED_CORE_FIELDS = [
-        "full_name_en",
-        "full_name_ar",
         "id_or_passport",
         "student_mobile_no",
         "email_address",
@@ -57,6 +56,8 @@ class RegistrationEngine:
         "college_preference_5",
         "college_preference_6",
     }
+
+    AUTO_FIELDS = {"final_student_name", "final_college"}
 
     GUARDIAN_WORDS = {
         "guardian",
@@ -241,11 +242,11 @@ class RegistrationEngine:
 
     def export_form_values(self, session_id: str) -> dict[str, Any]:
         session_state = self.sessions.get(session_id, {})
-        return dict(session_state.get("fields", {}))
+        return self._form_state_with_auto_fields(session_state.get("fields", {}))
 
     def export_form_state(self, session_id: str) -> dict[str, Any]:
         session_state = self.sessions.get(session_id, {})
-        form_state = session_state.get("fields", {})
+        form_state = self._form_state_with_auto_fields(session_state.get("fields", {}))
         metadata = session_state.get("metadata", {})
 
         fields: dict[str, dict[str, Any]] = {}
@@ -264,6 +265,15 @@ class RegistrationEngine:
                     ),
                     "source": field_metadata.get("source"),
                     "source_text": field_metadata.get("source_text"),
+                }
+            elif field_name in self.AUTO_FIELDS:
+                fields[field_name] = {
+                    "value": value,
+                    "confidence": 1.0,
+                    "confirmed": True,
+                    "needs_confirmation": False,
+                    "source": "auto",
+                    "source_text": None,
                 }
             else:
                 fields[field_name] = {
@@ -345,7 +355,23 @@ class RegistrationEngine:
         if not isinstance(data, list):
             raise ValueError("data/registration_fields.json must contain a list.")
 
-        return [field for field in data if isinstance(field, dict) and field.get("field_name")]
+        field_definitions: list[dict[str, Any]] = []
+
+        for field in data:
+            if not isinstance(field, dict):
+                continue
+
+            field_id = field.get("field_id") or field.get("field_name")
+
+            if not field_id:
+                continue
+
+            normalized_field = dict(field)
+            normalized_field["field_id"] = field_id
+            normalized_field["field_name"] = field.get("field_name") or field_id
+            field_definitions.append(normalized_field)
+
+        return field_definitions
 
     def _extract_updates(
         self,
@@ -976,15 +1002,36 @@ class RegistrationEngine:
 
         return None
 
+    def _form_state_with_auto_fields(self, form_state: dict[str, Any]) -> dict[str, Any]:
+        values = dict(form_state)
+
+        if not values.get("final_student_name"):
+            student_name = values.get("full_name_ar") or values.get("full_name_en")
+
+            if student_name:
+                values["final_student_name"] = student_name
+
+        if not values.get("final_college") and values.get("college_preference_1"):
+            values["final_college"] = values["college_preference_1"]
+
+        return values
+
     def _missing_required_fields(self, form_state: dict[str, Any]) -> list[str]:
-        return [
+        missing_fields: list[str] = []
+
+        if not any(form_state.get(field_name) for field_name in self.REQUIRED_NAME_FIELDS):
+            missing_fields.append("full_name_en")
+
+        missing_fields.extend(
             field_name
             for field_name in self.REQUIRED_CORE_FIELDS
             if not form_state.get(field_name)
-        ]
+        )
+
+        return missing_fields
 
     def _completion_percentage(self, form_state: dict[str, Any]) -> int:
-        required_count = len(self.REQUIRED_CORE_FIELDS)
+        required_count = len(self.REQUIRED_CORE_FIELDS) + 1
         filled_count = required_count - len(self._missing_required_fields(form_state))
 
         return round((filled_count / required_count) * 100)
