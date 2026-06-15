@@ -8,6 +8,9 @@ PROJECT_NAME = "Admission Robot"
 
 # Main LLM model agreed for the real AI steps.
 MAIN_LLM_MODEL = "gpt-5-mini"
+OPENAI_API_KEY_ENV = "OPENAI_API_KEY"
+LLM_TIMEOUT_SECONDS = 15
+ENABLE_LLM_RAG = True
 
 # Languages
 LANGUAGE_AR = "ar"

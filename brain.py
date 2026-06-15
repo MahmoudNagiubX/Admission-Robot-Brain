@@ -13,7 +13,11 @@ Next modules:
 - TTS engine
 """
 
-from config import SUPPORTED_LANGUAGES, SUPPORTED_MODES
+from datetime import datetime
+from pathlib import Path
+
+from answer_composer import AnswerComposer
+from config import ENABLE_LLM_RAG, SUPPORTED_LANGUAGES, SUPPORTED_MODES
 from faq_router import FAQRouter
 from knowledge_base import KnowledgeBase
 from memory import MemoryManager
@@ -33,6 +37,7 @@ class ECUBrain:
         self.faq_router = FAQRouter()
         self.knowledge_base = KnowledgeBase()
         self.registration_engine = RegistrationEngine()
+        self.answer_composer = AnswerComposer()
 
     def process(self, brain_input: BrainInput) -> BrainOutput:
         """
@@ -133,11 +138,25 @@ class ECUBrain:
         )
 
         if knowledge_match["matched"]:
+            answer_result = {
+                "answer_text": knowledge_match["answer_text"],
+                "speech_text": knowledge_match["speech_text"],
+                "confidence": knowledge_match["confidence"],
+                "route_notes": [],
+            }
+
+            if ENABLE_LLM_RAG:
+                answer_result = self.answer_composer.compose_from_kb(
+                    question=processed_text.raw_text,
+                    kb_result=knowledge_match,
+                    language=brain_input.language,
+                )
+
             return BrainOutput(
                 mode=brain_input.mode,
-                answer_text=knowledge_match["answer_text"],
-                speech_text=knowledge_match["speech_text"],
-                confidence=knowledge_match["confidence"],
+                answer_text=answer_result["answer_text"],
+                speech_text=answer_result["speech_text"],
+                confidence=answer_result["confidence"],
                 current_topic=session.current_topic,
                 audio_path=None,
                 form_updates={},
@@ -152,8 +171,16 @@ class ECUBrain:
                     "knowledge_base_match_found",
                     f"section_id:{knowledge_match['section_id']}",
                     *knowledge_match["reasons"],
+                    *answer_result["route_notes"],
                 ],
             )
+
+        self._log_unanswered_query(
+            session_id=brain_input.session_id,
+            language=brain_input.language,
+            raw_text=brain_input.text,
+            reason="no_faq_or_knowledge_base_source",
+        )
 
         return BrainOutput(
             mode=brain_input.mode,
@@ -173,6 +200,7 @@ class ECUBrain:
                 "knowledge_base_checked",
                 "no_knowledge_base_match_found",
                 "safe_fallback_returned",
+                "no_source_logged",
                 *knowledge_match["reasons"],
             ],
             )
@@ -189,6 +217,23 @@ class ECUBrain:
             return "تم إدخال البيانات الأساسية. من فضلك راجع البيانات على الشاشة قبل الإرسال النهائي."
 
         return "Basic registration data is complete. Please review the information on screen before final submission."
+
+    def _log_unanswered_query(
+        self,
+        session_id: str,
+        language: str,
+        raw_text: str,
+        reason: str,
+    ) -> None:
+        logs_folder = Path("logs")
+        logs_folder.mkdir(exist_ok=True)
+        log_path = logs_folder / "unanswered_queries.log"
+        timestamp = datetime.now().isoformat(timespec="seconds")
+        safe_text = raw_text.replace("\n", " ").replace("|", "/")
+        log_line = f"{timestamp} | {session_id} | {language} | {safe_text} | {reason}\n"
+
+        with open(log_path, "a", encoding="utf-8") as file:
+            file.write(log_line)
 
     def _validate_input(self, brain_input: BrainInput) -> None:
         if not brain_input.session_id.strip():
