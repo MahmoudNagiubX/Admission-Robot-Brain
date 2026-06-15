@@ -1,13 +1,10 @@
 """
 Compose final QA answers from verified local knowledge base context.
 """
-
 import re
 from typing import Any
-
 from config import RAG_INCLUDE_SOURCE_NOTE, RAG_MAX_ANSWER_CHARS
 from llm_client import LLMClient
-
 
 class AnswerComposer:
     """

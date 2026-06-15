@@ -115,6 +115,89 @@ def test_registration_skips_qa_stack() -> None:
     assert "faq_and_knowledge_base_skipped_for_registration" in output.route_taken
 
 
+def test_invalid_phone_rejected() -> None:
+    brain = ECUBrain()
+    output = process_text(
+        brain,
+        "my phone is 12345",
+        mode="registration",
+        session_id="invalid-phone-session",
+    )
+
+    assert "student_mobile_no" not in output.form_updates
+    assert "registration_validation_failed:student_mobile_no" in output.route_taken
+
+
+def test_invalid_percentage_rejected() -> None:
+    brain = ECUBrain()
+    output = process_text(
+        brain,
+        "my percentage is 150%",
+        mode="registration",
+        session_id="invalid-percentage-session",
+    )
+
+    assert "percentage" not in output.form_updates
+    assert "registration_validation_failed:percentage" in output.route_taken
+
+
+def test_correction_updates_phone() -> None:
+    brain = ECUBrain()
+    session_id = "correction-session"
+    process_text(
+        brain,
+        "my phone is 01012345678",
+        mode="registration",
+        session_id=session_id,
+    )
+    output = process_text(
+        brain,
+        "No, my phone is 01112345678",
+        mode="registration",
+        session_id=session_id,
+    )
+    values = brain.registration_engine.export_form_values(session_id)
+
+    assert output.form_updates.get("student_mobile_no") == "01112345678"
+    assert values.get("student_mobile_no") == "01112345678"
+
+
+def test_confirm_marks_sensitive_fields_confirmed() -> None:
+    brain = ECUBrain()
+    session_id = "confirm-session"
+    process_text(
+        brain,
+        "my phone is 01012345678 and my email is test@example.com",
+        mode="registration",
+        session_id=session_id,
+    )
+    output = process_text(
+        brain,
+        "confirm",
+        mode="registration",
+        session_id=session_id,
+    )
+    state = brain.registration_engine.export_form_state(session_id)
+
+    assert "field_confirmed:student_mobile_no" in output.route_taken
+    assert "field_confirmed:email_address" in output.route_taken
+    assert state["fields"]["student_mobile_no"]["confirmed"] is True
+    assert state["fields"]["email_address"]["confirmed"] is True
+
+
+def test_guardian_phone_routed() -> None:
+    brain = ECUBrain()
+    output = process_text(
+        brain,
+        "my father phone is 01112345678",
+        mode="registration",
+        session_id="guardian-phone-session",
+    )
+
+    assert output.form_updates.get("guardian_mobile_no") == "01112345678"
+    assert "student_mobile_no" not in output.form_updates
+
+
 def main() -> int:
     tests = [
         ("QA FAQ", test_qa_faq),
@@ -122,6 +205,14 @@ def main() -> int:
         ("QA no source", test_qa_no_source),
         ("Registration English", test_registration_english),
         ("Registration Arabic", test_registration_arabic),
+        ("Registration invalid phone rejected", test_invalid_phone_rejected),
+        ("Registration invalid percentage rejected", test_invalid_percentage_rejected),
+        ("Registration correction updates phone", test_correction_updates_phone),
+        (
+            "Registration confirm marks sensitive fields confirmed",
+            test_confirm_marks_sensitive_fields_confirmed,
+        ),
+        ("Registration guardian phone routed", test_guardian_phone_routed),
         ("Registration skips FAQ/KB/RAG", test_registration_skips_qa_stack),
     ]
     results = [run_test(name, check) for name, check in tests]

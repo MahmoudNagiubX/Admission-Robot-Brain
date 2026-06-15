@@ -32,6 +32,8 @@ def run_local_test() -> None:
     print("  validate kb          -> print knowledge base validation report")
     print("  show form            -> print registration form debug view")
     print("  review form          -> print registration review summary")
+    print("  export form          -> print flat registration values")
+    print("  status form          -> print registration status")
     print("  test llm             -> test configured LLM provider")
     print("=" * 70)
 
@@ -56,6 +58,30 @@ def run_local_test() -> None:
             print("\nRegistration Review Summary")
             print("-" * 70)
             print(brain.registration_engine.get_review_summary(session_id, language))
+            continue
+
+        if user_text.lower() == "export form":
+            print("\nRegistration Form Export")
+            print("-" * 70)
+            print(
+                json.dumps(
+                    brain.registration_engine.export_form_values(session_id),
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            continue
+
+        if user_text.lower() == "status form":
+            print("\nRegistration Status")
+            print("-" * 70)
+            print(
+                json.dumps(
+                    brain.registration_engine.get_registration_status(session_id),
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             continue
 
         if user_text.lower() == "test llm":

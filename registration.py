@@ -7,6 +7,7 @@ core registration fields using deterministic rules.
 
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,12 @@ class RegistrationEngine:
         "percentage",
         "total_marks",
         "password",
+        "college_preference_1",
+        "college_preference_2",
+        "college_preference_3",
+        "college_preference_4",
+        "college_preference_5",
+        "college_preference_6",
     }
 
     GUARDIAN_WORDS = {
@@ -70,7 +77,9 @@ class RegistrationEngine:
 
     CONFIRM_WORDS = {"confirm", "yes", "correct", "تمام", "ايوه", "نعم", "صح"}
     REJECT_WORDS = {"no", "wrong", "incorrect", "لا", "غلط", "مش صح"}
-    CORRECTION_WORDS = REJECT_WORDS
+    CORRECTION_WORDS = REJECT_WORDS.union(
+        {"change", "update", "replace", "غير", "عدل"}
+    )
     LLM_ALLOWED_FIELDS = {
         "full_name_en",
         "full_name_ar",
@@ -157,19 +166,36 @@ class RegistrationEngine:
         form_updates: dict[str, Any] = {}
         needs_confirmation = False
         latest_sensitive_fields: list[str] = []
+        correction_requested = self._has_correction_words(processed_text.normalized_text)
 
         for field_name, value in extracted_updates.items():
             if value in {None, ""}:
                 continue
 
+            if not self._can_update_field(
+                field_name=field_name,
+                form_state=form_state,
+                correction_requested=correction_requested,
+            ):
+                route_notes.append(f"registration_update_skipped_existing:{field_name}")
+                continue
+
+            normalized_value, is_valid = self._validate_field_value(field_name, value)
+
+            if not is_valid:
+                route_notes.append(f"registration_validation_failed:{field_name}")
+                continue
+
             form_state[field_name] = value
-            form_updates[field_name] = value
-            session_state["metadata"][field_name] = {
-                "value": value,
-                "confirmed": False,
-                "needs_confirmation": field_name in self.SENSITIVE_FIELDS,
-                "source_text": processed_text.raw_text,
-            }
+            form_updates[field_name] = normalized_value
+            form_state[field_name] = normalized_value
+            session_state["metadata"][field_name] = self._build_field_state(
+                value=normalized_value,
+                confidence=0.90,
+                needs_confirmation=field_name in self.SENSITIVE_FIELDS,
+                source="registration_extraction",
+                source_text=processed_text.raw_text,
+            )
             route_notes.append(f"field_filled:{field_name}")
 
             if field_name in self.SENSITIVE_FIELDS:
@@ -193,6 +219,83 @@ class RegistrationEngine:
             "missing_required_fields": missing_required_fields,
             "route_notes": route_notes,
             "form_state": dict(form_state),
+        }
+
+    def _build_field_state(
+        self,
+        value: Any,
+        confidence: float,
+        needs_confirmation: bool,
+        source: str,
+        source_text: str,
+    ) -> dict[str, Any]:
+        return {
+            "value": value,
+            "confidence": confidence,
+            "confirmed": not needs_confirmation,
+            "needs_confirmation": needs_confirmation,
+            "source": source,
+            "source_text": source_text,
+        }
+
+    def export_form_values(self, session_id: str) -> dict[str, Any]:
+        session_state = self.sessions.get(session_id, {})
+        return dict(session_state.get("fields", {}))
+
+    def export_form_state(self, session_id: str) -> dict[str, Any]:
+        session_state = self.sessions.get(session_id, {})
+        form_state = session_state.get("fields", {})
+        metadata = session_state.get("metadata", {})
+
+        fields: dict[str, dict[str, Any]] = {}
+
+        for field_name, value in form_state.items():
+            field_metadata = metadata.get(field_name)
+
+            if isinstance(field_metadata, dict):
+                fields[field_name] = {
+                    "value": field_metadata.get("value", value),
+                    "confidence": field_metadata.get("confidence", 0.0),
+                    "confirmed": field_metadata.get("confirmed", False),
+                    "needs_confirmation": field_metadata.get(
+                        "needs_confirmation",
+                        field_name in self.SENSITIVE_FIELDS,
+                    ),
+                    "source": field_metadata.get("source"),
+                    "source_text": field_metadata.get("source_text"),
+                }
+            else:
+                fields[field_name] = {
+                    "value": value,
+                    "confidence": 0.0,
+                    "confirmed": field_name not in self.SENSITIVE_FIELDS,
+                    "needs_confirmation": field_name in self.SENSITIVE_FIELDS,
+                    "source": "legacy",
+                    "source_text": None,
+                }
+
+        return {
+            "fields": fields,
+            "latest_sensitive_fields": list(
+                session_state.get("latest_sensitive_fields", [])
+            ),
+            "status": self.get_registration_status(session_id),
+        }
+
+    def get_registration_status(self, session_id: str) -> dict[str, Any]:
+        session_state = self.sessions.get(session_id, {})
+        form_state = session_state.get("fields", {})
+        metadata = session_state.get("metadata", {})
+        missing_required_fields = self._missing_required_fields(form_state)
+
+        return {
+            "is_basic_registration_complete": not missing_required_fields,
+            "completion_percentage": self._completion_percentage(form_state),
+            "missing_required_fields": missing_required_fields,
+            "unconfirmed_sensitive_fields": self._unconfirmed_sensitive_fields(
+                form_state,
+                metadata,
+            ),
         }
 
     def get_form_debug_view(self, session_id: str) -> dict[str, Any]:
@@ -255,6 +358,7 @@ class RegistrationEngine:
         guardian_context = self._has_guardian_context(text_lower)
 
         self._extract_protected_entities(processed_text.entities, updates, guardian_context)
+        self._extract_loose_sensitive_values(raw_text, updates, guardian_context)
         self._extract_relationship(text_lower, updates)
         self._extract_names(raw_text, normalized_text, updates, guardian_context)
         self._extract_address(raw_text, normalized_text, updates)
@@ -293,6 +397,38 @@ class RegistrationEngine:
 
         if years:
             updates["year_of_completion"] = years[0]["value"]
+
+    def _extract_loose_sensitive_values(
+        self,
+        raw_text: str,
+        updates: dict[str, Any],
+        guardian_context: bool,
+    ) -> None:
+        if "student_mobile_no" not in updates and "guardian_mobile_no" not in updates:
+            phone_match = re.search(
+                r"(?:phone|mobile|رقمي|رقمه|موبايل)\D*([0-9][0-9\s\-]{4,20})",
+                raw_text,
+                flags=re.IGNORECASE,
+            )
+
+            if phone_match:
+                field_name = (
+                    "guardian_mobile_no" if guardian_context else "student_mobile_no"
+                )
+                updates[field_name] = re.sub(r"\D", "", phone_match.group(1))
+
+        if "percentage" not in updates:
+            percentage_match = re.search(
+                r"(\d{1,3}(?:\.\d{1,2})?)\s*(?:%|percent|percentage|مجموعي)",
+                raw_text,
+                flags=re.IGNORECASE,
+            )
+
+            if percentage_match:
+                try:
+                    updates["percentage"] = float(percentage_match.group(1))
+                except ValueError:
+                    pass
 
     def _extract_names(
         self,
@@ -597,6 +733,90 @@ class RegistrationEngine:
                     return faculty_id
 
         return None
+
+    def _can_update_field(
+        self,
+        field_name: str,
+        form_state: dict[str, Any],
+        correction_requested: bool,
+    ) -> bool:
+        if correction_requested:
+            return True
+
+        return not form_state.get(field_name)
+
+    def _validate_field_value(self, field_name: str, value: Any) -> tuple[Any, bool]:
+        if field_name in {"student_mobile_no", "guardian_mobile_no"}:
+            return self._validate_mobile(value)
+
+        if field_name in {"email_address", "guardian_email_address"}:
+            return self._validate_email(value)
+
+        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
+            return self._validate_id_or_passport(value)
+
+        if field_name == "percentage":
+            return self._validate_percentage(value)
+
+        if field_name == "year_of_completion":
+            return self._validate_year(value)
+
+        if field_name.startswith("college_preference_"):
+            faculty_id = self._faculty_id_from_value(str(value))
+            return faculty_id, faculty_id is not None
+
+        return value, True
+
+    def _validate_mobile(self, value: Any) -> tuple[str | None, bool]:
+        digits = re.sub(r"\D", "", str(value))
+        is_valid = (
+            len(digits) == 11
+            and digits.startswith(("010", "011", "012", "015"))
+        )
+
+        return digits if is_valid else None, is_valid
+
+    def _validate_email(self, value: Any) -> tuple[str | None, bool]:
+        email = str(value).strip()
+        is_valid = re.fullmatch(
+            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+            email,
+        ) is not None
+
+        return email if is_valid else None, is_valid
+
+    def _validate_id_or_passport(self, value: Any) -> tuple[str | None, bool]:
+        text = str(value).strip()
+        digits = re.sub(r"\D", "", text)
+
+        if re.fullmatch(r"[23]\d{13}", digits):
+            return digits, True
+
+        if re.fullmatch(r"[A-Za-z0-9]{6,20}", text):
+            return text, True
+
+        return None, False
+
+    def _validate_percentage(self, value: Any) -> tuple[float | None, bool]:
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return None, False
+
+        is_valid = 0 <= number <= 100
+
+        return number if is_valid else None, is_valid
+
+    def _validate_year(self, value: Any) -> tuple[int | None, bool]:
+        try:
+            year = int(value)
+        except (TypeError, ValueError):
+            return None, False
+
+        current_year = datetime.now().year
+        is_valid = 2015 <= year <= current_year + 1
+
+        return year if is_valid else None, is_valid
 
     def _has_correction_words(self, text: str) -> bool:
         text_lower = text.lower()
