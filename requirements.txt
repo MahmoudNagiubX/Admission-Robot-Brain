@@ -1,0 +1,3 @@
+# Current version uses Python standard library only.
+# We will add external packages later only when needed:
+# rapidfuzz, openai, qdrant-client, azure-cognitiveservices-speech

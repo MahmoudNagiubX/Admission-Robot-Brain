@@ -1,8 +1,7 @@
 """
 Shared data models for the AI Brain.
 
-These models define the shape of input, processed text, and output
-used inside the system.
+We use dataclasses now to keep the project simple and lightweight.
 """
 
 from dataclasses import dataclass, field
@@ -14,8 +13,8 @@ class BrainInput:
     """
     Input received by the AI Brain.
 
-    This text will later come from the STT system,
-    but for now we type it manually in main.py.
+    In production, text will come from the STT module.
+    For local testing, we type the text manually in main.py.
     """
 
     session_id: str
@@ -27,10 +26,10 @@ class BrainInput:
 @dataclass
 class ProcessedText:
     """
-    Text package created by text_processor.py before entering the brain logic.
+    Complete text package created before routing.
 
-    Important rule:
-    We always keep raw_text so we can debug STT mistakes later.
+    Important:
+    We keep all versions because every version has a different purpose.
     """
 
     raw_text: str
@@ -48,8 +47,7 @@ class BrainOutput:
     """
     Final output returned by the AI Brain.
 
-    Later this output will include real answer text, form updates,
-    and TTS audio path.
+    Later this will include real RAG answers, registration updates, and TTS audio.
     """
 
     mode: str

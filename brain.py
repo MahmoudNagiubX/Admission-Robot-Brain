@@ -2,13 +2,12 @@
 Main AI Brain module.
 
 This file controls the main flow:
-- validate input
-- prepare text
-- route to the correct brain logic
-- return structured output
+1. Validate input.
+2. Process text using TextProcessor.
+3. Return a structured output.
 
-For Phase 1 / Step 2, it connects the TextProcessor
-and still returns a placeholder response.
+Current version focuses on the Text Intelligence Layer.
+FAQ, RAG, registration, and TTS will be connected later.
 """
 
 from config import SUPPORTED_LANGUAGES, SUPPORTED_MODES
@@ -26,7 +25,7 @@ class ECUBrain:
 
     def process(self, brain_input: BrainInput) -> BrainOutput:
         """
-        Process one user message and return a structured brain output.
+        Process one user message and return structured output.
         """
 
         self._validate_input(brain_input)
@@ -39,30 +38,31 @@ class ECUBrain:
         return BrainOutput(
             mode=brain_input.mode,
             answer_text=(
-                "Text processor is connected successfully. "
-                f"I received: {processed_text.corrected_text}"
+                "Text Intelligence Layer is running successfully.\n"
+                f"Raw: {processed_text.raw_text}\n"
+                f"Normalized: {processed_text.normalized_text}\n"
+                f"Protected: {processed_text.protected_text}\n"
+                f"Corrected: {processed_text.corrected_text}\n"
+                f"Search Query: {processed_text.search_query}\n"
+                f"Entities: {processed_text.entities}"
             ),
             speech_text=(
-                "Text processor is connected successfully. "
-                "Next step will be entity detection."
+                "Text intelligence layer is running successfully. "
+                "Next module will be memory or FAQ routing."
             ),
             confidence=1.0,
-            current_topic=None,
+            current_topic=self._extract_current_topic(processed_text.entities),
             audio_path=None,
             form_updates={},
             route_taken=[
                 "input_received",
                 "basic_validation_done",
                 *processed_text.route_notes,
-                "placeholder_response_returned",
+                "debug_response_returned",
             ],
         )
 
     def _validate_input(self, brain_input: BrainInput) -> None:
-        """
-        Validate the basic input before processing.
-        """
-
         if not brain_input.session_id.strip():
             raise ValueError("session_id cannot be empty.")
 
@@ -80,3 +80,18 @@ class ECUBrain:
                 f"Unsupported mode: {brain_input.mode}. "
                 f"Supported modes: {SUPPORTED_MODES}"
             )
+
+    def _extract_current_topic(self, entities: dict) -> str | None:
+        faculty = entities.get("faculty")
+        intent = entities.get("intent")
+
+        if faculty and intent:
+            return f"{faculty['id']}:{intent['id']}"
+
+        if faculty:
+            return faculty["id"]
+
+        if intent:
+            return intent["id"]
+
+        return None
