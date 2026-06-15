@@ -178,9 +178,9 @@ class ECUBrain:
 
     def _registration_complete_text(self, language: str) -> str:
         if language == "ar":
-            return "تم إدخال البيانات الأساسية. من فضلك راجع البيانات للتأكيد."
+            return "تم إدخال البيانات الأساسية. من فضلك راجع البيانات على الشاشة قبل الإرسال النهائي."
 
-        return "The core registration details are complete. Please review them for confirmation."
+        return "Basic registration data is complete. Please review the information on screen before final submission."
 
     def _validate_input(self, brain_input: BrainInput) -> None:
         if not brain_input.session_id.strip():
