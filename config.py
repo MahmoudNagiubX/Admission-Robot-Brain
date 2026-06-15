@@ -39,6 +39,18 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _env_optional_int(name: str) -> int | None:
+    value = os.getenv(name)
+
+    if value is None or value.strip() == "":
+        return None
+
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
 # Main LLM model agreed for the real AI steps.
 LLM_PROVIDER_ENV = "LLM_PROVIDER"
 DEFAULT_LLM_PROVIDER = "groq"
@@ -58,6 +70,12 @@ ENABLE_LLM_REGISTRATION_EXTRACTION = _env_bool(
 )
 RAG_MAX_ANSWER_CHARS = 700
 RAG_INCLUDE_SOURCE_NOTE = True
+
+# Speech-to-text
+STT_PROVIDER = os.getenv("STT_PROVIDER", "deepgram").strip().lower()
+DEEPGRAM_API_KEY_ENV = "DEEPGRAM_API_KEY"
+ENABLE_VOICE_INPUT = _env_bool("ENABLE_VOICE_INPUT", True)
+MICROPHONE_DEVICE_INDEX = _env_optional_int("MICROPHONE_DEVICE_INDEX")
 
 # Languages
 LANGUAGE_AR = "ar"

@@ -11,10 +11,12 @@ from brain import ECUBrain
 from config import DEFAULT_LANGUAGE, DEFAULT_MODE, SUPPORTED_LANGUAGES, SUPPORTED_MODES
 from llm_client import LLMClient
 from models import BrainInput
+from stt_engine import STTEngine
 
 
 def run_local_test() -> None:
     brain = ECUBrain()
+    stt_engine = STTEngine()
 
     session_id = "test-session-001"
     language = DEFAULT_LANGUAGE
@@ -35,6 +37,8 @@ def run_local_test() -> None:
     print("  export form          -> print flat registration values")
     print("  status form          -> print registration status")
     print("  test llm             -> test configured LLM provider")
+    print("  listen / voice       -> record one utterance and process transcript")
+    print("  list mics            -> list available microphone input devices")
     print("=" * 70)
 
     while True:
@@ -88,6 +92,18 @@ def run_local_test() -> None:
             run_llm_test()
             continue
 
+        if user_text.lower() == "list mics":
+            print_microphones(stt_engine)
+            continue
+
+        if user_text.lower() in {"listen", "voice"}:
+            transcript = run_voice_input(stt_engine, language)
+
+            if not transcript:
+                continue
+
+            user_text = transcript
+
         if user_text.lower().startswith("lang "):
             new_language = user_text.lower().replace("lang ", "").strip()
 
@@ -119,19 +135,7 @@ def run_local_test() -> None:
 
         try:
             output = brain.process(brain_input)
-
-            print("\nBrain Output")
-            print("-" * 70)
-            print(f"Mode: {output.mode}")
-            print(f"Answer Text:\n{output.answer_text}")
-            print(f"Speech Text: {output.speech_text}")
-            print(f"Confidence: {output.confidence}")
-            print(f"Current Topic: {output.current_topic}")
-            print(f"Audio Path: {output.audio_path}")
-            print(f"Form Updates: {output.form_updates}")
-            print(f"Next Question: {output.next_question}")
-            print(f"Needs Confirmation: {output.needs_confirmation}")
-            print(f"Route Taken: {output.route_taken}")
+            print_brain_output(output)
 
         except Exception as error:
             print(f"\nError: {error}")
@@ -174,6 +178,55 @@ def print_form_debug_view(debug_view: dict) -> None:
     print("\nRegistration Form Debug View")
     print("-" * 70)
     print(json.dumps(debug_view, ensure_ascii=False, indent=2))
+
+
+def print_microphones(stt_engine: STTEngine) -> None:
+    microphones = stt_engine.list_microphones()
+
+    print("\nAvailable Microphones")
+    print("-" * 70)
+
+    if not microphones:
+        print(stt_engine.last_error or "No microphone input devices found.")
+        return
+
+    for microphone in microphones:
+        print(
+            f"Index {microphone.get('index')}: {microphone.get('name')} "
+            f"| channels={microphone.get('max_input_channels')} "
+            f"| rate={microphone.get('default_sample_rate')}"
+        )
+
+
+def run_voice_input(stt_engine: STTEngine, language: str) -> str | None:
+    if not stt_engine.is_available():
+        print(f"\nSTT unavailable: {stt_engine.last_error}")
+        return None
+
+    print("\nListening for one utterance...")
+    transcript = stt_engine.transcribe_once(language)
+
+    if not transcript:
+        print(f"STT unavailable: {stt_engine.last_error or 'No transcript returned.'}")
+        return None
+
+    print(f"Transcript: {transcript}")
+    return transcript
+
+
+def print_brain_output(output) -> None:
+    print("\nBrain Output")
+    print("-" * 70)
+    print(f"Mode: {output.mode}")
+    print(f"Answer Text:\n{output.answer_text}")
+    print(f"Speech Text: {output.speech_text}")
+    print(f"Confidence: {output.confidence}")
+    print(f"Current Topic: {output.current_topic}")
+    print(f"Audio Path: {output.audio_path}")
+    print(f"Form Updates: {output.form_updates}")
+    print(f"Next Question: {output.next_question}")
+    print(f"Needs Confirmation: {output.needs_confirmation}")
+    print(f"Route Taken: {output.route_taken}")
 
 
 def run_llm_test() -> None:

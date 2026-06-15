@@ -3,3 +3,4 @@
 # rapidfuzz, openai, qdrant-client, azure-cognitiveservices-speech
 openai
 python-dotenv
+pyaudio

@@ -11,9 +11,11 @@ from pathlib import Path
 
 os.environ["ENABLE_LLM_RAG"] = "false"
 os.environ["ENABLE_LLM_REGISTRATION_EXTRACTION"] = "false"
+os.environ["ENABLE_VOICE_INPUT"] = "false"
 
 from brain import ECUBrain
 from models import BrainInput
+from stt_engine import STTEngine
 
 
 REGISTRATION_FIELDS_PATH = Path("data/registration_fields.json")
@@ -638,6 +640,14 @@ def test_registration_name_requirement_accepts_either_language() -> None:
     assert "full_name_ar" not in status["missing_required_fields"]
 
 
+def test_stt_engine_imports_and_fails_safely_without_voice() -> None:
+    stt_engine = STTEngine()
+
+    assert stt_engine.is_available() is False
+    assert stt_engine.transcribe_once("en") is None
+    assert stt_engine.last_error
+
+
 def main() -> int:
     tests = [
         ("QA FAQ", test_qa_faq),
@@ -722,6 +732,7 @@ def main() -> int:
             "Registration name requirement accepts either language",
             test_registration_name_requirement_accepts_either_language,
         ),
+        ("STT engine safe init", test_stt_engine_imports_and_fails_safely_without_voice),
         ("Registration skips FAQ/KB/RAG", test_registration_skips_qa_stack),
     ]
     results = [run_test(name, check) for name, check in tests]
