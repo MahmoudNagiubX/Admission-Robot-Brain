@@ -4,13 +4,39 @@ Configuration file for Admission Robot AI Brain.
 Keep project constants here so the rest of the code stays clean.
 """
 
+import os
+
 PROJECT_NAME = "Admission Robot"
 
+
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+
+    if value is None:
+        return default
+
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+
+    if value is None:
+        return default
+
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 # Main LLM model agreed for the real AI steps.
-MAIN_LLM_MODEL = "gpt-5-mini"
 OPENAI_API_KEY_ENV = "OPENAI_API_KEY"
-LLM_TIMEOUT_SECONDS = 15
-ENABLE_LLM_RAG = True
+MAIN_LLM_MODEL = os.getenv("MAIN_LLM_MODEL", "gpt-5-mini")
+LLM_TIMEOUT_SECONDS = _env_int("LLM_TIMEOUT_SECONDS", 15)
+ENABLE_LLM_RAG = _env_bool("ENABLE_LLM_RAG", True)
+RAG_MAX_ANSWER_CHARS = 700
+RAG_INCLUDE_SOURCE_NOTE = True
 
 # Languages
 LANGUAGE_AR = "ar"

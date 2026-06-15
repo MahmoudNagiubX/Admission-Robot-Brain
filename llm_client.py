@@ -5,6 +5,16 @@ Small defensive OpenAI client wrapper for grounded RAG answers.
 import os
 from typing import Any
 
+
+try:
+    from dotenv import load_dotenv
+except Exception:
+    load_dotenv = None
+
+
+if load_dotenv is not None:
+    load_dotenv()
+
 from config import LLM_TIMEOUT_SECONDS, MAIN_LLM_MODEL, OPENAI_API_KEY_ENV
 
 
