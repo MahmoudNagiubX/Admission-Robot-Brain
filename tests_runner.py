@@ -537,9 +537,15 @@ def test_registration_required_fields_are_basic_voice_fields_only() -> None:
         for field in fields
         if field.get("required_group") == "student_name"
     }
+    guided_required_fields = {
+        field["field_id"]
+        for field in fields
+        if field.get("required_for_basic_registration") is True
+    }
 
     assert required_fields == expected_required
     assert name_group_fields == {"full_name_en", "full_name_ar"}
+    assert guided_required_fields == expected_required | {"full_name_en", "full_name_ar"}
     assert all(
         field["input_method"] == "voice"
         for field in fields
@@ -648,6 +654,166 @@ def test_stt_engine_imports_and_fails_safely_without_voice() -> None:
     assert stt_engine.last_error
 
 
+def test_guided_start_returns_first_question() -> None:
+    brain = ECUBrain()
+    question = brain.registration_engine.start_guided_form(
+        session_id="guided-start-session",
+        language="en",
+    )
+    debug_view = brain.registration_engine.get_form_debug_view("guided-start-session")
+
+    assert question == "What is your full name in English?"
+    assert debug_view["current_field"] == "full_name_en"
+
+
+def test_guided_answer_first_name_fills_current_field() -> None:
+    brain = ECUBrain()
+    session_id = "guided-name-session"
+    brain.registration_engine.start_guided_form(session_id=session_id, language="en")
+    output = process_text(
+        brain,
+        "Ahmed Mohamed Ali",
+        mode="registration",
+        session_id=session_id,
+    )
+    values = brain.registration_engine.export_form_values(session_id)
+
+    assert output.form_updates.get("full_name_en") == "Ahmed Mohamed Ali"
+    assert values.get("full_name_en") == "Ahmed Mohamed Ali"
+
+
+def test_guided_next_question_moves_forward_after_name() -> None:
+    brain = ECUBrain()
+    session_id = "guided-next-session"
+    brain.registration_engine.start_guided_form(session_id=session_id, language="en")
+    output = process_text(
+        brain,
+        "Ahmed Mohamed Ali",
+        mode="registration",
+        session_id=session_id,
+    )
+
+    assert output.next_question == "What is your national ID or passport number?"
+    assert (
+        brain.registration_engine.get_form_debug_view(session_id)["current_field"]
+        == "id_or_passport"
+    )
+
+
+def test_guided_phone_question_fills_student_mobile() -> None:
+    brain = ECUBrain()
+    session_id = "guided-phone-session"
+    session_state = brain.registration_engine._get_or_create_session_state(session_id)
+    session_state["guided_flow"] = True
+    session_state["current_field"] = "student_mobile_no"
+    session_state["skipped_fields"] = {
+        "full_name_en",
+        "full_name_ar",
+        "id_or_passport",
+        "country",
+        "city",
+        "address",
+        "email_address",
+    }
+    output = process_text(
+        brain,
+        "01012345678",
+        mode="registration",
+        session_id=session_id,
+    )
+
+    assert output.form_updates.get("student_mobile_no") == "01012345678"
+
+
+def test_guided_sensitive_phone_needs_confirmation() -> None:
+    brain = ECUBrain()
+    session_id = "guided-phone-confirmation-session"
+    session_state = brain.registration_engine._get_or_create_session_state(session_id)
+    session_state["guided_flow"] = True
+    session_state["current_field"] = "student_mobile_no"
+    session_state["skipped_fields"] = {
+        "full_name_en",
+        "full_name_ar",
+        "id_or_passport",
+        "country",
+        "city",
+        "address",
+        "email_address",
+    }
+    output = process_text(
+        brain,
+        "01012345678",
+        mode="registration",
+        session_id=session_id,
+    )
+
+    assert output.needs_confirmation is True
+    assert "confirmation_needed:student_mobile_no" in output.route_taken
+    assert "confirm" in output.next_question.lower()
+
+
+def test_guided_confirm_phone_moves_forward() -> None:
+    brain = ECUBrain()
+    session_id = "guided-confirm-phone-session"
+    session_state = brain.registration_engine._get_or_create_session_state(session_id)
+    session_state["guided_flow"] = True
+    session_state["current_field"] = "student_mobile_no"
+    session_state["skipped_fields"] = {
+        "full_name_en",
+        "full_name_ar",
+        "id_or_passport",
+        "country",
+        "city",
+        "address",
+        "email_address",
+    }
+    process_text(
+        brain,
+        "01012345678",
+        mode="registration",
+        session_id=session_id,
+    )
+    output = process_text(
+        brain,
+        "confirm",
+        mode="registration",
+        session_id=session_id,
+    )
+    state = brain.registration_engine.export_form_state(session_id)
+
+    assert state["fields"]["student_mobile_no"]["confirmed"] is True
+    assert output.next_question == "What is your school name?"
+    assert state["current_field"] == "school_name"
+
+
+def test_guided_skip_field_moves_to_next() -> None:
+    brain = ECUBrain()
+    session_id = "guided-skip-session"
+    brain.registration_engine.start_guided_form(session_id=session_id, language="en")
+    question = brain.registration_engine.skip_current_field(
+        session_id=session_id,
+        language="en",
+    )
+    debug_view = brain.registration_engine.get_form_debug_view(session_id)
+
+    assert question == "What is your full name in Arabic?"
+    assert debug_view["current_field"] == "full_name_ar"
+
+
+def test_guided_never_asks_password_received_papers_or_auto_fields() -> None:
+    brain = ECUBrain()
+    guided_fields = brain.registration_engine._guided_field_order("en")
+    forbidden_fields = {"password", "final_student_name", "academic_year", "final_college"}
+    received_paper_fields = {
+        field["field_id"]
+        for field in load_registration_fields()
+        if field["section"] == "Received Papers"
+    }
+
+    assert forbidden_fields.isdisjoint(guided_fields)
+    assert received_paper_fields.isdisjoint(guided_fields)
+
+
 def main() -> int:
     tests = [
         ("QA FAQ", test_qa_faq),
@@ -733,6 +899,32 @@ def main() -> int:
             test_registration_name_requirement_accepts_either_language,
         ),
         ("STT engine safe init", test_stt_engine_imports_and_fails_safely_without_voice),
+        ("Guided form starts with first question", test_guided_start_returns_first_question),
+        (
+            "Guided answer fills current name field",
+            test_guided_answer_first_name_fills_current_field,
+        ),
+        (
+            "Guided next question moves forward",
+            test_guided_next_question_moves_forward_after_name,
+        ),
+        (
+            "Guided phone question fills student mobile",
+            test_guided_phone_question_fills_student_mobile,
+        ),
+        (
+            "Guided sensitive phone needs confirmation",
+            test_guided_sensitive_phone_needs_confirmation,
+        ),
+        (
+            "Guided confirm phone moves forward",
+            test_guided_confirm_phone_moves_forward,
+        ),
+        ("Guided skip field moves forward", test_guided_skip_field_moves_to_next),
+        (
+            "Guided never asks password papers or auto fields",
+            test_guided_never_asks_password_received_papers_or_auto_fields,
+        ),
         ("Registration skips FAQ/KB/RAG", test_registration_skips_qa_stack),
     ]
     results = [run_test(name, check) for name, check in tests]

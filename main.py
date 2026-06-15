@@ -36,6 +36,9 @@ def run_local_test() -> None:
     print("  review form          -> print registration review summary")
     print("  export form          -> print flat registration values")
     print("  status form          -> print registration status")
+    print("  start form           -> start guided registration questions")
+    print("  next question        -> print current registration question")
+    print("  skip field           -> skip current guided field")
     print("  test llm             -> test configured LLM provider")
     print("  listen / voice       -> record one utterance and process transcript")
     print("  list mics            -> list available microphone input devices")
@@ -86,6 +89,37 @@ def run_local_test() -> None:
                     indent=2,
                 )
             )
+            continue
+
+        if user_text.lower() == "start form":
+            mode = "registration"
+            question = brain.registration_engine.start_guided_form(
+                session_id=session_id,
+                language=language,
+            )
+            print("\nGuided Registration")
+            print("-" * 70)
+            print(question or "No registration question is available.")
+            continue
+
+        if user_text.lower() == "next question":
+            question = brain.registration_engine.get_current_question(
+                session_id=session_id,
+                language=language,
+            )
+            print("\nNext Registration Question")
+            print("-" * 70)
+            print(question or "No registration question is available.")
+            continue
+
+        if user_text.lower() == "skip field":
+            question = brain.registration_engine.skip_current_field(
+                session_id=session_id,
+                language=language,
+            )
+            print("\nNext Registration Question")
+            print("-" * 70)
+            print(question or "No more guided registration questions.")
             continue
 
         if user_text.lower() == "test llm":

@@ -125,6 +125,9 @@ class RegistrationEngine:
                 "fields": {},
                 "metadata": {},
                 "latest_sensitive_fields": [],
+                "current_field": None,
+                "guided_flow": False,
+                "skipped_fields": set(),
             },
         )
         form_state = session_state["fields"]
@@ -139,8 +142,13 @@ class RegistrationEngine:
         if confirmation_result is not None:
             missing_required_fields = self._missing_required_fields(form_state)
             completion_percentage = self._completion_percentage(form_state)
+            current_field = self._sync_current_field(
+                session_state=session_state,
+                language=language,
+            )
             next_question = (
                 confirmation_result["next_question"]
+                or self._question_for_field(current_field, language)
                 or self._next_question(missing_required_fields, language)
             )
 
@@ -154,7 +162,11 @@ class RegistrationEngine:
                 "form_state": dict(form_state),
             }
 
-        extracted_updates = self._extract_updates(processed_text, form_state)
+        extracted_updates = self._extract_updates(
+            processed_text=processed_text,
+            form_state=form_state,
+            current_field=session_state.get("current_field"),
+        )
         semantic_updates, semantic_route_notes = self._extract_semantic_updates(
             processed_text=processed_text,
             form_state=form_state,
@@ -208,7 +220,15 @@ class RegistrationEngine:
             session_state["latest_sensitive_fields"] = latest_sensitive_fields
         missing_required_fields = self._missing_required_fields(form_state)
         completion_percentage = self._completion_percentage(form_state)
-        next_question = self._next_question(missing_required_fields, language)
+        current_field = self._sync_current_field(
+            session_state=session_state,
+            language=language,
+        )
+        next_question = self._question_for_field(current_field, language)
+        if needs_confirmation:
+            next_question = self._confirmation_question(latest_sensitive_fields, language)
+        elif not next_question:
+            next_question = self._next_question(missing_required_fields, language)
 
         if not form_updates:
             route_notes.append("no_registration_fields_extracted")
@@ -222,6 +242,42 @@ class RegistrationEngine:
             "route_notes": route_notes,
             "form_state": dict(form_state),
         }
+
+    def start_guided_form(self, session_id: str, language: str) -> str | None:
+        session_state = self._get_or_create_session_state(session_id)
+        session_state["guided_flow"] = True
+        session_state.setdefault("skipped_fields", set())
+        current_field = self._sync_current_field(
+            session_state=session_state,
+            language=language,
+        )
+
+        return self._question_for_field(current_field, language)
+
+    def get_current_question(self, session_id: str, language: str) -> str | None:
+        session_state = self._get_or_create_session_state(session_id)
+        current_field = self._sync_current_field(
+            session_state=session_state,
+            language=language,
+        )
+
+        return self._question_for_field(current_field, language)
+
+    def skip_current_field(self, session_id: str, language: str) -> str | None:
+        session_state = self._get_or_create_session_state(session_id)
+        current_field = session_state.get("current_field")
+
+        if current_field:
+            skipped_fields = session_state.setdefault("skipped_fields", set())
+            skipped_fields.add(current_field)
+
+        session_state["current_field"] = None
+        next_field = self._sync_current_field(
+            session_state=session_state,
+            language=language,
+        )
+
+        return self._question_for_field(next_field, language)
 
     def _build_field_state(
         self,
@@ -290,6 +346,7 @@ class RegistrationEngine:
             "latest_sensitive_fields": list(
                 session_state.get("latest_sensitive_fields", [])
             ),
+            "current_field": session_state.get("current_field"),
             "status": self.get_registration_status(session_id),
         }
 
@@ -326,6 +383,7 @@ class RegistrationEngine:
             "latest_sensitive_fields": list(
                 session_state.get("latest_sensitive_fields", [])
             ),
+            "current_field": session_state.get("current_field"),
             "is_basic_registration_complete": not missing_required_fields,
         }
 
@@ -373,16 +431,37 @@ class RegistrationEngine:
 
         return field_definitions
 
+    def _get_or_create_session_state(self, session_id: str) -> dict[str, Any]:
+        return self.sessions.setdefault(
+            session_id,
+            {
+                "fields": {},
+                "metadata": {},
+                "latest_sensitive_fields": [],
+                "current_field": None,
+                "guided_flow": False,
+                "skipped_fields": set(),
+            },
+        )
+
     def _extract_updates(
         self,
         processed_text: ProcessedText,
         form_state: dict[str, Any],
+        current_field: str | None = None,
     ) -> dict[str, Any]:
         updates: dict[str, Any] = {}
         raw_text = processed_text.raw_text.strip()
         normalized_text = processed_text.normalized_text.strip()
         text_lower = normalized_text.lower()
         guardian_context = self._has_guardian_context(text_lower)
+
+        if current_field:
+            self._extract_current_field_answer(
+                field_name=current_field,
+                processed_text=processed_text,
+                updates=updates,
+            )
 
         self._extract_protected_entities(processed_text.entities, updates, guardian_context)
         self._extract_loose_sensitive_values(raw_text, updates, guardian_context)
@@ -400,6 +479,96 @@ class RegistrationEngine:
         self._extract_college_preference(processed_text.entities, form_state, updates)
 
         return updates
+
+    def _extract_current_field_answer(
+        self,
+        field_name: str,
+        processed_text: ProcessedText,
+        updates: dict[str, Any],
+    ) -> None:
+        raw_text = processed_text.raw_text.strip()
+        normalized_text = processed_text.normalized_text.strip()
+
+        if not raw_text:
+            return
+
+        if field_name in {"full_name_en", "full_name_ar", "guardian_name"}:
+            updates[field_name] = self._clean_value(raw_text)
+            return
+
+        if field_name in {"student_mobile_no", "guardian_mobile_no"}:
+            digits = re.sub(r"\D", "", raw_text)
+
+            if digits:
+                updates[field_name] = digits
+
+            return
+
+        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
+            updates[field_name] = self._clean_value(raw_text)
+            return
+
+        if field_name in {"email_address", "guardian_email_address"}:
+            email_match = re.search(
+                r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+                raw_text,
+            )
+
+            if email_match:
+                updates[field_name] = email_match.group(0)
+
+            return
+
+        if field_name == "percentage":
+            percentage_match = re.search(r"\d{1,3}(?:\.\d{1,2})?", raw_text)
+
+            if percentage_match:
+                updates[field_name] = float(percentage_match.group(0))
+
+            return
+
+        if field_name == "year_of_completion":
+            year_match = re.search(r"\b20\d{2}\b", raw_text)
+
+            if year_match:
+                updates[field_name] = int(year_match.group(0))
+
+            return
+
+        if field_name == "certificate":
+            certificate_updates: dict[str, Any] = {}
+            self._extract_certificate(normalized_text.lower(), certificate_updates)
+
+            if "certificate" in certificate_updates:
+                updates[field_name] = certificate_updates["certificate"]
+            else:
+                updates[field_name] = self._clean_value(raw_text)
+
+            return
+
+        if field_name.startswith("college_preference_"):
+            faculty = processed_text.entities.get("faculty")
+
+            if faculty and faculty.get("id"):
+                updates[field_name] = faculty["id"]
+            else:
+                updates[field_name] = self._clean_value(raw_text)
+
+            return
+
+        if field_name == "relationship":
+            relationship_updates: dict[str, Any] = {}
+            self._extract_relationship(normalized_text.lower(), relationship_updates)
+
+            if "relationship" in relationship_updates:
+                updates[field_name] = relationship_updates["relationship"]
+            else:
+                updates[field_name] = self._clean_value(raw_text)
+
+            return
+
+        if field_name in {"school_name", "address", "city", "country"}:
+            updates[field_name] = self._clean_value(raw_text)
 
     def _extract_protected_entities(
         self,
@@ -972,6 +1141,10 @@ class RegistrationEngine:
                 metadata["needs_confirmation"] = False
 
             session_state["latest_sensitive_fields"] = []
+            self._sync_current_field(
+                session_state=session_state,
+                language=language,
+            )
 
             return {
                 "needs_confirmation": False,
@@ -1001,6 +1174,118 @@ class RegistrationEngine:
             }
 
         return None
+
+    def _sync_current_field(
+        self,
+        session_state: dict[str, Any],
+        language: str,
+    ) -> str | None:
+        current_field = session_state.get("current_field")
+        form_state = session_state.get("fields", {})
+        metadata = session_state.get("metadata", {})
+        skipped_fields = session_state.setdefault("skipped_fields", set())
+
+        if isinstance(skipped_fields, list):
+            skipped_fields = set(skipped_fields)
+            session_state["skipped_fields"] = skipped_fields
+
+        if current_field and self._guided_field_needs_answer(
+            field_name=current_field,
+            form_state=form_state,
+            metadata=metadata,
+            skipped_fields=skipped_fields,
+        ):
+            return current_field
+
+        next_field = self._next_guided_field(
+            form_state=form_state,
+            metadata=metadata,
+            skipped_fields=skipped_fields,
+            language=language,
+        )
+        session_state["current_field"] = next_field
+
+        return next_field
+
+    def _next_guided_field(
+        self,
+        form_state: dict[str, Any],
+        metadata: dict[str, Any],
+        skipped_fields: set[str],
+        language: str,
+    ) -> str | None:
+        for field_name in self._guided_field_order(language):
+            if self._guided_field_needs_answer(
+                field_name=field_name,
+                form_state=form_state,
+                metadata=metadata,
+                skipped_fields=skipped_fields,
+            ):
+                return field_name
+
+        return None
+
+    def _guided_field_order(self, language: str) -> list[str]:
+        fields = [
+            field["field_name"]
+            for field in self.field_definitions
+            if field.get("input_method") == "voice"
+            and field.get("required_for_basic_registration") is True
+        ]
+
+        if language == "ar" and "full_name_ar" in fields:
+            fields = [field for field in fields if field != "full_name_ar"]
+            insert_at = fields.index("full_name_en") if "full_name_en" in fields else 0
+            fields.insert(insert_at, "full_name_ar")
+
+        return fields
+
+    def _guided_field_needs_answer(
+        self,
+        field_name: str,
+        form_state: dict[str, Any],
+        metadata: dict[str, Any],
+        skipped_fields: set[str],
+    ) -> bool:
+        if field_name in skipped_fields:
+            return False
+
+        if field_name in self.REQUIRED_NAME_FIELDS:
+            return not any(
+                form_state.get(name_field)
+                for name_field in self.REQUIRED_NAME_FIELDS
+            )
+
+        if not form_state.get(field_name):
+            return True
+
+        if field_name in self.SENSITIVE_FIELDS:
+            return not metadata.get(field_name, {}).get("confirmed", False)
+
+        return False
+
+    def _question_for_field(self, field_name: str | None, language: str) -> str | None:
+        if not field_name:
+            return None
+
+        prompts = self.prompts.get(field_name, {})
+
+        if language == "ar":
+            return prompts.get("ar") or prompts.get("en")
+
+        return prompts.get("en") or prompts.get("ar")
+
+    def _confirmation_question(
+        self,
+        latest_sensitive_fields: list[str],
+        language: str,
+    ) -> str:
+        field_name = latest_sensitive_fields[0] if latest_sensitive_fields else "the field"
+
+        if language == "ar":
+            return "هل هذه المعلومة صحيحة؟ قل نعم للتأكيد أو لا للتعديل."
+
+        return f"Please confirm {field_name}. Say confirm if it is correct."
 
     def _form_state_with_auto_fields(self, form_state: dict[str, Any]) -> dict[str, Any]:
         values = dict(form_state)
@@ -1116,12 +1401,7 @@ class RegistrationEngine:
             return "Basic registration data is complete. Please review the information on screen before final submission."
 
         field_name = missing_required_fields[0]
-        prompts = self.prompts.get(field_name, {})
-
-        if language == "ar":
-            return prompts.get("ar") or prompts.get("en")
-
-        return prompts.get("en") or prompts.get("ar")
+        return self._question_for_field(field_name, language)
 
     def _clean_value(self, value: str) -> str:
         value = re.sub(r"\s+", " ", value).strip(" .,،")
