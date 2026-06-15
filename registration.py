@@ -203,7 +203,8 @@ class RegistrationEngine:
                 latest_sensitive_fields.append(field_name)
                 route_notes.append(f"confirmation_needed:{field_name}")
 
-        session_state["latest_sensitive_fields"] = latest_sensitive_fields
+        if latest_sensitive_fields:
+            session_state["latest_sensitive_fields"] = latest_sensitive_fields
         missing_required_fields = self._missing_required_fields(form_state)
         completion_percentage = self._completion_percentage(form_state)
         next_question = self._next_question(missing_required_fields, language)
@@ -364,6 +365,12 @@ class RegistrationEngine:
         self._extract_address(raw_text, normalized_text, updates)
         self._extract_school(raw_text, normalized_text, updates)
         self._extract_certificate(text_lower, updates)
+        self._extract_ranked_college_preferences(
+            raw_text=raw_text,
+            normalized_text=normalized_text,
+            form_state=form_state,
+            updates=updates,
+        )
         self._extract_college_preference(processed_text.entities, form_state, updates)
 
         return updates
@@ -625,6 +632,9 @@ class RegistrationEngine:
         form_state: dict[str, Any],
         updates: dict[str, Any],
     ) -> None:
+        if any(field_name.startswith("college_preference_") for field_name in updates):
+            return
+
         faculty = entities.get("faculty")
 
         if not faculty:
@@ -641,6 +651,96 @@ class RegistrationEngine:
             if not form_state.get(field_name) and field_name not in updates:
                 updates[field_name] = faculty_id
                 return
+
+    def _extract_ranked_college_preferences(
+        self,
+        raw_text: str,
+        normalized_text: str,
+        form_state: dict[str, Any],
+        updates: dict[str, Any],
+    ) -> None:
+        searchable_text = self._normalize_preference_text(
+            f"{raw_text} {normalized_text}"
+        )
+        rank_words = {
+            1: ["first", "1st", "one", "اول", "الاولي", "الأولى", "اولى"],
+            2: ["second", "2nd", "two", "ثاني", "الثانية", "التانية"],
+            3: ["third", "3rd", "three", "ثالث", "الثالثة", "التالتة"],
+            4: ["fourth", "4th", "four", "رابع", "الرابعة"],
+            5: ["fifth", "5th", "five", "خامس", "الخامسة"],
+            6: ["sixth", "6th", "six", "سادس", "السادسة"],
+        }
+
+        for faculty_id, aliases in FACULTY_ALIASES.items():
+            for alias in aliases:
+                alias_text = self._normalize_preference_text(alias)
+
+                if not alias_text:
+                    continue
+
+                for match in re.finditer(
+                    rf"(?<!\w){re.escape(alias_text)}(?!\w)",
+                    searchable_text,
+                ):
+                    window_start = max(0, match.start() - 45)
+                    window_end = min(len(searchable_text), match.end() + 45)
+                    window = searchable_text[window_start:window_end]
+                    rank = self._preference_rank_from_window(
+                        window=window,
+                        rank_words=rank_words,
+                        alias_start=match.start() - window_start,
+                        alias_end=match.end() - window_start,
+                    )
+
+                    if not rank:
+                        continue
+
+                    field_name = f"college_preference_{rank}"
+
+                    if not form_state.get(field_name) and field_name not in updates:
+                        updates[field_name] = faculty_id
+
+    def _preference_rank_from_window(
+        self,
+        window: str,
+        rank_words: dict[int, list[str]],
+        alias_start: int,
+        alias_end: int,
+    ) -> int | None:
+        nearest_rank: int | None = None
+        nearest_distance: int | None = None
+
+        for rank, words in rank_words.items():
+            for word in words:
+                normalized_word = self._normalize_preference_text(word)
+
+                for match in re.finditer(
+                    rf"(?<!\w){re.escape(normalized_word)}(?!\w)",
+                    window,
+                ):
+                    if match.end() <= alias_start:
+                        distance = alias_start - match.end()
+                    elif match.start() >= alias_end:
+                        distance = match.start() - alias_end
+                    else:
+                        distance = 0
+
+                    if nearest_distance is None or distance < nearest_distance:
+                        nearest_distance = distance
+                        nearest_rank = rank
+
+        return nearest_rank
+
+    def _normalize_preference_text(self, text: str) -> str:
+        normalized = text.lower()
+        normalized = re.sub(r"[أإآٱ]", "ا", normalized)
+        normalized = normalized.replace("ى", "ي")
+        normalized = normalized.replace("ؤ", "و")
+        normalized = normalized.replace("ئ", "ي")
+        normalized = re.sub(r"[^\w\s]", " ", normalized)
+        normalized = re.sub(r"\s+", " ", normalized)
+
+        return normalized.strip()
 
     def _extract_semantic_updates(
         self,
