@@ -43,6 +43,39 @@ class ProcessedText:
 
 
 @dataclass
+class ConversationTurn:
+    """
+    One stored user turn inside session memory.
+    """
+
+    user_text: str
+    normalized_text: str
+    faculty_id: str | None = None
+    intent_id: str | None = None
+    topic: str | None = None
+    mode: str = "qa"
+    language: str = "en"
+
+
+@dataclass
+class SessionMemory:
+    """
+    Short-term memory for one user session.
+
+    This is not permanent storage.
+    It only helps the robot understand follow-up questions.
+    """
+
+    session_id: str
+    language: str
+    mode: str
+    current_faculty_id: str | None = None
+    current_intent_id: str | None = None
+    current_topic: str | None = None
+    turns: list[ConversationTurn] = field(default_factory=list)
+
+
+@dataclass
 class BrainOutput:
     """
     Final output returned by the AI Brain.
