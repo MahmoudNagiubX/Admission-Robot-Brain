@@ -1,0 +1,1 @@
+# Stores short-term session memory: last topic, last turns, current mode.

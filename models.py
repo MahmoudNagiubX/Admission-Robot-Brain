@@ -1,0 +1,1 @@
+# Shared data structures/classes for input/output.
