@@ -18,6 +18,7 @@ from faq_router import FAQRouter
 from knowledge_base import KnowledgeBase
 from memory import MemoryManager
 from models import BrainInput, BrainOutput
+from registration import RegistrationEngine
 from text_processor import TextProcessor
 
 
@@ -31,6 +32,7 @@ class ECUBrain:
         self.memory_manager = MemoryManager(max_turns=3)
         self.faq_router = FAQRouter()
         self.knowledge_base = KnowledgeBase()
+        self.registration_engine = RegistrationEngine()
 
     def process(self, brain_input: BrainInput) -> BrainOutput:
         """
@@ -49,6 +51,37 @@ class ECUBrain:
             raw_text=brain_input.text,
             language=brain_input.language,
         )
+
+        if brain_input.mode == "registration":
+            registration_result = self.registration_engine.process(
+                session_id=brain_input.session_id,
+                processed_text=processed_text,
+                language=brain_input.language,
+            )
+            next_question = registration_result["next_question"]
+
+            return BrainOutput(
+                mode=brain_input.mode,
+                answer_text=next_question or self._registration_complete_text(
+                    brain_input.language
+                ),
+                speech_text=next_question or self._registration_complete_text(
+                    brain_input.language
+                ),
+                confidence=1.0,
+                current_topic="registration",
+                audio_path=None,
+                form_updates=registration_result["form_updates"],
+                route_taken=[
+                    "input_received",
+                    "basic_validation_done",
+                    *processed_text.route_notes,
+                    *registration_result["route_notes"],
+                    "faq_and_knowledge_base_skipped_for_registration",
+                ],
+                next_question=next_question,
+                needs_confirmation=registration_result["needs_confirmation"],
+            )
 
         processed_text = self.memory_manager.enrich_with_memory(
             session=session,
@@ -134,7 +167,7 @@ class ECUBrain:
                 "safe_fallback_returned",
                 *knowledge_match["reasons"],
             ],
-        )
+            )
 
     def reset_session(self, session_id: str) -> None:
         """
@@ -142,6 +175,12 @@ class ECUBrain:
         """
 
         self.memory_manager.reset_session(session_id)
+
+    def _registration_complete_text(self, language: str) -> str:
+        if language == "ar":
+            return "تم إدخال البيانات الأساسية. من فضلك راجع البيانات للتأكيد."
+
+        return "The core registration details are complete. Please review them for confirmation."
 
     def _validate_input(self, brain_input: BrainInput) -> None:
         if not brain_input.session_id.strip():

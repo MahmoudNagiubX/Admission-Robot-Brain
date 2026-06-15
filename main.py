@@ -81,6 +81,8 @@ def run_local_test() -> None:
             print(f"Current Topic: {output.current_topic}")
             print(f"Audio Path: {output.audio_path}")
             print(f"Form Updates: {output.form_updates}")
+            print(f"Next Question: {output.next_question}")
+            print(f"Needs Confirmation: {output.needs_confirmation}")
             print(f"Route Taken: {output.route_taken}")
 
         except Exception as error:

@@ -91,3 +91,5 @@ class BrainOutput:
     audio_path: str | None = None
     form_updates: dict[str, Any] = field(default_factory=dict)
     route_taken: list[str] = field(default_factory=list)
+    next_question: str | None = None
+    needs_confirmation: bool = False
