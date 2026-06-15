@@ -10,6 +10,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from config import ENABLE_LLM_REGISTRATION_EXTRACTION, FACULTY_ALIASES
+from llm_client import LLMClient
 from models import ProcessedText
 
 
@@ -68,6 +70,24 @@ class RegistrationEngine:
 
     CONFIRM_WORDS = {"confirm", "yes", "correct", "تمام", "ايوه", "نعم", "صح"}
     REJECT_WORDS = {"no", "wrong", "incorrect", "لا", "غلط", "مش صح"}
+    CORRECTION_WORDS = REJECT_WORDS
+    LLM_ALLOWED_FIELDS = {
+        "full_name_en",
+        "full_name_ar",
+        "school_name",
+        "certificate",
+        "guardian_name",
+        "relationship",
+        "address",
+        "city",
+        "country",
+        "college_preference_1",
+        "college_preference_2",
+        "college_preference_3",
+        "college_preference_4",
+        "college_preference_5",
+        "college_preference_6",
+    }
 
     def __init__(self, fields_path: str = "data/registration_fields.json") -> None:
         self.fields_path = Path(fields_path)
@@ -81,6 +101,7 @@ class RegistrationEngine:
             for field in self.field_definitions
         }
         self.sessions: dict[str, dict[str, Any]] = {}
+        self.llm_client = LLMClient()
 
     def process(
         self,
@@ -124,6 +145,14 @@ class RegistrationEngine:
             }
 
         extracted_updates = self._extract_updates(processed_text, form_state)
+        semantic_updates, semantic_route_notes = self._extract_semantic_updates(
+            processed_text=processed_text,
+            form_state=form_state,
+            deterministic_updates=extracted_updates,
+            language=language,
+        )
+        route_notes.extend(semantic_route_notes)
+        extracted_updates.update(semantic_updates)
 
         form_updates: dict[str, Any] = {}
         needs_confirmation = False
@@ -476,6 +505,103 @@ class RegistrationEngine:
             if not form_state.get(field_name) and field_name not in updates:
                 updates[field_name] = faculty_id
                 return
+
+    def _extract_semantic_updates(
+        self,
+        processed_text: ProcessedText,
+        form_state: dict[str, Any],
+        deterministic_updates: dict[str, Any],
+        language: str,
+    ) -> tuple[dict[str, Any], list[str]]:
+        if not ENABLE_LLM_REGISTRATION_EXTRACTION:
+            return {}, []
+
+        missing_allowed_fields = [
+            field_name
+            for field_name in self.LLM_ALLOWED_FIELDS
+            if not form_state.get(field_name) and field_name not in deterministic_updates
+        ]
+
+        if not missing_allowed_fields:
+            return {}, []
+
+        route_notes = [
+            "llm_registration_extraction_checked",
+            *self.llm_client.route_notes,
+        ]
+        current_form = {
+            **form_state,
+            **deterministic_updates,
+        }
+        extracted = self.llm_client.extract_registration_fields(
+            text=processed_text.raw_text,
+            current_form=current_form,
+            language=language,
+        )
+
+        if not extracted:
+            return {}, route_notes + ["llm_registration_extraction_failed"]
+
+        correction_requested = self._has_correction_words(processed_text.normalized_text)
+        validated_updates: dict[str, Any] = {}
+
+        for field_name, value in extracted.items():
+            if field_name not in self.LLM_ALLOWED_FIELDS:
+                continue
+
+            if value in {None, ""}:
+                continue
+
+            if (
+                not correction_requested
+                and (form_state.get(field_name) or deterministic_updates.get(field_name))
+            ):
+                continue
+
+            cleaned_value = self._validate_llm_field_value(field_name, value)
+
+            if cleaned_value in {None, ""}:
+                continue
+
+            validated_updates[field_name] = cleaned_value
+
+        if not validated_updates:
+            return {}, route_notes + ["llm_registration_extraction_failed"]
+
+        return validated_updates, route_notes + ["llm_registration_fields_extracted"]
+
+    def _validate_llm_field_value(self, field_name: str, value: Any) -> Any:
+        if isinstance(value, str):
+            value = self._clean_value(value)
+
+        if value in {None, ""}:
+            return None
+
+        if field_name.startswith("college_preference_"):
+            return self._faculty_id_from_value(str(value))
+
+        return value
+
+    def _faculty_id_from_value(self, value: str) -> str | None:
+        normalized_value = value.strip().lower()
+
+        if normalized_value in FACULTY_ALIASES:
+            return normalized_value
+
+        for faculty_id, aliases in FACULTY_ALIASES.items():
+            if normalized_value == faculty_id:
+                return faculty_id
+
+            for alias in aliases:
+                if normalized_value == alias.lower():
+                    return faculty_id
+
+        return None
+
+    def _has_correction_words(self, text: str) -> bool:
+        text_lower = text.lower()
+
+        return any(word in text_lower for word in self.CORRECTION_WORDS)
 
     def _has_guardian_context(self, text_lower: str) -> bool:
         return any(

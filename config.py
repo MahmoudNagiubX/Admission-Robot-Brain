@@ -6,6 +6,15 @@ Keep project constants here so the rest of the code stays clean.
 
 import os
 
+try:
+    from dotenv import load_dotenv
+except Exception:
+    load_dotenv = None
+
+
+if load_dotenv is not None:
+    load_dotenv()
+
 PROJECT_NAME = "Admission Robot"
 
 
@@ -31,10 +40,22 @@ def _env_int(name: str, default: int) -> int:
 
 
 # Main LLM model agreed for the real AI steps.
+LLM_PROVIDER_ENV = "LLM_PROVIDER"
+DEFAULT_LLM_PROVIDER = "groq"
+LLM_PROVIDER = os.getenv(LLM_PROVIDER_ENV, DEFAULT_LLM_PROVIDER).strip().lower()
 OPENAI_API_KEY_ENV = "OPENAI_API_KEY"
 MAIN_LLM_MODEL = os.getenv("MAIN_LLM_MODEL", "gpt-5-mini")
+GROQ_API_KEY_ENV = "GROQ_API_KEY"
+GROQ_MODEL_ENV = "GROQ_MODEL"
+DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = os.getenv(GROQ_MODEL_ENV, DEFAULT_GROQ_MODEL)
+GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 LLM_TIMEOUT_SECONDS = _env_int("LLM_TIMEOUT_SECONDS", 15)
 ENABLE_LLM_RAG = _env_bool("ENABLE_LLM_RAG", True)
+ENABLE_LLM_REGISTRATION_EXTRACTION = _env_bool(
+    "ENABLE_LLM_REGISTRATION_EXTRACTION",
+    True,
+)
 RAG_MAX_ANSWER_CHARS = 700
 RAG_INCLUDE_SOURCE_NOTE = True
 

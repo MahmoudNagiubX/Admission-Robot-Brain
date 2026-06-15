@@ -27,6 +27,7 @@ class AnswerComposer:
         route_notes = [
             "llm_rag_checked",
             f"source_section_id:{kb_result.get('section_id')}",
+            *self.llm_client.route_notes,
         ]
 
         generated_answer = self.llm_client.generate_grounded_answer(

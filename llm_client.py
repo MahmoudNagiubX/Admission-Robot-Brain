@@ -2,6 +2,7 @@
 Small defensive OpenAI client wrapper for grounded RAG answers.
 """
 
+import json
 import os
 from typing import Any
 
@@ -15,7 +16,15 @@ except Exception:
 if load_dotenv is not None:
     load_dotenv()
 
-from config import LLM_TIMEOUT_SECONDS, MAIN_LLM_MODEL, OPENAI_API_KEY_ENV
+from config import (
+    GROQ_API_KEY_ENV,
+    GROQ_BASE_URL,
+    GROQ_MODEL,
+    LLM_PROVIDER,
+    LLM_TIMEOUT_SECONDS,
+    MAIN_LLM_MODEL,
+    OPENAI_API_KEY_ENV,
+)
 
 
 class LLMClient:
@@ -25,15 +34,19 @@ class LLMClient:
 
     def __init__(
         self,
-        model: str = MAIN_LLM_MODEL,
-        api_key_env: str = OPENAI_API_KEY_ENV,
+        provider: str = LLM_PROVIDER,
         timeout_seconds: int = LLM_TIMEOUT_SECONDS,
     ) -> None:
-        self.model = model
-        self.api_key_env = api_key_env
+        self.provider = provider if provider in {"groq", "openai"} else "groq"
+        self.model = self._resolve_model()
+        self.api_key_env = self._resolve_api_key_env()
         self.timeout_seconds = timeout_seconds
-        self.api_key = os.getenv(api_key_env)
+        self.api_key = os.getenv(self.api_key_env)
         self.client = self._create_client()
+        self.route_notes = [
+            f"llm_provider:{self.provider}",
+            f"llm_model:{self.model}",
+        ]
 
     def generate_grounded_answer(
         self,
@@ -51,14 +64,56 @@ class LLMClient:
         prompt = self._build_prompt(question, context, language)
 
         try:
-            if hasattr(self.client, "responses"):
-                response = self.client.responses.create(
-                    model=self.model,
-                    input=prompt,
-                )
-                return self._extract_response_text(response)
+            return self._call_text_model(prompt)
         except Exception:
             return None
+
+        return None
+
+    def extract_registration_fields(
+        self,
+        text: str,
+        current_form: dict[str, Any],
+        language: str,
+    ) -> dict[str, Any] | None:
+        """
+        Extract allowed registration fields as JSON, or None on any failure.
+        """
+
+        if not self.client or not self.api_key:
+            return None
+
+        prompt = self._build_registration_prompt(text, current_form, language)
+
+        try:
+            response_text = self._call_text_model(prompt)
+        except Exception:
+            return None
+
+        if not response_text:
+            return None
+
+        return self._parse_json_object(response_text)
+
+    def _call_text_model(self, prompt: str) -> str | None:
+        if self.provider == "groq":
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+            )
+            return self._extract_chat_completion_text(response)
+
+        if hasattr(self.client, "responses"):
+            response = self.client.responses.create(
+                model=self.model,
+                input=prompt,
+            )
+            return self._extract_response_text(response)
 
         return None
 
@@ -69,9 +124,31 @@ class LLMClient:
         try:
             from openai import OpenAI
 
-            return OpenAI(api_key=self.api_key, timeout=self.timeout_seconds)
+            if self.provider == "groq":
+                return OpenAI(
+                    api_key=self.api_key,
+                    base_url=GROQ_BASE_URL,
+                    timeout=self.timeout_seconds,
+                )
+
+            return OpenAI(
+                api_key=self.api_key,
+                timeout=self.timeout_seconds,
+            )
         except Exception:
             return None
+
+    def _resolve_model(self) -> str:
+        if self.provider == "openai":
+            return MAIN_LLM_MODEL
+
+        return GROQ_MODEL
+
+    def _resolve_api_key_env(self) -> str:
+        if self.provider == "openai":
+            return OPENAI_API_KEY_ENV
+
+        return GROQ_API_KEY_ENV
 
     def _build_prompt(self, question: str, context: str, language: str) -> str:
         language_rule = "Arabic only" if language == "ar" else "English only"
@@ -86,6 +163,92 @@ class LLMClient:
             f"Question:\n{question}\n\n"
             f"Verified ECU context:\n{context}"
         )
+
+    def _build_registration_prompt(
+        self,
+        text: str,
+        current_form: dict[str, Any],
+        language: str,
+    ) -> str:
+        allowed_fields = [
+            "full_name_en",
+            "full_name_ar",
+            "school_name",
+            "certificate",
+            "guardian_name",
+            "relationship",
+            "address",
+            "city",
+            "country",
+            "college_preference_1",
+            "college_preference_2",
+            "college_preference_3",
+            "college_preference_4",
+            "college_preference_5",
+            "college_preference_6",
+        ]
+
+        known_faculty_ids = [
+            "engineering_and_technology",
+            "pharmacy_and_drug_technology",
+            "physical_therapy",
+            "computers_and_information_systems",
+            "economics_and_international_trade",
+            "arts_and_design",
+            "veterinary_medicine",
+            "mass_communication",
+        ]
+
+        return (
+            "You extract ECU registration form fields.\n"
+            "Return JSON only. No markdown. No explanation.\n"
+            "Only include fields explicitly present in the user text.\n"
+            "Do not guess missing values.\n"
+            f"Allowed fields: {json.dumps(allowed_fields)}\n"
+            f"Known faculty ids: {json.dumps(known_faculty_ids)}\n"
+            "Use canonical faculty ids for college preferences when clear.\n"
+            "Use certificate values like American, STEM, IGCSE, Thanaweya Amma, Al-Azhar.\n"
+            "Use relationship values like Father, Mother, Brother, Sister, Guardian.\n"
+            f"Language: {language}\n"
+            f"Current form JSON: {json.dumps(current_form, ensure_ascii=False)}\n"
+            f"User text: {text}"
+        )
+
+    def _parse_json_object(self, text: str) -> dict[str, Any] | None:
+        text = text.strip()
+
+        if text.startswith("```"):
+            text = text.strip("`").strip()
+
+            if text.startswith("json"):
+                text = text[4:].strip()
+
+        try:
+            parsed = json.loads(text)
+        except Exception:
+            return None
+
+        if not isinstance(parsed, dict):
+            return None
+
+        return parsed
+
+    def _extract_chat_completion_text(self, response: Any) -> str | None:
+        try:
+            choices = getattr(response, "choices", [])
+
+            if not choices:
+                return None
+
+            message = getattr(choices[0], "message", None)
+            content = getattr(message, "content", None)
+
+            if isinstance(content, str) and content.strip():
+                return content.strip()
+        except Exception:
+            return None
+
+        return None
 
     def _extract_response_text(self, response: Any) -> str | None:
         output_text = getattr(response, "output_text", None)

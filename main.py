@@ -9,6 +9,7 @@ import json
 
 from brain import ECUBrain
 from config import DEFAULT_LANGUAGE, DEFAULT_MODE, SUPPORTED_LANGUAGES, SUPPORTED_MODES
+from llm_client import LLMClient
 from models import BrainInput
 
 
@@ -31,6 +32,7 @@ def run_local_test() -> None:
     print("  validate kb          -> print knowledge base validation report")
     print("  show form            -> print registration form debug view")
     print("  review form          -> print registration review summary")
+    print("  test llm             -> test configured LLM provider")
     print("=" * 70)
 
     while True:
@@ -54,6 +56,10 @@ def run_local_test() -> None:
             print("\nRegistration Review Summary")
             print("-" * 70)
             print(brain.registration_engine.get_review_summary(session_id, language))
+            continue
+
+        if user_text.lower() == "test llm":
+            run_llm_test()
             continue
 
         if user_text.lower().startswith("lang "):
@@ -142,6 +148,25 @@ def print_form_debug_view(debug_view: dict) -> None:
     print("\nRegistration Form Debug View")
     print("-" * 70)
     print(json.dumps(debug_view, ensure_ascii=False, indent=2))
+
+
+def run_llm_test() -> None:
+    llm_client = LLMClient()
+    response = llm_client.generate_grounded_answer(
+        question="Say ready in one short sentence.",
+        context="This is a safe local health check. The only expected answer is readiness.",
+        language="en",
+    )
+    succeeded = bool(response)
+
+    print("\nLLM Provider Test")
+    print("-" * 70)
+    print(f"Provider: {llm_client.provider}")
+    print(f"Model: {llm_client.model}")
+    print(f"Succeeded: {succeeded}")
+
+    if succeeded:
+        print(f"Response: {response}")
 
 
 if __name__ == "__main__":
