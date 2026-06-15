@@ -19,6 +19,7 @@ Memory fills missing faculty = engineering_and_technology.
 """
 
 from copy import deepcopy
+import re
 from typing import Any
 
 from models import ConversationTurn, ProcessedText, SessionMemory
@@ -86,8 +87,13 @@ class MemoryManager:
 
         faculty = entities.get("faculty")
         intent = entities.get("intent")
+        text_looks_follow_up = self._looks_like_follow_up(enriched_text.normalized_text)
 
-        if faculty is None and session.current_faculty_id is not None:
+        if (
+            faculty is None
+            and session.current_faculty_id is not None
+            and text_looks_follow_up
+        ):
             entities["faculty"] = {
                 "id": session.current_faculty_id,
                 "matched_alias": None,
@@ -96,15 +102,18 @@ class MemoryManager:
             }
             enriched_text.route_notes.append("faculty_filled_from_memory")
 
-        if intent is None and session.current_intent_id is not None:
-            if self._looks_like_follow_up(enriched_text.normalized_text):
-                entities["intent"] = {
-                    "id": session.current_intent_id,
-                    "matched_alias": None,
-                    "match_type": "memory",
-                    "confidence": 0.70,
-                }
-                enriched_text.route_notes.append("intent_filled_from_memory")
+        if (
+            intent is None
+            and session.current_intent_id is not None
+            and text_looks_follow_up
+        ):
+            entities["intent"] = {
+                "id": session.current_intent_id,
+                "matched_alias": None,
+                "match_type": "memory",
+                "confidence": 0.70,
+            }
+            enriched_text.route_notes.append("intent_filled_from_memory")
 
         enriched_text.search_query = self._rebuild_search_query(
             original_query=enriched_text.search_query,
@@ -190,26 +199,38 @@ class MemoryManager:
         Detect if the user likely refers to previous context.
         """
 
-        follow_up_words = {
+        follow_up_phrases = {
             "it",
             "this",
             "that",
             "there",
             "its",
+            "how much is it",
+            "where is it",
+            "what about it",
             "دي",
             "ده",
             "دا",
             "ذلك",
             "دي بكام",
-            "بكام",
-            "كام",
-            "فين",
-            "هناك",
+            "ده بكام",
+            "مصاريفها",
+            "مكانها",
+            "فين هي",
+            "فين ده",
+            "فين دي",
+            "اوراقها",
+            "شروطها",
+            "اقسامها",
+            "تخصصاتها",
         }
 
         text_lower = text.lower()
 
-        return any(word in text_lower for word in follow_up_words)
+        return any(
+            re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text_lower)
+            for phrase in follow_up_phrases
+        )
 
     def _get_entity_id(self, entity: dict[str, Any] | None) -> str | None:
         if not entity:

@@ -4,15 +4,16 @@ Main AI Brain module.
 Current complete modules:
 1. Text Intelligence Layer
 2. Session Memory
+3. FAQ Routing
 
 Next modules:
-- FAQ routing
 - Knowledge base / RAG
 - Registration engine
 - TTS engine
 """
 
 from config import SUPPORTED_LANGUAGES, SUPPORTED_MODES
+from faq_router import FAQRouter
 from memory import MemoryManager
 from models import BrainInput, BrainOutput
 from text_processor import TextProcessor
@@ -26,6 +27,7 @@ class ECUBrain:
     def __init__(self) -> None:
         self.text_processor = TextProcessor()
         self.memory_manager = MemoryManager(max_turns=3)
+        self.faq_router = FAQRouter()
 
     def process(self, brain_input: BrainInput) -> BrainOutput:
         """
@@ -55,25 +57,37 @@ class ECUBrain:
             processed_text=processed_text,
         )
 
-        memory_debug = self.memory_manager.get_memory_debug_view(session)
+        faq_match = self.faq_router.find_best_match(
+            processed_text=processed_text,
+            language=brain_input.language,
+        )
+
+        if faq_match["matched"]:
+            return BrainOutput(
+                mode=brain_input.mode,
+                answer_text=faq_match["answer_text"],
+                speech_text=faq_match["speech_text"],
+                confidence=faq_match["confidence"],
+                current_topic=session.current_topic,
+                audio_path=None,
+                form_updates={},
+                route_taken=[
+                    "input_received",
+                    "basic_validation_done",
+                    *processed_text.route_notes,
+                    "session_memory_updated",
+                    "faq_router_checked",
+                    "faq_match_found",
+                    f"faq_id:{faq_match['faq_id']}",
+                    *faq_match["reasons"],
+                ],
+            )
 
         return BrainOutput(
             mode=brain_input.mode,
-            answer_text=(
-                "Text Intelligence Layer + Memory are running successfully.\n"
-                f"Raw: {processed_text.raw_text}\n"
-                f"Normalized: {processed_text.normalized_text}\n"
-                f"Protected: {processed_text.protected_text}\n"
-                f"Corrected: {processed_text.corrected_text}\n"
-                f"Search Query: {processed_text.search_query}\n"
-                f"Entities: {processed_text.entities}\n"
-                f"Memory: {memory_debug}"
-            ),
-            speech_text=(
-                "Memory system is running successfully. "
-                "Next module will be FAQ routing."
-            ),
-            confidence=1.0,
+            answer_text=faq_match["answer_text"],
+            speech_text=faq_match["speech_text"],
+            confidence=faq_match["confidence"],
             current_topic=session.current_topic,
             audio_path=None,
             form_updates={},
@@ -82,7 +96,10 @@ class ECUBrain:
                 "basic_validation_done",
                 *processed_text.route_notes,
                 "session_memory_updated",
-                "debug_response_returned",
+                "faq_router_checked",
+                "no_faq_match_found",
+                "next_step_should_be_rag",
+                *faq_match["reasons"],
             ],
         )
 
