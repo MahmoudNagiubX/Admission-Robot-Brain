@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from config import RAG_MIN_CONFIDENCE
+from data_validator import KnowledgeBaseValidator
 from models import ProcessedText
 
 
@@ -30,6 +31,8 @@ class KnowledgeBase:
 
     def __init__(self, faculties_folder: str = "data/faculties") -> None:
         self.faculties_folder = Path(faculties_folder)
+        self.validator = KnowledgeBaseValidator()
+        self.validation_results: list[dict[str, Any]] = []
         self.sections = self._load_all_sections()
 
     def search(
@@ -91,6 +94,13 @@ class KnowledgeBase:
 
         return best_result
 
+    def get_validation_report(self) -> list[dict[str, Any]]:
+        """
+        Return validation summaries collected while loading faculty files.
+        """
+
+        return self.validation_results
+
     # ------------------------------------------------------------------
     # Loading
     # ------------------------------------------------------------------
@@ -109,7 +119,25 @@ class KnowledgeBase:
             try:
                 with open(json_path, "r", encoding="utf-8") as file:
                     faculty_data = json.load(file)
-            except Exception:
+            except Exception as error:
+                validation_result = {
+                    "file_name": json_path.name,
+                    "is_valid": False,
+                    "errors": [f"Could not load JSON file: {error}"],
+                    "warnings": [],
+                }
+                self.validation_results.append(validation_result)
+                self._print_validation_messages(validation_result)
+                continue
+
+            validation_result = self.validator.validate_faculty_file(
+                file_path=json_path,
+                data=faculty_data,
+            )
+            self.validation_results.append(validation_result)
+            self._print_validation_messages(validation_result)
+
+            if not validation_result["is_valid"]:
                 continue
 
             faculty_id = (
@@ -127,6 +155,21 @@ class KnowledgeBase:
             )
 
         return all_sections
+
+    def _print_validation_messages(self, validation_result: dict[str, Any]) -> None:
+        file_name = validation_result["file_name"]
+
+        if validation_result["errors"]:
+            print(f"[KnowledgeBase Validation] Skipping invalid file: {file_name}")
+
+            for error in validation_result["errors"]:
+                print(f"  ERROR: {error}")
+
+        if validation_result["warnings"]:
+            print(f"[KnowledgeBase Validation] Warnings for {file_name}:")
+
+            for warning in validation_result["warnings"]:
+                print(f"  WARNING: {warning}")
 
     def _extract_sections_from_faculty(
         self,

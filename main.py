@@ -26,6 +26,7 @@ def run_local_test() -> None:
     print("  lang en              -> switch to English")
     print("  mode qa              -> Q&A mode")
     print("  mode registration    -> registration mode")
+    print("  validate kb          -> print knowledge base validation report")
     print("=" * 70)
 
     while True:
@@ -34,6 +35,10 @@ def run_local_test() -> None:
         if user_text.lower() in {"exit", "quit"}:
             print("Stopping local test.")
             break
+
+        if user_text.lower() == "validate kb":
+            print_validation_report(brain.knowledge_base.get_validation_report())
+            continue
 
         if user_text.lower().startswith("lang "):
             new_language = user_text.lower().replace("lang ", "").strip()
@@ -80,6 +85,39 @@ def run_local_test() -> None:
 
         except Exception as error:
             print(f"\nError: {error}")
+
+
+def print_validation_report(report: list[dict]) -> None:
+    print("\nKnowledge Base Validation Report")
+    print("-" * 70)
+
+    if not report:
+        print("No faculty files were validated.")
+        return
+
+    for result in report:
+        status = "valid" if result.get("is_valid") else "invalid"
+        print(f"File: {result.get('file_name')} | Status: {status}")
+
+        errors = result.get("errors", [])
+        warnings = result.get("warnings", [])
+
+        if errors:
+            print("Errors:")
+
+            for error in errors:
+                print(f"  - {error}")
+
+        if warnings:
+            print("Warnings:")
+
+            for warning in warnings:
+                print(f"  - {warning}")
+
+        if not errors and not warnings:
+            print("No errors or warnings.")
+
+        print("-" * 70)
 
 
 if __name__ == "__main__":
