@@ -5,6 +5,8 @@ This file simulates text coming from the STT system.
 You can test Arabic or English text directly from the terminal.
 """
 
+import json
+
 from brain import ECUBrain
 from config import DEFAULT_LANGUAGE, DEFAULT_MODE, SUPPORTED_LANGUAGES, SUPPORTED_MODES
 from models import BrainInput
@@ -27,6 +29,8 @@ def run_local_test() -> None:
     print("  mode qa              -> Q&A mode")
     print("  mode registration    -> registration mode")
     print("  validate kb          -> print knowledge base validation report")
+    print("  show form            -> print registration form debug view")
+    print("  review form          -> print registration review summary")
     print("=" * 70)
 
     while True:
@@ -38,6 +42,18 @@ def run_local_test() -> None:
 
         if user_text.lower() == "validate kb":
             print_validation_report(brain.knowledge_base.get_validation_report())
+            continue
+
+        if user_text.lower() == "show form":
+            print_form_debug_view(
+                brain.registration_engine.get_form_debug_view(session_id)
+            )
+            continue
+
+        if user_text.lower() == "review form":
+            print("\nRegistration Review Summary")
+            print("-" * 70)
+            print(brain.registration_engine.get_review_summary(session_id, language))
             continue
 
         if user_text.lower().startswith("lang "):
@@ -120,6 +136,12 @@ def print_validation_report(report: list[dict]) -> None:
             print("No errors or warnings.")
 
         print("-" * 70)
+
+
+def print_form_debug_view(debug_view: dict) -> None:
+    print("\nRegistration Form Debug View")
+    print("-" * 70)
+    print(json.dumps(debug_view, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

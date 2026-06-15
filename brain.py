@@ -59,15 +59,23 @@ class ECUBrain:
                 language=brain_input.language,
             )
             next_question = registration_result["next_question"]
+            is_basic_registration_complete = not registration_result[
+                "missing_required_fields"
+            ]
+            answer_text = next_question or self._registration_complete_text(
+                brain_input.language
+            )
+
+            if is_basic_registration_complete:
+                answer_text = self.registration_engine.get_review_summary(
+                    session_id=brain_input.session_id,
+                    language=brain_input.language,
+                )
 
             return BrainOutput(
                 mode=brain_input.mode,
-                answer_text=next_question or self._registration_complete_text(
-                    brain_input.language
-                ),
-                speech_text=next_question or self._registration_complete_text(
-                    brain_input.language
-                ),
+                answer_text=answer_text,
+                speech_text=answer_text,
                 confidence=1.0,
                 current_topic="registration",
                 audio_path=None,

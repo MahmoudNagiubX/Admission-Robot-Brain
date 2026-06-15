@@ -166,6 +166,45 @@ class RegistrationEngine:
             "form_state": dict(form_state),
         }
 
+    def get_form_debug_view(self, session_id: str) -> dict[str, Any]:
+        session_state = self.sessions.get(session_id, {})
+        form_state = session_state.get("fields", {})
+        metadata = session_state.get("metadata", {})
+        missing_required_fields = self._missing_required_fields(form_state)
+
+        return {
+            "filled_fields": dict(form_state),
+            "missing_required_fields": missing_required_fields,
+            "unconfirmed_sensitive_fields": self._unconfirmed_sensitive_fields(
+                form_state,
+                metadata,
+            ),
+            "completion_percentage": self._completion_percentage(form_state),
+            "latest_sensitive_fields": list(
+                session_state.get("latest_sensitive_fields", [])
+            ),
+            "is_basic_registration_complete": not missing_required_fields,
+        }
+
+    def get_review_summary(self, session_id: str, language: str) -> str:
+        debug_view = self.get_form_debug_view(session_id)
+        filled_fields = debug_view["filled_fields"]
+        missing_required_fields = debug_view["missing_required_fields"]
+        unconfirmed_sensitive_fields = debug_view["unconfirmed_sensitive_fields"]
+
+        if language == "ar":
+            return self._arabic_review_summary(
+                filled_fields=filled_fields,
+                missing_required_fields=missing_required_fields,
+                unconfirmed_sensitive_fields=unconfirmed_sensitive_fields,
+            )
+
+        return self._english_review_summary(
+            filled_fields=filled_fields,
+            missing_required_fields=missing_required_fields,
+            unconfirmed_sensitive_fields=unconfirmed_sensitive_fields,
+        )
+
     def _load_field_definitions(self) -> list[dict[str, Any]]:
         with open(self.fields_path, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -504,6 +543,78 @@ class RegistrationEngine:
 
         return round((filled_count / required_count) * 100)
 
+    def _unconfirmed_sensitive_fields(
+        self,
+        form_state: dict[str, Any],
+        metadata: dict[str, Any],
+    ) -> list[str]:
+        unconfirmed_fields: list[str] = []
+
+        for field_name in self.SENSITIVE_FIELDS:
+            if field_name not in form_state:
+                continue
+
+            field_metadata = metadata.get(field_name, {})
+
+            if not field_metadata.get("confirmed", False):
+                unconfirmed_fields.append(field_name)
+
+        return [
+            field_name
+            for field_name in self.field_order
+            if field_name in unconfirmed_fields
+        ]
+
+    def _english_review_summary(
+        self,
+        filled_fields: dict[str, Any],
+        missing_required_fields: list[str],
+        unconfirmed_sensitive_fields: list[str],
+    ) -> str:
+        full_name = filled_fields.get("full_name_en") or filled_fields.get("full_name_ar")
+
+        lines = [
+            "Please review your registration data:",
+            "",
+            f"* Full Name: {self._display_value(full_name)}",
+            f"* Mobile Number: {self._display_value(filled_fields.get('student_mobile_no'))}",
+            f"* Email: {self._display_value(filled_fields.get('email_address'))}",
+            f"* National ID / Passport: {self._display_value(filled_fields.get('id_or_passport'))}",
+            f"* School Name: {self._display_value(filled_fields.get('school_name'))}",
+            f"* Certificate: {self._display_value(filled_fields.get('certificate'))}",
+            f"* Percentage: {self._display_value(filled_fields.get('percentage'))}",
+            f"* First College Preference: {self._display_value(filled_fields.get('college_preference_1'))}",
+            f"Missing required fields: {self._display_list(missing_required_fields)}",
+            f"Unconfirmed sensitive fields: {self._display_list(unconfirmed_sensitive_fields)}",
+        ]
+
+        return "\n".join(lines)
+
+    def _arabic_review_summary(
+        self,
+        filled_fields: dict[str, Any],
+        missing_required_fields: list[str],
+        unconfirmed_sensitive_fields: list[str],
+    ) -> str:
+        full_name = filled_fields.get("full_name_ar") or filled_fields.get("full_name_en")
+
+        lines = [
+            "من فضلك راجع بيانات التسجيل:",
+            "",
+            f"* الاسم: {self._display_value(full_name, missing_text='غير مدخل')}",
+            f"* رقم الموبايل: {self._display_value(filled_fields.get('student_mobile_no'), missing_text='غير مدخل')}",
+            f"* البريد الإلكتروني: {self._display_value(filled_fields.get('email_address'), missing_text='غير مدخل')}",
+            f"* الرقم القومي / جواز السفر: {self._display_value(filled_fields.get('id_or_passport'), missing_text='غير مدخل')}",
+            f"* المدرسة: {self._display_value(filled_fields.get('school_name'), missing_text='غير مدخل')}",
+            f"* الشهادة: {self._display_value(filled_fields.get('certificate'), missing_text='غير مدخل')}",
+            f"* المجموع: {self._display_value(filled_fields.get('percentage'), missing_text='غير مدخل')}",
+            f"* الرغبة الأولى: {self._display_value(filled_fields.get('college_preference_1'), missing_text='غير مدخل')}",
+            f"البيانات الناقصة: {self._display_list(missing_required_fields, empty_text='لا توجد')}",
+            f"البيانات التي تحتاج تأكيد: {self._display_list(unconfirmed_sensitive_fields, empty_text='لا توجد')}",
+        ]
+
+        return "\n".join(lines)
+
     def _next_question(self, missing_required_fields: list[str], language: str) -> str | None:
         if not missing_required_fields:
             if language == "ar":
@@ -523,3 +634,15 @@ class RegistrationEngine:
         value = re.sub(r"\s+", " ", value).strip(" .,،")
         value = re.sub(r"\b(?:and|my|phone|email|school)\b.*$", "", value, flags=re.IGNORECASE)
         return value.strip(" .,،")
+
+    def _display_value(self, value: Any, missing_text: str = "Not provided") -> str:
+        if value in {None, ""}:
+            return missing_text
+
+        return str(value)
+
+    def _display_list(self, values: list[str], empty_text: str = "None") -> str:
+        if not values:
+            return empty_text
+
+        return ", ".join(values)
