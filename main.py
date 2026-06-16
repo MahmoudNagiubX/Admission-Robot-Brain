@@ -41,7 +41,7 @@ def run_local_test() -> None:
         known_commands = {
             "listen", "voice", "exit", "quit", "lang en", "lang ar", 
             "mode qa", "mode registration", "start form", "next question", 
-            "skip field", "show form", "export form", "review form", 
+            "skip field", "show form", "show field order", "export form", "review form", 
             "status form", "test tts", "audio status", "list mics", 
             "validate kb", "test llm"
         }
@@ -69,6 +69,7 @@ def run_local_test() -> None:
     print("  mode registration    -> registration mode")
     print("  validate kb          -> print knowledge base validation report")
     print("  show form            -> print registration form debug view")
+    print("  show field order     -> print registration field sequence")
     print("  review form          -> print registration review summary")
     print("  export form          -> print flat registration values")
     print("  status form          -> print registration status")
@@ -120,6 +121,12 @@ def run_local_test() -> None:
             print_form_debug_view(
                 brain.registration_engine.get_form_debug_view(session_id)
             )
+            continue
+
+        if user_input == "show field order":
+            print("\nRegistration Field Sequence")
+            print("-" * 70)
+            print(brain.registration_engine.show_field_order())
             continue
 
         if user_input == "review form":
