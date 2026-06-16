@@ -56,11 +56,6 @@ class RegistrationEngine:
         "city",
         "country",
         "college_preference_1",
-        "college_preference_2",
-        "college_preference_3",
-        "college_preference_4",
-        "college_preference_5",
-        "college_preference_6",
     }
 
     def __init__(self, fields_path: str = "data/registration_fields.json") -> None:
