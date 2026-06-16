@@ -166,6 +166,7 @@ class RegistrationEngine:
             processed_text=processed_text,
             form_state=form_state,
             current_field=session_state.get("current_field"),
+            correction_requested=self._has_correction_words(processed_text.normalized_text),
         )
         semantic_updates, semantic_route_notes = self._extract_semantic_updates(
             processed_text=processed_text,
@@ -180,6 +181,8 @@ class RegistrationEngine:
         needs_confirmation = False
         latest_sensitive_fields: list[str] = []
         correction_requested = self._has_correction_words(processed_text.normalized_text)
+
+        validation_errors = []
 
         for field_name, value in extracted_updates.items():
             if value in {None, ""}:
@@ -197,6 +200,8 @@ class RegistrationEngine:
 
             if not is_valid:
                 route_notes.append(f"registration_validation_failed:{field_name}")
+                if field_name == session_state.get("current_field"):
+                    validation_errors.append(field_name)
                 continue
 
             form_state[field_name] = value
@@ -224,11 +229,17 @@ class RegistrationEngine:
             session_state=session_state,
             language=language,
         )
-        next_question = self._question_for_field(current_field, language)
+        
+        # Determine next question
         if needs_confirmation:
             next_question = self._confirmation_question(latest_sensitive_fields, language)
-        elif not next_question:
-            next_question = self._next_question(missing_required_fields, language)
+        elif validation_errors:
+            # If current field failed validation, use retry prompt
+            next_question = self._retry_question(validation_errors[0], language)
+        else:
+            next_question = self._question_for_field(current_field, language)
+            if not next_question:
+                next_question = self._next_question(missing_required_fields, language)
 
         if not form_updates:
             route_notes.append("no_registration_fields_extracted")
@@ -449,6 +460,7 @@ class RegistrationEngine:
         processed_text: ProcessedText,
         form_state: dict[str, Any],
         current_field: str | None = None,
+        correction_requested: bool = False,
     ) -> dict[str, Any]:
         updates: dict[str, Any] = {}
         raw_text = processed_text.raw_text.strip()
@@ -462,6 +474,12 @@ class RegistrationEngine:
                 processed_text=processed_text,
                 updates=updates,
             )
+
+        # In guided mode, extra extraction is VERY conservative
+        # Only allow extra extraction if it's an explicit correction
+        # Otherwise, if current_field is active, we only care about it.
+        if current_field and not correction_requested:
+            return updates
 
         self._extract_protected_entities(processed_text.entities, updates, guardian_context)
         self._extract_loose_sensitive_values(raw_text, updates, guardian_context)
@@ -492,43 +510,68 @@ class RegistrationEngine:
         if not raw_text:
             return
 
-        if field_name in {"full_name_en", "full_name_ar", "guardian_name"}:
-            updates[field_name] = self._clean_value(raw_text)
+        # Do not save command words as field values
+        commands = {"listen", "voice", "next question", "skip field", "start form", "exit", "quit"}
+        if raw_text.lower() in commands:
             return
 
-        if field_name in {"student_mobile_no", "guardian_mobile_no"}:
-            digits = re.sub(r"\D", "", raw_text)
+        if field_name in {"full_name_en", "full_name_ar", "guardian_name"}:
+            cleaned = self._clean_answer_fallback(raw_text)
+            if cleaned:
+                updates[field_name] = cleaned
+            return
 
-            if digits:
-                updates[field_name] = digits
-
+        if field_name in {"student_mobile_no", "guardian_mobile_no", "home_phone", "work_no"}:
+            normalized_digits = self._normalize_digits(raw_text)
+            # Try extraction from sentence first
+            phone_match = re.search(r"\b(01[0125][0-9\s-]{8,11})\b", normalized_digits)
+            if phone_match:
+                updates[field_name] = re.sub(r"\D", "", phone_match.group(1))
+            else:
+                digits = re.sub(r"\D", "", normalized_digits)
+                if digits:
+                    updates[field_name] = digits
             return
 
         if field_name in {"id_or_passport", "guardian_id_or_passport"}:
-            updates[field_name] = self._clean_value(raw_text)
+            normalized_digits = self._normalize_digits(raw_text)
+            # If it's mostly digits, treat as ID
+            digits = re.sub(r"\D", "", normalized_digits)
+            if digits and len(digits) >= 10:
+                updates[field_name] = digits
+            else:
+                cleaned = self._clean_answer_fallback(raw_text)
+                if cleaned:
+                    updates[field_name] = cleaned
             return
 
         if field_name in {"email_address", "guardian_email_address"}:
+            normalized_email_text = self._normalize_email_transcript(raw_text)
             email_match = re.search(
                 r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-                raw_text,
+                normalized_email_text,
             )
 
             if email_match:
-                updates[field_name] = email_match.group(0)
+                updates[field_name] = email_match.group(0).lower()
+            elif "@" in normalized_email_text:
+                # Partial email detected, trigger validation failure
+                updates[field_name] = normalized_email_text
 
             return
 
-        if field_name == "percentage":
-            percentage_match = re.search(r"\d{1,3}(?:\.\d{1,2})?", raw_text)
+        if field_name == "percentage" or field_name == "total_marks":
+            normalized_digits = self._normalize_digits(raw_text)
+            percentage_match = re.search(r"(\d{1,3}(?:\.\d{1,2})?)", normalized_digits)
 
             if percentage_match:
-                updates[field_name] = float(percentage_match.group(0))
+                updates[field_name] = float(percentage_match.group(1))
 
             return
 
         if field_name == "year_of_completion":
-            year_match = re.search(r"\b20\d{2}\b", raw_text)
+            normalized_digits = self._normalize_digits(raw_text)
+            year_match = re.search(r"\b20\d{2}\b", normalized_digits)
 
             if year_match:
                 updates[field_name] = int(year_match.group(0))
@@ -542,7 +585,9 @@ class RegistrationEngine:
             if "certificate" in certificate_updates:
                 updates[field_name] = certificate_updates["certificate"]
             else:
-                updates[field_name] = self._clean_value(raw_text)
+                cleaned = self._clean_answer_fallback(raw_text)
+                if cleaned:
+                    updates[field_name] = cleaned
 
             return
 
@@ -552,7 +597,9 @@ class RegistrationEngine:
             if faculty and faculty.get("id"):
                 updates[field_name] = faculty["id"]
             else:
-                updates[field_name] = self._clean_value(raw_text)
+                cleaned = self._clean_answer_fallback(raw_text)
+                if cleaned:
+                    updates[field_name] = cleaned
 
             return
 
@@ -563,12 +610,145 @@ class RegistrationEngine:
             if "relationship" in relationship_updates:
                 updates[field_name] = relationship_updates["relationship"]
             else:
-                updates[field_name] = self._clean_value(raw_text)
+                cleaned = self._clean_answer_fallback(raw_text)
+                if cleaned:
+                    updates[field_name] = cleaned
 
             return
 
-        if field_name in {"school_name", "address", "city", "country"}:
-            updates[field_name] = self._clean_value(raw_text)
+        if field_name == "country":
+            cleaned = self._clean_country_prefix(raw_text)
+            if cleaned:
+                updates[field_name] = cleaned
+            return
+
+        if field_name in {"school_name", "address", "city"}:
+            cleaned = self._clean_answer_fallback(raw_text)
+            if cleaned:
+                updates[field_name] = cleaned
+
+    def _clean_answer_fallback(self, text: str) -> str:
+        """
+        Clean common answer prefixes for current field fallback extraction.
+        """
+        text = text.strip(" .,،!؟?")
+
+        # Common prefixes to remove (longest first)
+        prefixes = [
+            r"my full name in english is",
+            r"my full name in arabic is",
+            r"my full name is",
+            r"my name is",
+            r"my phone number is",
+            r"my phone is",
+            r"my mobile is",
+            r"my email is",
+            r"my percentage is",
+            r"my certificate is",
+            r"the certificate is",
+            r"it is",
+            r"it's",
+            r"i am",
+            r"i'm",
+            r"i got",
+            r"i scored",
+            r"اسمي هو",
+            r"اسمي",
+            r"انا اسمي",
+            r"انا",
+            r"رقم تليفوني",
+            r"رقمي",
+            r"ايميلي",
+            r"بريدي",
+            r"مجموعي",
+            r"انا جبت",
+            r"جبت",
+            r"شهادتي هي",
+            r"شهادتي",
+        ]
+
+        cleaned = text
+        for prefix in prefixes:
+            # Match prefix at start (case-insensitive)
+            pattern = rf"^{prefix}\s*"
+            if re.search(pattern, cleaned, flags=re.IGNORECASE):
+                cleaned = re.sub(pattern, "", cleaned, count=1, flags=re.IGNORECASE)
+                break  # Remove only one prefix
+
+        return cleaned.strip(" .,،!؟?")
+
+    def _normalize_digits(self, text: str) -> str:
+        """
+        Convert digit words to digits and join separated digit sequences.
+        """
+        digit_map = {
+            "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
+            "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9",
+            "زيرو": "0", "صفر": "0", "واحد": "1", "اتنين": "2", "اثنين": "2",
+            "تلاتة": "3", "ثلاثة": "3", "اربعة": "4", "أربعة": "4", "خمسة": "5",
+            "ستة": "6", "سبعة": "7", "تمنية": "8", "ثمانية": "8", "تسعة": "9"
+        }
+        
+        words = text.lower().split()
+        normalized_words = []
+        for word in words:
+            normalized_words.append(digit_map.get(word, word))
+        
+        joined_text = " ".join(normalized_words)
+        
+        # Join sequences of digits separated by spaces
+        # e.g. "3 0 5" -> "305"
+        def join_digits(match):
+            return match.group(0).replace(" ", "")
+            
+        return re.sub(r"\b\d(?:\s+\d)+\b", join_digits, joined_text)
+
+    def _normalize_email_transcript(self, text: str) -> str:
+        """
+        Normalize spoken email phrases.
+        """
+        text = text.lower()
+        
+        # Normalize spoken words to symbols
+        replacements = [
+            (r"\s+at(\s+|$)", "@"), (r"\s+dot(\s+|$)", "."), (r"\s+underscore(\s+|$)", "_"),
+            (r"\s+dash(\s+|$)", "-"), (r"\s+hyphen(\s+|$)", "-"),
+            (r"\s+آت(\s+|$)", "@"), (r"\s+ات(\s+|$)", "@"), (r"\s+على(\s+|$)", "@"),
+            (r"\s+دوت(\s+|$)", "."), (r"\s+نقطة(\s+|$)", "."),
+            (r"\s+شرطة(\s+|$)", "-"), (r"\s+اندرسكور(\s+|$)", "_")
+        ]
+        
+        for pattern, replacement in replacements:
+            text = re.sub(pattern, replacement, text)
+            
+        # Also replace digit words
+        digit_map = {
+            "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
+            "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"
+        }
+        for word, digit in digit_map.items():
+            text = re.sub(rf"\b{word}\b", digit, text)
+            
+        # Remove all remaining spaces from the email
+        text = text.replace(" ", "")
+        
+        return text.strip()
+
+    def _clean_country_prefix(self, text: str) -> str:
+        text = text.strip(" .,،!؟?")
+        prefixes = [
+            r"i live in", r"i am from", r"my country is", r"country is",
+            r"انا من", r"أنا من", r"بلدي", r"الدولة"
+        ]
+        
+        cleaned = text
+        for prefix in prefixes:
+            pattern = rf"^{prefix}\s*"
+            if re.search(pattern, cleaned, flags=re.IGNORECASE):
+                cleaned = re.sub(pattern, "", cleaned, count=1, flags=re.IGNORECASE)
+                break
+                
+        return cleaned.strip(" .,،!؟?")
 
     def _extract_protected_entities(
         self,
@@ -1084,10 +1264,14 @@ class RegistrationEngine:
         text = str(value).strip()
         digits = re.sub(r"\D", "", text)
 
-        if re.fullmatch(r"[23]\d{13}", digits):
-            return digits, True
+        # Egyptian ID: Exactly 14 digits
+        if digits and len(digits) == len(text):
+            if len(digits) == 14:
+                return digits, True
+            return None, False
 
-        if re.fullmatch(r"[A-Za-z0-9]{6,20}", text):
+        # Passport: alphanumeric, at least one letter, length 6-20
+        if 6 <= len(text) <= 20 and any(c.isalpha() for c in text) and text.isalnum():
             return text, True
 
         return None, False
@@ -1112,6 +1296,24 @@ class RegistrationEngine:
         is_valid = 2015 <= year <= current_year + 1
 
         return year if is_valid else None, is_valid
+
+    def _retry_question(self, field_name: str, language: str) -> str:
+        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
+            if language == "ar":
+                return "لم أسمع الرقم القومي كاملًا. من فضلك قل الـ 14 رقم ببطء، أو اكتبه يدويًا."
+            return "I did not hear the full national ID. Please say the 14 digits slowly, or type it manually."
+            
+        if field_name in {"student_mobile_no", "guardian_mobile_no"}:
+            if language == "ar":
+                return "لم أسمع الرقم كاملًا. من فضلك قل الـ 11 رقم ببطء، أو اكتبه يدويًا."
+            return "I did not hear the full mobile number. Please say the 11 digits slowly, or type it manually."
+            
+        if field_name in {"email_address", "guardian_email_address"}:
+            if language == "ar":
+                return "لم أسمع البريد الإلكتروني كاملًا. من فضلك قل البريد مرة أخرى مثل: name at gmail dot com، أو اكتبه يدويًا."
+            return "I could not hear the full email address. Please say it again like: name at gmail dot com, or type it manually."
+            
+        return self._question_for_field(field_name, language)
 
     def _has_correction_words(self, text: str) -> bool:
         text_lower = text.lower()

@@ -5,15 +5,15 @@ Keep project constants here so the rest of the code stays clean.
 """
 
 import os
+from pathlib import Path
 
 try:
     from dotenv import load_dotenv
-except Exception:
+    ENV_PATH = Path(__file__).resolve().parent / ".env"
+    load_dotenv(dotenv_path=ENV_PATH)
+except ImportError:
     load_dotenv = None
 
-
-if load_dotenv is not None:
-    load_dotenv()
 
 PROJECT_NAME = "Admission Robot"
 
@@ -76,6 +76,44 @@ STT_PROVIDER = os.getenv("STT_PROVIDER", "deepgram").strip().lower()
 DEEPGRAM_API_KEY_ENV = "DEEPGRAM_API_KEY"
 ENABLE_VOICE_INPUT = _env_bool("ENABLE_VOICE_INPUT", True)
 MICROPHONE_DEVICE_INDEX = _env_optional_int("MICROPHONE_DEVICE_INDEX")
+
+# Voice recording settings
+VOICE_RECORD_MODE = os.getenv("VOICE_RECORD_MODE", "vad").strip().lower()
+VOICE_RECORD_SECONDS = _env_int("VOICE_RECORD_SECONDS", 7)
+VOICE_SAMPLE_RATE = _env_int("VOICE_SAMPLE_RATE", 16000)
+VOICE_CHANNELS = _env_int("VOICE_CHANNELS", 1)
+VOICE_CHUNK_MS = _env_int("VOICE_CHUNK_MS", 30)
+
+# VAD settings
+VOICE_START_TIMEOUT_SECONDS = _env_int("VOICE_START_TIMEOUT_SECONDS", 8)
+VOICE_MAX_RECORD_SECONDS = _env_int("VOICE_MAX_RECORD_SECONDS", 15)
+VOICE_MIN_RECORD_SECONDS = float(os.getenv("VOICE_MIN_RECORD_SECONDS", "0.4"))
+VOICE_SILENCE_STOP_SECONDS = float(os.getenv("VOICE_SILENCE_STOP_SECONDS", "1.0"))
+VOICE_ENERGY_THRESHOLD = _env_int("VOICE_ENERGY_THRESHOLD", 500)
+VOICE_PRE_ROLL_MS = _env_int("VOICE_PRE_ROLL_MS", 300)
+
+
+# Text-to-speech
+ENABLE_TTS = _env_bool("ENABLE_TTS", False)
+TTS_PROVIDER = os.getenv("TTS_PROVIDER", "edge").strip().lower()
+
+# edge-tts settings
+EDGE_TTS_VOICE_EN = os.getenv("EDGE_TTS_VOICE_EN", "en-US-ChristopherNeural")
+EDGE_TTS_VOICE_AR = os.getenv("EDGE_TTS_VOICE_AR", "ar-EG-SalmaNeural")
+EDGE_TTS_RATE = os.getenv("EDGE_TTS_RATE", "-10%")
+EDGE_TTS_RATE_AR = os.getenv("EDGE_TTS_RATE_AR", "-3%")
+
+# Legacy Azure settings (kept for compatibility or if provider is azure)
+AZURE_SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
+AZURE_SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
+AZURE_TTS_VOICE_EN = os.getenv("AZURE_TTS_VOICE_EN", "en-US-JennyNeural")
+AZURE_TTS_VOICE_AR = os.getenv("AZURE_TTS_VOICE_AR", "ar-EG-SalmaNeural")
+TTS_RATE = os.getenv("TTS_RATE", "0%")
+
+TTS_FALLBACK_PHRASE = os.getenv(
+    "TTS_FALLBACK_PHRASE",
+    "Sorry, I had a small audio issue. Please ask me again.",
+)
 
 # Languages
 LANGUAGE_AR = "ar"

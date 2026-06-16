@@ -6,12 +6,24 @@ You can test Arabic or English text directly from the terminal.
 """
 
 import json
-
+import os
 from brain import ECUBrain
-from config import DEFAULT_LANGUAGE, DEFAULT_MODE, SUPPORTED_LANGUAGES, SUPPORTED_MODES
+from config import (
+    DEFAULT_LANGUAGE,
+    DEFAULT_MODE,
+    EDGE_TTS_VOICE_AR,
+    EDGE_TTS_VOICE_EN,
+    ENABLE_TTS,
+    ENABLE_VOICE_INPUT,
+    STT_PROVIDER,
+    SUPPORTED_LANGUAGES,
+    SUPPORTED_MODES,
+    TTS_PROVIDER,
+)
 from llm_client import LLMClient
 from models import BrainInput
 from stt_engine import STTEngine
+from tts_engine import speak_text
 
 
 def run_local_test() -> None:
@@ -21,6 +33,30 @@ def run_local_test() -> None:
     session_id = "test-session-001"
     language = DEFAULT_LANGUAGE
     mode = DEFAULT_MODE
+
+    def normalize_command(text: str) -> str:
+        """
+        Normalize known commands by trimming punctuation and quotes.
+        """
+        known_commands = {
+            "listen", "voice", "exit", "quit", "lang en", "lang ar", 
+            "mode qa", "mode registration", "start form", "next question", 
+            "skip field", "show form", "export form", "review form", 
+            "status form", "test tts", "audio status", "list mics", 
+            "validate kb", "test llm"
+        }
+        
+        # Trim common trailing punctuation and quotes
+        trimmed = text.strip().strip("'\".,!؟?")
+        
+        if trimmed.lower() in known_commands:
+            return trimmed.lower()
+            
+        # Also check for lang/mode prefix
+        if trimmed.lower().startswith("lang ") or trimmed.lower().startswith("mode "):
+            return trimmed.lower()
+            
+        return text.strip()
 
     print("=" * 70)
     print("Admission Robot AI Brain - Local Test")
@@ -40,34 +76,60 @@ def run_local_test() -> None:
     print("  next question        -> print current registration question")
     print("  skip field           -> skip current guided field")
     print("  test llm             -> test configured LLM provider")
+    print("  test tts             -> test robot voice output")
+    print("  audio status         -> check audio and environment setup")
     print("  listen / voice       -> record one utterance and process transcript")
     print("  list mics            -> list available microphone input devices")
     print("=" * 70)
 
-    while True:
-        user_text = input(f"\n[{language} | {mode}] User text: ").strip()
+    def process_user_text(text: str) -> None:
+        brain_input = BrainInput(
+            session_id=session_id,
+            text=text,
+            language=language,
+            mode=mode,
+        )
 
-        if user_text.lower() in {"exit", "quit"}:
+        try:
+            output = brain.process(brain_input)
+            print_brain_output(output)
+
+            # Determine what to speak
+            text_to_speak = (
+                output.next_question or output.speech_text or output.answer_text
+            )
+            if text_to_speak:
+                speak_text(text_to_speak, language=language)
+
+        except Exception as error:
+            print(f"\nError: {error}")
+
+    while True:
+        raw_input = input(f"\n[{language} | {mode}] User text: ")
+        user_input = normalize_command(raw_input)
+
+        if user_input in {"exit", "quit"}:
             print("Stopping local test.")
             break
 
-        if user_text.lower() == "validate kb":
+        if user_input == "validate kb":
             print_validation_report(brain.knowledge_base.get_validation_report())
             continue
 
-        if user_text.lower() == "show form":
+        if user_input == "show form":
             print_form_debug_view(
                 brain.registration_engine.get_form_debug_view(session_id)
             )
             continue
 
-        if user_text.lower() == "review form":
+        if user_input == "review form":
             print("\nRegistration Review Summary")
             print("-" * 70)
-            print(brain.registration_engine.get_review_summary(session_id, language))
+            summary = brain.registration_engine.get_review_summary(session_id, language)
+            speak_text(summary, language=language)
             continue
 
-        if user_text.lower() == "export form":
+        if user_input == "export form":
             print("\nRegistration Form Export")
             print("-" * 70)
             print(
@@ -79,7 +141,7 @@ def run_local_test() -> None:
             )
             continue
 
-        if user_text.lower() == "status form":
+        if user_input == "status form":
             print("\nRegistration Status")
             print("-" * 70)
             print(
@@ -91,7 +153,7 @@ def run_local_test() -> None:
             )
             continue
 
-        if user_text.lower() == "start form":
+        if user_input == "start form":
             mode = "registration"
             question = brain.registration_engine.start_guided_form(
                 session_id=session_id,
@@ -99,47 +161,57 @@ def run_local_test() -> None:
             )
             print("\nGuided Registration")
             print("-" * 70)
-            print(question or "No registration question is available.")
+            text_to_print = question or "No registration question is available."
+            speak_text(text_to_print, language=language)
             continue
 
-        if user_text.lower() == "next question":
+        if user_input == "next question":
             question = brain.registration_engine.get_current_question(
                 session_id=session_id,
                 language=language,
             )
             print("\nNext Registration Question")
             print("-" * 70)
-            print(question or "No registration question is available.")
+            text_to_print = question or "No registration question is available."
+            speak_text(text_to_print, language=language)
             continue
 
-        if user_text.lower() == "skip field":
+        if user_input == "skip field":
             question = brain.registration_engine.skip_current_field(
                 session_id=session_id,
                 language=language,
             )
             print("\nNext Registration Question")
             print("-" * 70)
-            print(question or "No more guided registration questions.")
+            text_to_print = question or "No more guided registration questions."
+            speak_text(text_to_print, language=language)
             continue
 
-        if user_text.lower() == "test llm":
+        if user_input == "test llm":
             run_llm_test()
             continue
 
-        if user_text.lower() == "list mics":
+        if user_input == "test tts":
+            speak_text("This is a test voice from Admission Robot.", language=language)
+            continue
+
+        if user_input == "audio status":
+            print_audio_status()
+            continue
+
+        if user_input == "list mics":
             print_microphones(stt_engine)
             continue
 
-        if user_text.lower() in {"listen", "voice"}:
+        if user_input in {"listen", "voice"}:
             transcript = run_voice_input(stt_engine, language)
 
-            if not transcript:
-                continue
+            if transcript:
+                process_user_text(transcript)
+            continue
 
-            user_text = transcript
-
-        if user_text.lower().startswith("lang "):
-            new_language = user_text.lower().replace("lang ", "").strip()
+        if user_input.startswith("lang "):
+            new_language = user_input.replace("lang ", "").strip()
 
             if new_language in SUPPORTED_LANGUAGES:
                 language = new_language
@@ -149,8 +221,8 @@ def run_local_test() -> None:
 
             continue
 
-        if user_text.lower().startswith("mode "):
-            new_mode = user_text.lower().replace("mode ", "").strip()
+        if user_input.startswith("mode "):
+            new_mode = user_input.replace("mode ", "").strip()
 
             if new_mode in SUPPORTED_MODES:
                 mode = new_mode
@@ -160,19 +232,11 @@ def run_local_test() -> None:
 
             continue
 
-        brain_input = BrainInput(
-            session_id=session_id,
-            text=user_text,
-            language=language,
-            mode=mode,
-        )
+        if not user_input:
+            continue
 
-        try:
-            output = brain.process(brain_input)
-            print_brain_output(output)
-
-        except Exception as error:
-            print(f"\nError: {error}")
+        # Process normal typed input
+        process_user_text(user_input)
 
 
 def print_validation_report(report: list[dict]) -> None:
@@ -280,6 +344,22 @@ def run_llm_test() -> None:
 
     if succeeded:
         print(f"Response: {response}")
+
+
+def print_audio_status() -> None:
+    print("\nAudio and Environment Status")
+    print("-" * 70)
+    print(f"ENABLE_TTS: {ENABLE_TTS}")
+    print(f"TTS_PROVIDER: {TTS_PROVIDER}")
+    print(f"EDGE_TTS_VOICE_EN: {EDGE_TTS_VOICE_EN}")
+    print(f"EDGE_TTS_VOICE_AR: {EDGE_TTS_VOICE_AR}")
+    print(f"ENABLE_VOICE_INPUT: {ENABLE_VOICE_INPUT}")
+    print(f"STT_PROVIDER: {STT_PROVIDER}")
+
+    deepgram_key = os.getenv("DEEPGRAM_API_KEY")
+    has_deepgram = bool(deepgram_key and deepgram_key.strip())
+    print(f"DEEPGRAM_API_KEY configured: {has_deepgram}")
+    print("-" * 70)
 
 
 if __name__ == "__main__":

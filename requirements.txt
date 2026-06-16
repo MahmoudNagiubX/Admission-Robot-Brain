@@ -1,6 +1,30 @@
 # Current version uses Python standard library only.
 # We will add external packages later only when needed:
 # rapidfuzz, openai, qdrant-client, azure-cognitiveservices-speech
-openai
-python-dotenv
-pyaudio
+# Core Environment & Configuration
+python-dotenv==1.0.1
+
+# Data Validation & Models
+pydantic==2.7.1
+
+# HTTP Client for General APIs (Gladia, ElevenLabs, etc.)
+requests==2.31.0
+
+# LLM Integration (OpenAI / Gemini compatibility)
+openai==1.30.1
+google-generativeai==0.5.4
+
+# Speech-to-Text (STT) Engines
+deepgram-sdk==3.3.0
+speechmatics==1.6.0
+
+# Text-to-Speech (TTS) Engine
+edge-tts==6.1.12
+pygame==2.5.2
+elevenlabs==1.2.3
+azure-cognitiveservices-speech==1.37.0
+
+# Hardware Audio Utilities (Microphone & Volume Tests)
+PyAudio==0.2.14
+sounddevice==0.4.6
+numpy==1.26.4
