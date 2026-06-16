@@ -95,6 +95,44 @@ class LLMClient:
 
         return self._parse_json_object(response_text)
 
+    def correct_registration_value(
+        self,
+        field_id: str,
+        raw_text: str,
+        language: str = "en",
+        current_value: Any = None,
+        field_schema: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Attempt to correct or normalize a single registration field value.
+        Returns a safe structured dict. Never raises exceptions.
+        """
+        default_response = {
+            "field_id": field_id,
+            "candidate_value": None,
+            "confidence": 0.0,
+            "action": "ask_retry",
+            "reason": "LLM unavailable or failed"
+        }
+
+        if not self.client or not self.api_key:
+            return default_response
+
+        prompt = self._build_correction_prompt(field_id, raw_text, language)
+
+        try:
+            response_text = self._call_text_model(prompt)
+            if not response_text:
+                return default_response
+                
+            parsed = self._parse_json_object(response_text)
+            if not parsed or "candidate_value" not in parsed:
+                return default_response
+                
+            return parsed
+        except Exception:
+            return default_response
+
     def _call_text_model(self, prompt: str) -> str | None:
         if self.provider == "groq":
             response = self.client.chat.completions.create(
@@ -212,6 +250,36 @@ class LLMClient:
             f"Language: {language}\n"
             f"Current form JSON: {json.dumps(current_form, ensure_ascii=False)}\n"
             f"User text: {text}"
+        )
+
+    def _build_correction_prompt(
+        self,
+        field_id: str,
+        text: str,
+        language: str,
+    ) -> str:
+        return (
+            "You are a registration data cleaner for ECU Admission Robot.\n"
+            "Your job is to extract or correct a SINGLE field from messy text.\n"
+            f"Target Field: {field_id}\n"
+            f"User Text: {text}\n"
+            f"Language: {language}\n\n"
+            "Rules:\n"
+            "1. Return JSON only. No explanation.\n"
+            "2. If the text contains a correction for the field, extract it.\n"
+            "3. Normalize names, certificates, and job titles.\n"
+            "4. For dates, return YYYY-MM-DD.\n"
+            "5. If you cannot find a valid value for this specific field, return null for candidate_value.\n"
+            "6. DO NOT invent IDs, phone numbers, or emails. If they are missing or too short, return null.\n"
+            "7. Do NOT extract other fields. Focus ONLY on the Target Field.\n\n"
+            "Required JSON format:\n"
+            "{\n"
+            '  "field_id": "...",\n'
+            '  "candidate_value": "...",\n'
+            '  "confidence": 0.0,\n'
+            '  "action": "use_candidate | ask_retry | no_change",\n'
+            '  "reason": "short reason"\n'
+            "}"
         )
 
     def _parse_json_object(self, text: str) -> dict[str, Any] | None:

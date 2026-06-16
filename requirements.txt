@@ -28,3 +28,7 @@ azure-cognitiveservices-speech==1.37.0
 PyAudio==0.2.14
 sounddevice==0.4.6
 numpy==1.26.4
+
+# Terminal Display (Optional for RTL text support)
+arabic-reshaper==3.0.0
+python-bidi==0.6.3

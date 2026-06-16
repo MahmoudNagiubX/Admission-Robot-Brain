@@ -24,6 +24,7 @@ from llm_client import LLMClient
 from models import BrainInput
 from stt_engine import STTEngine
 from tts_engine import speak_text
+from console_utils import format_for_terminal
 
 
 def run_local_test() -> None:
@@ -315,7 +316,7 @@ def run_voice_input(stt_engine: STTEngine, language: str) -> str | None:
         print(f"STT unavailable: {stt_engine.last_error or 'No transcript returned.'}")
         return None
 
-    print(f"Transcript: {transcript}")
+    print(format_for_terminal(f"Transcript: {transcript}"))
     return transcript
 
 
@@ -323,13 +324,13 @@ def print_brain_output(output) -> None:
     print("\nBrain Output")
     print("-" * 70)
     print(f"Mode: {output.mode}")
-    print(f"Answer Text:\n{output.answer_text}")
-    print(f"Speech Text: {output.speech_text}")
+    print(format_for_terminal(f"Answer Text:\n{output.answer_text}"))
+    print(format_for_terminal(f"Speech Text: {output.speech_text}"))
     print(f"Confidence: {output.confidence}")
     print(f"Current Topic: {output.current_topic}")
     print(f"Audio Path: {output.audio_path}")
-    print(f"Form Updates: {output.form_updates}")
-    print(f"Next Question: {output.next_question}")
+    print(format_for_terminal(f"Form Updates: {output.form_updates}"))
+    print(format_for_terminal(f"Next Question: {output.next_question}"))
     print(f"Needs Confirmation: {output.needs_confirmation}")
     print(f"Route Taken: {output.route_taken}")
 
@@ -338,7 +339,7 @@ def run_llm_test() -> None:
     llm_client = LLMClient()
     response = llm_client.generate_grounded_answer(
         question="Say ready in one short sentence.",
-        context="This is a safe local health check. The only expected answer is readiness.",
+        context="This is a safe local health health check. The only expected answer is readiness.",
         language="en",
     )
     succeeded = bool(response)

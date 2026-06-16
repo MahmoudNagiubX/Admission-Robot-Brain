@@ -5,13 +5,14 @@ import argparse
 import threading
 import subprocess
 from pathlib import Path
+from console_utils import format_for_terminal
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 MAIN_FILE = PROJECT_DIR / "main.py"
 
 
-# Full 24-field Arabic registration flow
+# Full 39-field Arabic registration flow
 # Important:
 # Sensitive fields need confirmation after them.
 FAKE_REGISTRATION_INPUTS = [
@@ -34,12 +35,18 @@ FAKE_REGISTRATION_INPUTS = [
     "أعزب",                    # marital_status
 
     # 2. Contact
+    "مصر",                     # country
     "القاهرة",                 # governorate
+    "الحي الثامن",             # district
     "مدينة نصر",               # city
     "20 شارع نجاتي سراج الحي الثامن مدينة نصر",  # address
+    "0223456789",              # home_phone
 
     "01012345678",             # student_mobile_no
     "نعم",                     # confirm student mobile
+
+    "01123456789",             # mobile_no_2
+    "نعم",                     # confirm mobile 2
 
     "mahmoud.nagib09@gmail.com",  # email_address
     "نعم",                        # confirm email
@@ -47,20 +54,41 @@ FAKE_REGISTRATION_INPUTS = [
     # 3. Academic
     "مدرسة النصر",             # school_name
     "ثانوية عامة",             # certificate
+    "علمي رياضة",              # sector
     "2024",                    # year_of_completion
 
     "92.5",                    # percentage
     "نعم",                     # confirm percentage
 
+    "385",                     # total_marks
+    "نعم",                     # confirm total_marks
+
+    "123456",                  # seat_number
+
     # 4. Guardian
     "محمد نجيب",               # guardian_name
     "الأب",                    # relationship
+    "27501010123456",          # guardian_id_or_passport
+    "نعم",                     # confirm guardian ID
     "مهندس",                   # guardian_profession
+    "شركة المقاولون العرب",    # guardian_employer
     "مصري",                    # guardian_nationality
+    "مصر",                     # guardian_country
+    "الحي الثامن",             # guardian_district
     "نفس العنوان",             # guardian_address, should copy student address
+    "10 شارع عباس العقاد مدينة نصر", # guardian_work_address
 
     "01112345678",             # guardian_mobile_no
     "نعم",                     # confirm guardian mobile
+
+    "0223456789",              # guardian_home_phone
+    "نعم",                     # confirm guardian home phone
+
+    "0222223333",              # guardian_work_no
+    "نعم",                     # confirm guardian work phone
+
+    "guardian@example.com",    # guardian_email_address
+    "نعم",                     # confirm guardian email
 
     # 5. Faculty
     "هندسة",                   # college_preference_1
@@ -79,7 +107,7 @@ def reader_loop(proc: subprocess.Popen) -> None:
     assert proc.stdout is not None
 
     for line in proc.stdout:
-        print(line, end="", flush=True)
+        print(format_for_terminal(line), end="", flush=True)
 
 
 def start_main_process() -> subprocess.Popen:
@@ -115,7 +143,7 @@ def send(proc: subprocess.Popen, text: str, delay: float) -> None:
 
     assert proc.stdin is not None
 
-    print(f"\n[Fake Test -> main.py] {text}", flush=True)
+    print(format_for_terminal(f"\n[Fake Test -> main.py] {text}"), flush=True)
     proc.stdin.write(text + "\n")
     proc.stdin.flush()
     time.sleep(delay)

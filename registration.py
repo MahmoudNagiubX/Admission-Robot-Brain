@@ -45,17 +45,70 @@ class RegistrationEngine:
     CORRECTION_WORDS = REJECT_WORDS.union(
         {"change", "update", "replace", "غير", "عدل"}
     )
+
+    PROFESSION_WORDS = {
+        "مهندس", "طبيب", "دكتور", "مدرس", "معلم", "محاسب", "مدير", "عامل", "فني",
+        "engineer", "doctor", "teacher", "accountant", "manager", "worker", "technician"
+    }
+
     LLM_ALLOWED_FIELDS = {
         "full_name_en",
         "full_name_ar",
         "school_name",
         "certificate",
+        "sector",
         "guardian_name",
         "relationship",
         "address",
         "city",
         "country",
+        "district",
+        "governorate",
         "college_preference_1",
+    }
+
+    FRONTEND_FIELD_MAP = {
+        "full_name_ar": "fullNameAr",
+        "full_name_en": "fullNameEn",
+        "date_of_birth": "dateOfBirth",
+        "place_of_birth": "placeOfBirth",
+        "nationality": "nationality",
+        "id_or_passport": "nationalId",
+        "gender": "gender",
+        "marital_status": "maritalStatus",
+        "country": "country",
+        "governorate": "governorate",
+        "district": "district",
+        "city": "city",
+        "address": "address",
+        "home_phone": "homePhone",
+        "student_mobile_no": "mobile",
+        "mobile_no_2": "mobileNo2",
+        "email_address": "email",
+        "school_name": "schoolName",
+        "certificate": "certificateType",
+        "sector": "sector",
+        "year_of_completion": "yearOfCompletion",
+        "percentage": "percentage",
+        "total_marks": "totalMarks",
+        "seat_number": "seatNumber",
+        "guardian_name": "guardianName",
+        "relationship": "guardianRelationship",
+        "guardian_id_or_passport": "guardianNationalId",
+        "guardian_profession": "guardianProfession",
+        "guardian_employer": "guardianEmployer",
+        "guardian_nationality": "guardianNationality",
+        "guardian_country": "guardianCountry",
+        "guardian_district": "guardianDistrict",
+        "guardian_address": "guardianAddress",
+        "guardian_work_address": "guardianWorkAddress",
+        "guardian_mobile_no": "guardianMobile",
+        "guardian_home_phone": "guardianHomePhone",
+        "guardian_work_no": "guardianWorkPhone",
+        "guardian_email_address": "guardianEmail",
+        "college_preference_1": "faculty",
+        "final_student_name": "finalStudentName",
+        "final_college": "finalCollege",
     }
 
     def __init__(self, fields_path: str = "data/registration_fields.json") -> None:
@@ -113,6 +166,7 @@ class RegistrationEngine:
         form_state = session_state["fields"]
         route_notes = ["registration_engine_checked"]
 
+        # 1. Handle explicit confirmation commands (Yes/No)
         confirmation_result = self._handle_confirmation_command(
             processed_text.normalized_text,
             session_state,
@@ -145,6 +199,7 @@ class RegistrationEngine:
         correction_requested = self._has_correction_words(processed_text.normalized_text)
         current_field = session_state.get("current_field")
 
+        # 2. Extract updates (Strictly current-field-only if in guided flow)
         extracted_updates = self._extract_updates(
             processed_text=processed_text,
             form_state=form_state,
@@ -152,11 +207,9 @@ class RegistrationEngine:
             correction_requested=correction_requested,
         )
         
-        # Disable LLM extraction during guided flow if current_field is active
-        # unless it's an explicit correction
-        if current_field and not correction_requested:
-            semantic_updates, semantic_route_notes = {}, []
-        else:
+        # Disable broad semantic extraction during guided flow to stay on target
+        semantic_updates, semantic_route_notes = {}, []
+        if not current_field or correction_requested:
             semantic_updates, semantic_route_notes = self._extract_semantic_updates(
                 processed_text=processed_text,
                 form_state=form_state,
@@ -170,14 +223,14 @@ class RegistrationEngine:
         form_updates: dict[str, Any] = {}
         needs_confirmation = False
         latest_sensitive_fields: list[str] = []
-        correction_requested = self._has_correction_words(processed_text.normalized_text)
-
         validation_errors = []
 
+        # 3. Process and Validate updates
         for field_name, value in extracted_updates.items():
             if value in {None, ""}:
                 continue
 
+            # Skip if field is already filled and no correction requested
             if not self._can_update_field(
                 field_name=field_name,
                 form_state=form_state,
@@ -186,17 +239,39 @@ class RegistrationEngine:
                 route_notes.append(f"registration_update_skipped_existing:{field_name}")
                 continue
 
+            # Deterministic Validation
             normalized_value, is_valid = self._validate_field_value(field_name, value)
+
+            # 4. LLM Correction Fallback (Only for current field if deterministic fails)
+            if not is_valid and field_name == current_field and ENABLE_LLM_REGISTRATION_EXTRACTION:
+                route_notes.append(f"deterministic_validation_failed:{field_name}")
+                llm_correction_func = getattr(self.llm_client, "correct_registration_value", None)
+                if llm_correction_func:
+                    llm_candidate = llm_correction_func(
+                        field_id=field_name,
+                        raw_text=processed_text.raw_text,
+                        language=language,
+                    )
+                    if llm_candidate and llm_candidate.get("candidate_value"):
+                        # RE-VALIDATE LLM candidate deterministically
+                        val = llm_candidate["candidate_value"]
+                        normalized_value, is_valid = self._validate_field_value(field_name, val)
+                        if is_valid:
+                            route_notes.append(f"llm_correction_accepted:{field_name}")
+                        else:
+                            route_notes.append(f"llm_correction_invalid:{field_name}")
+                else:
+                    route_notes.append("llm_correction_unavailable")
 
             if not is_valid:
                 route_notes.append(f"registration_validation_failed:{field_name}")
-                if field_name == session_state.get("current_field"):
+                if field_name == current_field:
                     validation_errors.append(field_name)
                 continue
 
-            form_state[field_name] = value
-            form_updates[field_name] = normalized_value
+            # 5. Apply valid update
             form_state[field_name] = normalized_value
+            form_updates[field_name] = normalized_value
             session_state["metadata"][field_name] = self._build_field_state(
                 value=normalized_value,
                 confidence=0.90,
@@ -213,6 +288,7 @@ class RegistrationEngine:
 
         if latest_sensitive_fields:
             session_state["latest_sensitive_fields"] = latest_sensitive_fields
+        
         missing_required_fields = self._missing_required_fields(form_state)
         completion_percentage = self._completion_percentage(form_state)
         current_field = self._sync_current_field(
@@ -220,11 +296,11 @@ class RegistrationEngine:
             language=language,
         )
         
-        # Determine next question
+        # 6. Determine Next Question / Retry Prompt
         if needs_confirmation:
             next_question = self._confirmation_question(latest_sensitive_fields, language)
         elif validation_errors:
-            # If current field failed validation, use retry prompt
+            # Current field failed both deterministic and LLM correction
             next_question = self._retry_question(validation_errors[0], language)
         else:
             next_question = self._question_for_field(current_field, language)
@@ -310,6 +386,20 @@ class RegistrationEngine:
             k: v for k, v in raw_values.items()
             if k in schema_ids or k in allowed_auto
         }
+
+    def export_form_values_frontend(self, session_id: str) -> dict[str, Any]:
+        """
+        Export form values using camelCase keys for frontend compatibility.
+        """
+        snake_values = self.export_form_values(session_id)
+        camel_values = {}
+        
+        for snake_key, value in snake_values.items():
+            camel_key = self.FRONTEND_FIELD_MAP.get(snake_key)
+            if camel_key:
+                camel_values[camel_key] = value
+                
+        return camel_values
 
     def export_form_state(self, session_id: str) -> dict[str, Any]:
         session_state = self.sessions.get(session_id, {})
@@ -472,22 +562,19 @@ class RegistrationEngine:
         raw_text = processed_text.raw_text.strip()
         normalized_text = processed_text.normalized_text.strip()
         text_lower = normalized_text.lower()
-        guardian_context = self._has_guardian_context(text_lower)
-
-        if current_field:
+        
+        # Strictly follow the current_field only if in guided flow
+        if current_field and not correction_requested:
             self._extract_current_field_answer(
                 field_name=current_field,
                 processed_text=processed_text,
                 updates=updates,
                 form_state=form_state,
             )
-            
-            # In guided mode, if we have a current_field, we STICK to it.
-            # Do NOT run extra extraction if we're not correcting.
-            if not correction_requested:
-                return updates
+            return updates
 
-        # extra extraction is only for corrections or non-guided fills
+        # Broad extraction is ONLY for corrections or if not in a specific guided field
+        guardian_context = self._has_guardian_context(text_lower)
         self._extract_protected_entities(processed_text.entities, updates, guardian_context)
         self._extract_loose_sensitive_values(raw_text, updates, guardian_context)
         self._extract_relationship(text_lower, updates)
@@ -495,12 +582,6 @@ class RegistrationEngine:
         self._extract_address(raw_text, normalized_text, updates)
         self._extract_school(raw_text, normalized_text, updates)
         self._extract_certificate(text_lower, updates)
-        self._extract_ranked_college_preferences(
-            raw_text=raw_text,
-            normalized_text=normalized_text,
-            form_state=form_state,
-            updates=updates,
-        )
         self._extract_college_preference(processed_text.entities, form_state, updates)
 
         return updates
@@ -529,28 +610,15 @@ class RegistrationEngine:
                 updates[field_name] = cleaned
             return
 
-        if field_name in {"student_mobile_no", "guardian_mobile_no", "home_phone", "guardian_work_no", "guardian_home_phone"}:
+        if field_name in {
+            "student_mobile_no", "guardian_mobile_no", "mobile_no_2",
+            "home_phone", "guardian_work_no", "guardian_home_phone",
+            "id_or_passport", "guardian_id_or_passport", "seat_number"
+        }:
             normalized_digits = self._normalize_digits(raw_text)
-            # Try extraction from sentence first
-            phone_match = re.search(r"\b(01[0125][0-9\s-]{8,11})\b", normalized_digits)
-            if phone_match:
-                updates[field_name] = re.sub(r"\D", "", phone_match.group(1))
-            else:
-                digits = re.sub(r"\D", "", normalized_digits)
-                if digits:
-                    updates[field_name] = digits
-            return
-
-        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
-            normalized_digits = self._normalize_digits(raw_text)
-            # If it's mostly digits, treat as ID
             digits = re.sub(r"\D", "", normalized_digits)
-            if digits and len(digits) >= 10:
+            if digits:
                 updates[field_name] = digits
-            else:
-                cleaned = self._clean_answer_fallback(raw_text)
-                if cleaned:
-                    updates[field_name] = cleaned
             return
 
         if field_name in {"email_address", "guardian_email_address"}:
@@ -592,6 +660,19 @@ class RegistrationEngine:
 
             if "certificate" in certificate_updates:
                 updates[field_name] = certificate_updates["certificate"]
+            else:
+                cleaned = self._clean_answer_fallback(raw_text)
+                if cleaned:
+                    updates[field_name] = cleaned
+
+            return
+
+        if field_name == "sector":
+            sector_updates: dict[str, Any] = {}
+            self._extract_sector(normalized_text.lower(), sector_updates)
+
+            if "sector" in sector_updates:
+                updates[field_name] = sector_updates["sector"]
             else:
                 cleaned = self._clean_answer_fallback(raw_text)
                 if cleaned:
@@ -661,8 +742,8 @@ class RegistrationEngine:
         if field_name in {
             "school_name", "address", "city", "district", "governorate",
             "place_of_birth", "nationality", "gender", "marital_status",
-            "guardian_profession", "guardian_nationality", "guardian_city",
-            "guardian_district", "guardian_work_address"
+            "guardian_profession", "guardian_employer", "guardian_nationality",
+            "guardian_city", "guardian_district", "guardian_work_address", "guardian_address"
         }:
             cleaned = self._clean_answer_fallback(raw_text)
             if cleaned:
@@ -695,7 +776,12 @@ class RegistrationEngine:
             r"i scored",
             r"اسمي هو",
             r"اسمي",
+            r"إسمي هو",
+            r"إسمي",
+            r"الاسم هو",
+            r"الاسم",
             r"انا اسمي",
+            r"أنا اسمي",
             r"انا",
             r"رقم تليفوني",
             r"رقمي",
@@ -1066,7 +1152,7 @@ class RegistrationEngine:
         form_state: dict[str, Any],
         updates: dict[str, Any],
     ) -> None:
-        if any(field_name.startswith("college_preference_") for field_name in updates):
+        if "college_preference_1" in updates:
             return
 
         faculty = entities.get("faculty")
@@ -1079,91 +1165,8 @@ class RegistrationEngine:
         if not faculty_id:
             return
 
-        for index in range(1, 7):
-            field_name = f"college_preference_{index}"
-
-            if not form_state.get(field_name) and field_name not in updates:
-                updates[field_name] = faculty_id
-                return
-
-    def _extract_ranked_college_preferences(
-        self,
-        raw_text: str,
-        normalized_text: str,
-        form_state: dict[str, Any],
-        updates: dict[str, Any],
-    ) -> None:
-        searchable_text = self._normalize_preference_text(
-            f"{raw_text} {normalized_text}"
-        )
-        rank_words = {
-            1: ["first", "1st", "one", "اول", "الاولي", "الأولى", "اولى"],
-            2: ["second", "2nd", "two", "ثاني", "الثانية", "التانية"],
-            3: ["third", "3rd", "three", "ثالث", "الثالثة", "التالتة"],
-            4: ["fourth", "4th", "four", "رابع", "الرابعة"],
-            5: ["fifth", "5th", "five", "خامس", "الخامسة"],
-            6: ["sixth", "6th", "six", "سادس", "السادسة"],
-        }
-
-        for faculty_id, aliases in FACULTY_ALIASES.items():
-            for alias in aliases:
-                alias_text = self._normalize_preference_text(alias)
-
-                if not alias_text:
-                    continue
-
-                for match in re.finditer(
-                    rf"(?<!\w){re.escape(alias_text)}(?!\w)",
-                    searchable_text,
-                ):
-                    window_start = max(0, match.start() - 45)
-                    window_end = min(len(searchable_text), match.end() + 45)
-                    window = searchable_text[window_start:window_end]
-                    rank = self._preference_rank_from_window(
-                        window=window,
-                        rank_words=rank_words,
-                        alias_start=match.start() - window_start,
-                        alias_end=match.end() - window_start,
-                    )
-
-                    if not rank:
-                        continue
-
-                    field_name = f"college_preference_{rank}"
-
-                    if not form_state.get(field_name) and field_name not in updates:
-                        updates[field_name] = faculty_id
-
-    def _preference_rank_from_window(
-        self,
-        window: str,
-        rank_words: dict[int, list[str]],
-        alias_start: int,
-        alias_end: int,
-    ) -> int | None:
-        nearest_rank: int | None = None
-        nearest_distance: int | None = None
-
-        for rank, words in rank_words.items():
-            for word in words:
-                normalized_word = self._normalize_preference_text(word)
-
-                for match in re.finditer(
-                    rf"(?<!\w){re.escape(normalized_word)}(?!\w)",
-                    window,
-                ):
-                    if match.end() <= alias_start:
-                        distance = alias_start - match.end()
-                    elif match.start() >= alias_end:
-                        distance = match.start() - alias_end
-                    else:
-                        distance = 0
-
-                    if nearest_distance is None or distance < nearest_distance:
-                        nearest_distance = distance
-                        nearest_rank = rank
-
-        return nearest_rank
+        if not form_state.get("college_preference_1"):
+            updates["college_preference_1"] = faculty_id
 
     def _normalize_preference_text(self, text: str) -> str:
         normalized = text.lower()
@@ -1284,8 +1287,11 @@ class RegistrationEngine:
         field_def = next((f for f in self.field_definitions if f["field_id"] == field_name), {})
         validation_type = field_def.get("validation_type")
 
-        if validation_type == "mobile" or field_name in {"student_mobile_no", "guardian_mobile_no"}:
+        if validation_type == "mobile" or field_name in {"student_mobile_no", "guardian_mobile_no", "mobile_no_2"}:
             return self._validate_mobile(value)
+
+        if validation_type == "phone" or field_name in {"home_phone", "guardian_home_phone", "guardian_work_no"}:
+            return self._validate_phone_generic(value)
 
         if validation_type == "email" or field_name in {"email_address", "guardian_email_address"}:
             return self._validate_email(value)
@@ -1293,8 +1299,11 @@ class RegistrationEngine:
         if validation_type == "id_or_passport" or field_name in {"id_or_passport", "guardian_id_or_passport"}:
             return self._validate_id_or_passport(value)
 
-        if validation_type == "percentage" or field_name in {"percentage", "science_score", "math_score", "literary_score"}:
+        if validation_type == "percentage":
             return self._validate_percentage(value)
+
+        if validation_type == "total_marks" or field_name == "total_marks":
+            return self._validate_total_marks(value)
 
         if validation_type == "year" or field_name == "year_of_completion":
             return self._validate_year(value)
@@ -1318,10 +1327,62 @@ class RegistrationEngine:
         if validation_type == "relationship":
             return self._validate_relationship(value)
 
+        if validation_type == "sector" or field_name == "sector":
+            return self._validate_sector(value)
+
+        if field_name == "guardian_profession":
+            return self._validate_guardian_profession(value)
+
+        if field_name == "guardian_nationality":
+            return self._validate_guardian_nationality(value)
+
         if field_name == "governorate":
             return self._normalize_governorate(value)
 
         return value, True
+
+    def _validate_phone_generic(self, value: Any) -> tuple[str | None, bool]:
+        digits = re.sub(r"\D", "", str(value))
+        # Reasonable length for phone numbers (e.g. 7 to 11 digits)
+        is_valid = 7 <= len(digits) <= 12
+        return digits if is_valid else None, is_valid
+
+    def _validate_total_marks(self, value: Any) -> tuple[float | None, bool]:
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return None, False
+
+        is_valid = number > 0
+        return number if is_valid else None, is_valid
+
+    def _validate_sector(self, value: Any) -> tuple[str | None, bool]:
+        text = str(value).strip().lower()
+        
+        # Normalize: science, math, literary
+        mapping = {
+            "science": ["science", "علمي علوم", "علوم"],
+            "math": ["math", "علمي رياضة", "رياضة"],
+            "literary": ["literary", "أدبي", "ادبي"]
+        }
+        
+        for canonical, aliases in mapping.items():
+            if text == canonical or any(alias in text for alias in aliases):
+                return canonical, True
+                
+        return None, False
+
+    def _extract_sector(self, text_lower: str, updates: dict[str, Any]) -> None:
+        patterns = [
+            (r"علمي علوم|علوم|\bscience\b", "science"),
+            (r"علمي رياضة|رياضة|\bmath\b", "math"),
+            (r"أدبي|ادبي|\bliterary\b", "literary")
+        ]
+        
+        for pattern, sector in patterns:
+            if re.search(pattern, text_lower):
+                updates["sector"] = sector
+                return
 
     def _validate_date(self, value: Any) -> tuple[str | None, bool]:
         text = str(value).strip()
@@ -1352,27 +1413,58 @@ class RegistrationEngine:
 
     def _validate_arabic_name(self, value: Any) -> tuple[str | None, bool]:
         name = str(value).strip()
+        # Clean repeated spaces
+        name = re.sub(r"\s+", " ", name)
         # Arabic letters and spaces
         is_arabic = re.fullmatch(r"[\u0600-\u06FF\s]+", name) is not None
+        # Reject English letters
+        has_english = bool(re.search(r"[A-Za-z]", name))
         # At least 2 names
         has_two_names = len(name.split()) >= 2
         # No numbers
         no_numbers = not any(c.isdigit() for c in name)
 
-        is_valid = is_arabic and has_two_names and no_numbers
+        is_valid = is_arabic and not has_english and has_two_names and no_numbers
         return name if is_valid else None, is_valid
 
     def _validate_english_name(self, value: Any) -> tuple[str | None, bool]:
         name = str(value).strip()
+        # Clean repeated spaces
+        name = re.sub(r"\s+", " ", name)
         # English letters and spaces
         is_english = re.fullmatch(r"[A-Za-z\s]+", name) is not None
+        # Reject Arabic letters
+        has_arabic = bool(re.search(r"[\u0600-\u06FF]", name))
         # At least 2 names
         has_two_names = len(name.split()) >= 2
         # No numbers
         no_numbers = not any(c.isdigit() for c in name)
 
-        is_valid = is_english and has_two_names and no_numbers
+        is_valid = is_english and not has_arabic and has_two_names and no_numbers
         return name if is_valid else None, is_valid
+
+    def _validate_guardian_profession(self, value: Any) -> tuple[str | None, bool]:
+        text = str(value).strip()
+        text_lower = text.lower()
+        
+        # Reject relationship words
+        if self._has_guardian_context(text_lower):
+            return None, False
+            
+        # Minimum meaningful length
+        is_valid = len(text) >= 2 and not any(c.isdigit() for c in text)
+        return text if is_valid else None, is_valid
+
+    def _validate_guardian_nationality(self, value: Any) -> tuple[str | None, bool]:
+        text = str(value).strip()
+        text_lower = text.lower()
+        
+        # Reject relationship words or job titles
+        if self._has_guardian_context(text_lower) or self._has_profession_context(text_lower):
+            return None, False
+            
+        is_valid = len(text) >= 2 and not any(c.isdigit() for c in text)
+        return text if is_valid else None, is_valid
 
     def _validate_gender(self, value: Any) -> tuple[str | None, bool]:
         text = str(value).strip().lower()
@@ -1502,31 +1594,70 @@ class RegistrationEngine:
     def _retry_question(self, field_name: str, language: str) -> str:
         if field_name in {"id_or_passport", "guardian_id_or_passport"}:
             if language == "ar":
-                return "لم أسمع الرقم القومي كاملًا. من فضلك قل الـ 14 رقم ببطء، أو اكتبه يدويًا."
-            return "I did not hear the full national ID. Please say the 14 digits slowly, or type it manually."
+                return "الرقم القومي يجب أن يكون 14 رقمًا، أو أدخل رقم جواز سفر صحيح."
+            return "National ID must be 14 digits, or enter a valid passport number."
             
         if field_name in {"student_mobile_no", "guardian_mobile_no"}:
             if language == "ar":
-                return "لم أسمع الرقم كاملًا. من فضلك قل الـ 11 رقم ببطء، أو اكتبه يدويًا."
-            return "I did not hear the full mobile number. Please say the 11 digits slowly, or type it manually."
+                return "لم أسمع رقم موبايل صحيح. من فضلك قل 11 رقم يبدأ بـ 010 أو 011 أو 012 أو 015."
+            return "I did not hear a valid mobile number. Please say 11 digits starting with 010, 011, 012, or 015."
             
         if field_name in {"email_address", "guardian_email_address"}:
             if language == "ar":
-                return "لم أسمع البريد الإلكتروني كاملًا. من فضلك قل البريد مرة أخرى مثل: name at gmail dot com، أو اكتبه يدويًا."
-            return "I could not hear the full email address. Please say it again like: name at gmail dot com, or type it manually."
+                return "البريد الإلكتروني غير كامل أو غير صحيح. من فضلك قل البريد مرة أخرى مثل name at gmail dot com."
+            return "The email address is incomplete or incorrect. Please say it again like: name at gmail dot com."
+            
+        if field_name == "date_of_birth":
+            if language == "ar":
+                return "تاريخ الميلاد غير واضح. من فضلك قل التاريخ مثل 15/08/2005."
+            return "Date of birth is unclear. Please say it like: 15/08/2005."
+
+        if field_name in {"percentage", "science_score", "math_score", "literary_score"}:
+            if language == "ar":
+                return "النسبة يجب أن تكون رقمًا من 0 إلى 100."
+            return "Percentage must be a number from 0 to 100."
+
+        if field_name == "full_name_en":
+            if language == "ar":
+                return "من فضلك قل اسمك الكامل باللغة الإنجليزية، أو اكتبه بحروف إنجليزية."
+            return "Please say your full name in English, or type it using English letters."
+
+        if field_name == "guardian_profession":
+            if language == "ar":
+                return "أحتاج وظيفة ولي الأمر، مثل مهندس أو طبيب أو مدرس."
+            return "I need the guardian's profession, such as engineer, doctor, or teacher."
+
+        if field_name == "guardian_nationality":
+            if language == "ar":
+                return "أحتاج جنسية ولي الأمر، مثل مصري."
+            return "I need the guardian's nationality, such as Egyptian."
             
         return self._question_for_field(field_name, language)
 
     def _has_correction_words(self, text: str) -> bool:
         text_lower = text.lower()
-
-        return any(word in text_lower for word in self.CORRECTION_WORDS)
+        normalized = self._normalize_preference_text(text_lower)
+        for word in self.CORRECTION_WORDS:
+            norm_word = self._normalize_preference_text(word)
+            if f" {norm_word} " in f" {normalized} " or normalized == norm_word or normalized.startswith(f"{norm_word} ") or normalized.endswith(f" {norm_word}"):
+                return True
+        return False
 
     def _has_guardian_context(self, text_lower: str) -> bool:
-        return any(
-            re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text_lower)
-            for word in self.GUARDIAN_WORDS
-        )
+        normalized = self._normalize_preference_text(text_lower)
+        for word in self.GUARDIAN_WORDS:
+            norm_word = self._normalize_preference_text(word)
+            if f" {norm_word} " in f" {normalized} " or normalized == norm_word:
+                return True
+        return False
+
+    def _has_profession_context(self, text_lower: str) -> bool:
+        normalized = self._normalize_preference_text(text_lower)
+        for word in self.PROFESSION_WORDS:
+            norm_word = self._normalize_preference_text(word)
+            if f" {norm_word} " in f" {normalized} " or normalized == norm_word:
+                return True
+        return False
 
     def _handle_confirmation_command(
         self,

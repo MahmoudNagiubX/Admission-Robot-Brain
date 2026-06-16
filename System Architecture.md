@@ -1009,41 +1009,67 @@ It handles:
 
 ## 28. Full Registration Form Fields
 
-The ECU registration paper form contains these main sections:
+The AI Brain supports the full 39-field registration flow aligned with the frontend wizard.
 
-1. Personal Data
-2. Family Information
-3. Received Papers
-4. College Preferences
+Sections and field counts:
 
-### Personal Data fields
+1. Personal Data: 8 fields
+2. Contact: 9 fields
+3. Academic: 7 fields
+4. Guardian: 14 fields
+5. Faculty: 1 field
 
-```text
-full_name_ar
-full_name_en
-date_of_birth
-place_of_birth
-nationality
-id_or_passport
-gender
-marital_status
-governorate
-city
-address
-student_mobile_no
-email_address
-school_name
-certificate
-year_of_completion
-percentage
-guardian_name
-relationship
-guardian_profession
-guardian_nationality
-guardian_address
-guardian_mobile_no
-college_preference_1
-```
+Total: 39 guided fields.
+
+### Exact Guided Order
+
+1. `full_name_ar`
+2. `full_name_en`
+3. `date_of_birth`
+4. `place_of_birth`
+5. `nationality`
+6. `id_or_passport`
+7. `gender`
+8. `marital_status`
+9. `country`
+10. `governorate`
+11. `district`
+12. `city`
+13. `address`
+14. `home_phone`
+15. `student_mobile_no`
+16. `mobile_no_2`
+17. `email_address`
+18. `school_name`
+19. `certificate`
+20. `sector`
+21. `year_of_completion`
+22. `percentage`
+23. `total_marks`
+24. `seat_number`
+25. `guardian_name`
+26. `relationship`
+27. `guardian_id_or_passport`
+28. `guardian_profession`
+29. `guardian_employer`
+30. `guardian_nationality`
+31. `guardian_country`
+32. `guardian_district`
+33. `guardian_address`
+34. `guardian_work_address`
+35. `guardian_mobile_no`
+36. `guardian_home_phone`
+37. `guardian_work_no`
+38. `guardian_email_address`
+39. `college_preference_1`
+
+### Strict Behavior
+
+- **Current-field-only:** During guided registration, only the active `current_field` is filled. Extraction does not leak into other fields.
+- **Deterministic Validation:** Strict rules (e.g., 14 digits for ID, 11 digits for mobile) are the final gate.
+- **LLM Correction:** LLM is used only as a fallback for the active `current_field` when deterministic rules fail.
+- **Confirmation:** Sensitive fields (IDs, phones, emails, grades, faculty) require explicit user confirmation.
+- **Export:** Supports both internal `snake_case` and frontend-friendly `camelCase` (via `export_form_values_frontend`).
 
 ---
 
