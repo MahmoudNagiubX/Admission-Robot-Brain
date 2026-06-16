@@ -147,18 +147,28 @@ class RegistrationEngine:
                 "form_state": dict(form_state),
             }
 
+        correction_requested = self._has_correction_words(processed_text.normalized_text)
+        current_field = session_state.get("current_field")
+
         extracted_updates = self._extract_updates(
             processed_text=processed_text,
             form_state=form_state,
-            current_field=session_state.get("current_field"),
-            correction_requested=self._has_correction_words(processed_text.normalized_text),
+            current_field=current_field,
+            correction_requested=correction_requested,
         )
-        semantic_updates, semantic_route_notes = self._extract_semantic_updates(
-            processed_text=processed_text,
-            form_state=form_state,
-            deterministic_updates=extracted_updates,
-            language=language,
-        )
+        
+        # Disable LLM extraction during guided flow if current_field is active
+        # unless it's an explicit correction
+        if current_field and not correction_requested:
+            semantic_updates, semantic_route_notes = {}, []
+        else:
+            semantic_updates, semantic_route_notes = self._extract_semantic_updates(
+                processed_text=processed_text,
+                form_state=form_state,
+                deterministic_updates=extracted_updates,
+                language=language,
+            )
+            
         route_notes.extend(semantic_route_notes)
         extracted_updates.update(semantic_updates)
 
@@ -295,16 +305,31 @@ class RegistrationEngine:
 
     def export_form_values(self, session_id: str) -> dict[str, Any]:
         session_state = self.sessions.get(session_id, {})
-        return self._form_state_with_auto_fields(session_state.get("fields", {}))
+        raw_values = self._form_state_with_auto_fields(session_state.get("fields", {}))
+        
+        # Strictly filter to only schema fields or allowed auto fields
+        schema_ids = {f["field_id"] for f in self.field_definitions}
+        allowed_auto = {"final_student_name", "final_college", "academic_year"}
+        
+        return {
+            k: v for k, v in raw_values.items()
+            if k in schema_ids or k in allowed_auto
+        }
 
     def export_form_state(self, session_id: str) -> dict[str, Any]:
         session_state = self.sessions.get(session_id, {})
-        form_state = self._form_state_with_auto_fields(session_state.get("fields", {}))
+        raw_form_state = self._form_state_with_auto_fields(session_state.get("fields", {}))
         metadata = session_state.get("metadata", {})
+
+        schema_ids = {f["field_id"] for f in self.field_definitions}
+        allowed_auto = {"final_student_name", "final_college", "academic_year"}
 
         fields: dict[str, dict[str, Any]] = {}
 
-        for field_name, value in form_state.items():
+        for field_name, value in raw_form_state.items():
+            if field_name not in schema_ids and field_name not in allowed_auto:
+                continue
+
             field_metadata = metadata.get(field_name)
 
             if isinstance(field_metadata, dict):
@@ -319,7 +344,7 @@ class RegistrationEngine:
                     "source": field_metadata.get("source"),
                     "source_text": field_metadata.get("source_text"),
                 }
-            elif field_name in self.auto_fields:
+            elif field_name in self.auto_fields or field_name in allowed_auto:
                 fields[field_name] = {
                     "value": value,
                     "confidence": 1.0,
@@ -462,17 +487,12 @@ class RegistrationEngine:
                 form_state=form_state,
             )
             
-            # If current field was extracted, and we're in guided mode without correction,
-            # don't do any extra extraction to avoid leakage/wrong fills.
-            if current_field in updates and not correction_requested:
+            # In guided mode, if we have a current_field, we STICK to it.
+            # Do NOT run extra extraction if we're not correcting.
+            if not correction_requested:
                 return updates
 
-        # In guided mode, extra extraction is VERY conservative
-        # Only allow extra extraction if it's an explicit correction
-        # Otherwise, if current_field is active, we only care about it.
-        if current_field and not correction_requested:
-            return updates
-
+        # extra extraction is only for corrections or non-guided fills
         self._extract_protected_entities(processed_text.entities, updates, guardian_context)
         self._extract_loose_sensitive_values(raw_text, updates, guardian_context)
         self._extract_relationship(text_lower, updates)
