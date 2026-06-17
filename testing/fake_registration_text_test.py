@@ -8,7 +8,7 @@ from pathlib import Path
 from console_utils import format_for_terminal
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[1]
 MAIN_FILE = PROJECT_DIR / "main.py"
 
 
@@ -161,6 +161,8 @@ def start_main_process() -> subprocess.Popen:
         raise FileNotFoundError(f"main.py not found at: {MAIN_FILE}")
 
     env = os.environ.copy()
+    # Ensure root and testing are in PYTHONPATH
+    env["PYTHONPATH"] = f"{PROJECT_DIR}{os.pathsep}{PROJECT_DIR / 'testing'}"
 
     # Make test faster and avoid robot voice during fake text test.
     env["ENABLE_TTS"] = "false"

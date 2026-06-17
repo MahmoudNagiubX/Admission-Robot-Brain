@@ -22,7 +22,7 @@ REGISTRATION_FIELDS_PATH = Path("data/registration_fields.json")
 
 
 import unittest
-from confirmation_location_tests import TestUniversalConfirmation, TestArabicLocationStorage
+from testing.confirmation_location_tests import TestUniversalConfirmation, TestArabicLocationStorage
 
 def run_unittest_suite(test_class):
     suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
@@ -824,7 +824,20 @@ def test_fake_full_39_field_flow_completes() -> None:
     import os
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
-    result = subprocess.run([sys.executable, "fake_registration_text_test.py", "--delay", "0"], capture_output=True, env=env)
+    
+    # Compute project root
+    project_root = Path(__file__).resolve().parents[1]
+    env["PYTHONPATH"] = str(project_root)
+    
+    # Correct path to the test script
+    test_script = project_root / "testing" / "fake_registration_text_test.py"
+    
+    result = subprocess.run(
+        [sys.executable, str(test_script), "--delay", "0"], 
+        capture_output=True, 
+        env=env,
+        cwd=str(project_root)
+    )
     assert result.returncode == 0, f"Script failed with code {result.returncode}, stderr: {result.stderr.decode('utf-8', errors='replace')}"
     # Search for completion success in logs or stdout
     output = result.stdout.decode('utf-8', errors='replace')

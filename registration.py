@@ -218,6 +218,76 @@ class RegistrationEngine:
         
         # Load Name Lexicon
         self.name_lexicon = self._load_name_lexicon()
+        
+        # Canonical Name Mapping (Project Priority)
+        self.CANONICAL_NAME_MAP = {
+            # English aliases to canonical pair: (English, Arabic)
+            "mahmoud": ("Mahmoud", "محمود"),
+            "mahmud": ("Mahmoud", "محمود"),
+            "mahamud": ("Mahmoud", "محمود"),
+            "mohamed": ("Mohamed", "محمد"),
+            "mohammed": ("Mohamed", "محمد"),
+            "muhammad": ("Mohamed", "محمد"),
+            "mohamad": ("Mohamed", "محمد"),
+            "ahmed": ("Ahmed", "أحمد"),
+            "ahmad": ("Ahmed", "أحمد"),
+            "ahman": ("Ahmed", "أحمد"),
+            "nagib": ("Nagib", "نجيب"),
+            "naguib": ("Nagib", "نجيب"),
+            "nageeb": ("Nagib", "نجيب"),
+            "najib": ("Nagib", "نجيب"),
+            "mohsen": ("Mohsen", "محسن"),
+            "mohsin": ("Mohsen", "محسن"),
+            "mostafa": ("Mostafa", "مصطفى"),
+            "mustafa": ("Mostafa", "مصطفى"),
+            "zeyad": ("Zeyad", "زياد"),
+            "ziyad": ("Zeyad", "زياد"),
+            "zyad": ("Zeyad", "زياد"),
+            "omar": ("Omar", "عمر"),
+            "umar": ("Omar", "عمر"),
+            "farouk": ("Farouk", "فاروق"),
+            "farouq": ("Farouk", "فاروق"),
+            "farok": ("Farouk", "فاروق"),
+            "farooq": ("Farouk", "فاروق"),
+            "abdelrahman": ("Abdelrahman", "عبد الرحمن"),
+            "abd el rahman": ("Abdelrahman", "عبد الرحمن"),
+            "abdulrahman": ("Abdelrahman", "عبد الرحمن"),
+            "abdurahman": ("Abdelrahman", "عبد الرحمن"),
+            "abdallah": ("Abdallah", "عبد الله"),
+            "abdullah": ("Abdallah", "عبد الله"),
+            "abd allah": ("Abdallah", "عبد الله"),
+            "ali": ("Ali", "علي"),
+            "nour": ("Nour", "نور"),
+            "noor": ("Nour", "نور"),
+            "sama": ("Sama", "سما"),
+            "samaa": ("Sama", "سما"),
+            "mina": ("Mina", "مينا"),
+            "george": ("George", "جورج"),
+            "fady": ("Fady", "فادي"),
+
+            # Arabic aliases to canonical pair:
+            "محمود": ("Mahmoud", "محمود"),
+            "محمد": ("Mohamed", "محمد"),
+            "احمد": ("Ahmed", "أحمد"),
+            "أحمد": ("Ahmed", "أحمد"),
+            "نجيب": ("Nagib", "نجيب"),
+            "محسن": ("Mohsen", "محسن"),
+            "مصطفى": ("Mostafa", "مصطفى"),
+            "زياد": ("Zeyad", "زياد"),
+            "عمر": ("Omar", "عمر"),
+            "فاروق": ("Farouk", "فاروق"),
+            "عبدالرحمن": ("Abdelrahman", "عبد الرحمن"),
+            "عبد الرحمن": ("Abdelrahman", "عبد الرحمن"),
+            "عبدالله": ("Abdallah", "عبد الله"),
+            "عبد الله": ("Abdallah", "عبد الله"),
+            "علي": ("Ali", "علي"),
+            "نور": ("Nour", "نور"),
+            "سما": ("Sama", "سما"),
+            "سماء": ("Sama", "سما"),
+            "مينا": ("Mina", "مينا"),
+            "جورج": ("George", "جورج"),
+            "فادي": ("Fady", "فادي"),
+        }
         self.name_lookup_en = {} # Normalized EN -> (Primary EN, Primary AR)
         self.name_lookup_ar = {} # Normalized AR -> (Primary EN, Primary AR)
         self._build_lexicon_lookups()
@@ -1086,17 +1156,31 @@ class RegistrationEngine:
         profile_updates = self._extract_by_profile(field_name, processed_text, form_state)
         updates.update(profile_updates)
 
+    def _is_clear_numeric_date_attempt(self, text: str) -> bool:
+        """
+        Detects if the input is a clear attempt at a numeric date (8 digits or 3 numbers).
+        """
+        # Compact 8 digits
+        if re.search(r"\b\d{8}\b", text):
+            return True
+        # 3 numbers with spaces or common separators
+        digits = re.findall(r"\d+", text)
+        if len(digits) == 3:
+            # Check if they look like a date (DD MM YYYY)
+            d, m, y = digits
+            if len(y) == 4 and len(d) <= 2 and len(m) <= 2:
+                return True
+        return False
+
     def _parse_date_naturally(self, text: str) -> str | None:
         """
         Smart date parser for spoken Arabic/English.
         Returns YYYY-MM-DD.
         Priority:
         1. ISO date: YYYY-MM-DD
-        2. Date with separators: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
-        3. Date with spaces: DD MM YYYY
-        4. Compact 8 digits: DDMMYYYY
-        5. Month name forms: DD month YYYY
-        6. Spoken Arabic/Egyptian forms
+        2. Strict Numeric Check: DDMMYYYY or DD MM YYYY
+        3. Month name forms: DD month YYYY
+        4. Spoken Arabic/Egyptian forms
         """
         month_map = {
             "يناير": 1, "فبراير": 2, "مارس": 3, "ابريل": 4, "أبريل": 4,
@@ -1119,31 +1203,33 @@ class RegistrationEngine:
         # First parse spoken numbers for subsequent steps
         text_with_digits = parse_spoken_numbers(text)
 
-        # 2. Try numeric formats with separators (DD/MM/YYYY etc.)
-        sep_match = re.search(r"(\d{1,2})[\s\-/.](\d{1,2})[\s\-/.](\d{4})", text_with_digits)
-        if sep_match:
-            day, month, year = map(int, sep_match.groups())
-            # Egyptian order: day month year
-            if 1 <= month <= 12 and 1 <= day <= 31:
-                try:
-                    return datetime(year, month, day).strftime("%Y-%m-%d")
-                except ValueError:
-                    pass
+        # 2. Strict Numeric Attempt Guard
+        # If it looks like a numeric date, we MUST handle it strictly.
+        if self._is_clear_numeric_date_attempt(text_with_digits):
+            # Try compact 8 digits
+            compact_match = re.search(r"\b(\d{2})(\d{2})(\d{4})\b", text_with_digits)
+            if compact_match:
+                day, month, year = map(int, compact_match.groups())
+                if 1 <= month <= 12 and 1 <= day <= 31:
+                    try:
+                        return datetime(year, month, day).strftime("%Y-%m-%d")
+                    except ValueError:
+                        pass
+                return None # Invalid numeric attempt, don't try fallback
+            
+            # Try 3 numbers (separators or spaces)
+            digits = re.findall(r"\d+", text_with_digits)
+            if len(digits) == 3:
+                day, month, year = map(int, digits)
+                if len(str(year)) == 4:
+                    if 1 <= month <= 12 and 1 <= day <= 31:
+                        try:
+                            return datetime(year, month, day).strftime("%Y-%m-%d")
+                        except ValueError:
+                            pass
+                    return None # Invalid numeric attempt, don't try fallback
 
-        # 3. Compact 8 digits: DDMMYYYY
-        compact_match = re.search(r"\b(\d{2})(\d{2})(\d{4})\b", text_with_digits)
-        if compact_match:
-            day, month, year = map(int, compact_match.groups())
-            # Egyptian order is strictly DD MM YYYY. 
-            # We don't swap to MMDDYYYY for compact 8-digits in Egypt.
-            if 1 <= month <= 12 and 1 <= day <= 31:
-                try:
-                    return datetime(year, month, day).strftime("%Y-%m-%d")
-                except ValueError:
-                    pass
-            return None
-
-        # 4. Try format with month names
+        # 3. Try format with month names
         found_month = None
         for month_name, month_num in month_map.items():
             if month_name in text.lower():
@@ -1160,17 +1246,6 @@ class RegistrationEngine:
                 if 1 <= day <= 31:
                     try:
                         return datetime(year, found_month, day).strftime("%Y-%m-%d")
-                    except ValueError:
-                        pass
-
-        # 5. Last resort: just 3 numbers in a row
-        digits = re.findall(r"\d+", text_with_digits)
-        if len(digits) == 3:
-            day, month, year = map(int, digits)
-            if len(str(year)) == 4:
-                if 1 <= month <= 12 and 1 <= day <= 31:
-                    try:
-                        return datetime(year, month, day).strftime("%Y-%m-%d")
                     except ValueError:
                         pass
 
@@ -1412,6 +1487,7 @@ class RegistrationEngine:
                 (r"sh", "ش"), (r"ch", "تش"), (r"kh", "خ"), (r"gh", "غ"),
                 (r"ph", "ف"), (r"th", "ث"), (r"ee", "ي"), (r"oo", "و"),
                 (r"ou", "و"), (r"ea", "ي"), (r"ai", "اي"), (r"ay", "اي"),
+                (r"^za", "زا"), # Special rule for initial 'za' (e.g., Zalaf)
                 (r"b", "ب"), (r"t", "ت"), (r"g", "ج"), (r"d", "د"),
                 (r"r", "ر"), (r"z", "ز"), (r"s", "س"), (r"f", "ف"),
                 (r"k", "ك"), (r"q", "ق"), (r"l", "ل"), (r"m", "م"),
@@ -1457,7 +1533,7 @@ class RegistrationEngine:
         names_en = []
         names_ar = []
         
-        # Layer 2 & 3: Lexicon & Fuzzy/Phonetic
+        # Layer 1 & 2: Canonical Map & Lexicon & Fuzzy/Phonetic
         idx = 0
         while idx < len(parts):
             found = False
@@ -1465,14 +1541,20 @@ class RegistrationEngine:
             for window in range(min(3, len(parts) - idx), 0, -1):
                 phrase = " ".join(parts[idx:idx+window])
                 
-                # Try exact lookup
+                # Try Canonical Map (Highest Priority)
+                pair = self.CANONICAL_NAME_MAP.get(phrase.lower())
+                if pair:
+                    names_en.append(pair[0])
+                    names_ar.append(pair[1])
+                    idx += window
+                    found = True
+                    break
+
+                # Try exact lookup in larger lexicon
                 en_norm = self._normalize_en_for_match(phrase)
                 ar_norm = self._normalize_ar_for_match(phrase)
                 
                 pair = self.name_lookup_en.get(en_norm) or self.name_lookup_ar.get(ar_norm)
-                
-                if not pair and idx == 0: # Try emergency map
-                    pair = self.NAME_CORRECTION_MAP.get(phrase.lower())
                 
                 if pair:
                     names_en.append(pair[0])
