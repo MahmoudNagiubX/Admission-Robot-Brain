@@ -93,3 +93,6 @@ class BrainOutput:
     route_taken: list[str] = field(default_factory=list)
     next_question: str | None = None
     needs_confirmation: bool = False
+    manual_input_required: bool = False
+    manual_field: str | None = None
+    manual_prompt: str | None = None

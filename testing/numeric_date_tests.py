@@ -148,36 +148,65 @@ class TestNumericDateParsing(unittest.TestCase):
     def test_confirmation_no_variants_arabic(self):
         variants = ["لا", "لأ", "غلط", "مش صح", "غير صحيح"]
         for variant in variants:
-            # Setup a pending confirmation
-            state = self.engine._get_or_create_session_state(self.session_id)
+            test_session_id = f"{self.session_id}-{variant}"
+            state = self.engine._get_or_create_session_state(test_session_id)
             state["latest_sensitive_fields"] = ["student_mobile_no"]
             state["fields"]["student_mobile_no"] = "01012345678"
             state["metadata"]["student_mobile_no"] = {"confirmed": False}
             
-            result = self._process_text(variant, language="ar")
+            processed = ProcessedText(
+                raw_text=variant,
+                normalized_text=variant,
+                protected_text=variant,
+                corrected_text=variant,
+                search_query=variant,
+                language="ar",
+                entities={}
+            )
+            result = self.engine.process(test_session_id, processed, "ar")
             with self.subTest(variant=variant):
                 self.assertNotIn("student_mobile_no", state["fields"])
 
     def test_confirmation_yes_variants_english(self):
         variants = ["yes", "ok", "correct", "confirm"]
         for variant in variants:
-            state = self.engine._get_or_create_session_state(self.session_id)
+            test_session_id = f"{self.session_id}-{variant}"
+            state = self.engine._get_or_create_session_state(test_session_id)
             state["latest_sensitive_fields"] = ["student_mobile_no"]
             state["fields"]["student_mobile_no"] = "01012345678"
             state["metadata"]["student_mobile_no"] = {"confirmed": False}
             
-            result = self._process_text(variant, language="en")
+            processed = ProcessedText(
+                raw_text=variant,
+                normalized_text=variant,
+                protected_text=variant,
+                corrected_text=variant,
+                search_query=variant,
+                language="en",
+                entities={}
+            )
+            result = self.engine.process(test_session_id, processed, "en")
             self.assertTrue(state["metadata"]["student_mobile_no"]["confirmed"])
 
     def test_confirmation_no_variants_english(self):
         variants = ["no", "wrong", "incorrect", "retry"]
         for variant in variants:
-            state = self.engine._get_or_create_session_state(self.session_id)
+            test_session_id = f"{self.session_id}-{variant}"
+            state = self.engine._get_or_create_session_state(test_session_id)
             state["latest_sensitive_fields"] = ["student_mobile_no"]
             state["fields"]["student_mobile_no"] = "01012345678"
             state["metadata"]["student_mobile_no"] = {"confirmed": False}
             
-            result = self._process_text(variant, language="en")
+            processed = ProcessedText(
+                raw_text=variant,
+                normalized_text=variant,
+                protected_text=variant,
+                corrected_text=variant,
+                search_query=variant,
+                language="en",
+                entities={}
+            )
+            result = self.engine.process(test_session_id, processed, "en")
             self.assertNotIn("student_mobile_no", state["fields"])
 
 if __name__ == "__main__":

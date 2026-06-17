@@ -366,6 +366,9 @@ def print_brain_output(output) -> None:
     print(format_for_terminal(f"Form Updates: {output.form_updates}"))
     print(format_for_terminal(f"Next Question: {output.next_question}"))
     print(f"Needs Confirmation: {output.needs_confirmation}")
+    if output.manual_input_required:
+        print(f"Manual Input Required: {output.manual_input_required}")
+        print(f"Manual Field: {output.manual_field}")
     print(f"Route Taken: {output.route_taken}")
 
 

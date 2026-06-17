@@ -94,6 +94,9 @@ class ECUBrain:
                 ],
                 next_question=next_question,
                 needs_confirmation=registration_result["needs_confirmation"],
+                manual_input_required=registration_result.get("manual_input_required", False),
+                manual_field=registration_result.get("manual_field"),
+                manual_prompt=registration_result.get("manual_prompt"),
             )
 
         processed_text = self.memory_manager.enrich_with_memory(
