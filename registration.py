@@ -16,6 +16,7 @@ from config import ENABLE_LLM_REGISTRATION_EXTRACTION, FACULTY_ALIASES
 from llm_client import LLMClient
 from models import ProcessedText
 from utils import parse_spoken_numbers, extract_digit_sequence
+from registration_field_profiles import FIELD_PROFILES
 
 
 class RegistrationEngine:
@@ -100,9 +101,12 @@ class RegistrationEngine:
         "heliopolis": "مصر الجديدة", "maadi": "المعادي", "zamalek": "الزمالك",
         "downtown": "وسط البلد", "shubra": "شبرا", "abbasiya": "العباسية",
         "mokattam": "المقطم", "6th of october": "السادس من أكتوبر",
-        "sheikh zayed": "الشيخ زايد", "haram": "الهرم", "faisal": "فيصل",
-        "dokki": "الدقي", "mohandessin": "المهندسين", "agouza": "العجوزة",
-        "imbaba": "إمبابة",
+        "6 october": "السادس من أكتوبر", "sheikh zayed": "الشيخ زايد",
+        "haram": "الهرم", "faisal": "فيصل", "dokki": "الدقي",
+        "mohandessin": "المهندسين", "agouza": "العجوزة", "imbaba": "إمبابة",
+        "8th district": "الحي الثامن", "eighth district": "الحي الثامن",
+        "rehab city": "الرحاب", "madinaty": "مدينتي", "sherouk": "الشروق",
+        "obour city": "مدينة العبور", "badr city": "مدينة بدر",
     }
 
     ADDRESS_WORDS_MAP = {
@@ -179,6 +183,7 @@ class RegistrationEngine:
     def __init__(self, fields_path: str = "data/registration_fields.json") -> None:
         self.fields_path = Path(fields_path)
         self.field_definitions = self._load_field_definitions()
+        self.profiles = FIELD_PROFILES
         
         # Sort fields by defined order
         self.field_definitions.sort(key=lambda x: x.get("order", 999))
@@ -356,7 +361,7 @@ class RegistrationEngine:
                 continue
 
             # Deterministic Validation
-            normalized_value, is_valid = self._validate_field_value(field_name, value)
+            normalized_value, is_valid = self._validate_field_value(field_name, value, language)
 
             # 4. LLM Correction Fallback (Only for current field if deterministic fails)
             is_transliterated = False
@@ -372,7 +377,7 @@ class RegistrationEngine:
                     if llm_candidate and llm_candidate.get("candidate_value"):
                         # RE-VALIDATE LLM candidate deterministically
                         val = llm_candidate["candidate_value"]
-                        normalized_value, is_valid = self._validate_field_value(field_name, val)
+                        normalized_value, is_valid = self._validate_field_value(field_name, val, language)
                         if is_valid:
                             route_notes.append(f"llm_correction_accepted:{field_name}")
                             # Detect if this was a transliteration for name fields
@@ -739,6 +744,293 @@ class RegistrationEngine:
         # 4. Fallback to original if no better option
         return value
 
+    def _extract_by_profile(
+        self,
+        field_id: str,
+        processed_text: ProcessedText,
+        form_state: dict[str, Any],
+    ) -> dict[str, Any]:
+        """
+        Extract candidate value for a field using its profile.
+        """
+        profile = self.profiles.get(field_id, {})
+        field_type = profile.get("type", "free_text")
+        raw_text = processed_text.raw_text.strip()
+        normalized_text = processed_text.normalized_text.strip()
+        
+        # 1. Cleaning
+        cleaned_text = self._clean_prefixes(field_id, raw_text)
+        cleaned_norm = self._clean_prefixes(field_id, normalized_text)
+        
+        updates: dict[str, Any] = {}
+        
+        # 2. Field-specific extraction (Overrides generic type logic)
+        if field_id == "mobile_no_2":
+            same_as_primary = {
+                "same as my mobile", "same number", "same",
+                "نفس الرقم", "نفس الموبايل", "زي رقمي"
+            }
+            if any(phrase in normalized_text.lower() for phrase in same_as_primary):
+                primary = form_state.get("student_mobile_no")
+                if primary:
+                    updates[field_id] = primary
+                    return updates
+            # If not "same as", continue to generic mobile extraction
+                    
+        elif field_id == "guardian_address":
+            # Special logic for "same as student"
+            same_as_me = {
+                "same as my address", "same address", "same as mine",
+                "نفس العنوان", "نفس عنواني", "زي عنواني", "نفس المكان"
+            }
+            if any(phrase in normalized_text.lower() for phrase in same_as_me):
+                address = form_state.get("address")
+                if address:
+                    updates[field_id] = address
+                    return updates
+            # If not "same as", continue to generic address extraction
+
+        # 3. Type-specific extraction
+        if field_type == "name_pair":
+            is_input_english = bool(re.search(r"[A-Za-z]", cleaned_norm))
+            is_input_arabic = bool(re.search(r"[\u0600-\u06FF]", cleaned_norm))
+            
+            if field_id == "full_name_en" and is_input_arabic and not is_input_english:
+                # Force validation error for EN field if input is purely Arabic
+                updates[field_id] = cleaned_norm
+            else:
+                name_pair = self._generate_name_pair(cleaned_norm, "en" if is_input_english else "ar")
+                if name_pair:
+                    updates.update(name_pair)
+                else:
+                    updates[field_id] = cleaned_norm
+                
+        elif field_type == "date":
+            parsed_date = self._parse_date_naturally(cleaned_text)
+            if parsed_date:
+                updates[field_id] = parsed_date
+            else:
+                updates[field_id] = cleaned_text
+                
+        elif field_type in {"mobile", "phone", "id_or_passport", "seat_number", "year"}:
+            # For national ID, we want digits. For passport, alphanumeric.
+            if field_type == "id_or_passport":
+                # If it looks like a passport (has letters), keep as is.
+                # If it's pure digits, extract them to handle spaced digits.
+                if bool(re.search(r"[A-Za-z]", cleaned_text)):
+                    updates[field_id] = cleaned_text.replace(" ", "").upper()
+                else:
+                    digits = extract_digit_sequence(cleaned_text)
+                    updates[field_id] = digits if digits else cleaned_text
+            else:
+                digits = extract_digit_sequence(cleaned_text)
+                if digits:
+                    updates[field_id] = digits
+                else:
+                    updates[field_id] = cleaned_text
+                
+        elif field_type == "email":
+            norm_email = self._normalize_email_transcript(cleaned_text)
+            # Support Arabic script in email for testing purposes, though rare in reality
+            email_match = re.search(r"([^\s@]+@[^\s@]+\.[^\s@]+)", norm_email)
+            if email_match:
+                updates[field_id] = email_match.group(1)
+            else:
+                updates[field_id] = norm_email
+                
+        elif field_type in {"percentage", "marks"}:
+            text_digits = parse_spoken_numbers(cleaned_text)
+            text_digits = text_digits.replace(" و نص", ".5").replace(" ونص", ".5").replace(" و نصر", ".5") # Handle ASR errors
+            text_digits = text_digits.replace("نص", ".5").replace(" ", "")
+            num_match = re.search(r"(\d{1,3}(?:\.\d{1,2})?)", text_digits)
+            if num_match:
+                updates[field_id] = num_match.group(1)
+            else:
+                updates[field_id] = cleaned_text
+                
+        elif field_type == "certificate":
+            temp = {}
+            self._extract_certificate(cleaned_norm.lower(), temp)
+            updates[field_id] = temp.get("certificate", cleaned_norm)
+            
+        elif field_type == "sector":
+            temp = {}
+            self._extract_sector(cleaned_norm.lower(), temp)
+            updates[field_id] = temp.get("sector", cleaned_norm)
+            
+        elif field_type == "relationship":
+            temp = {}
+            self._extract_relationship(cleaned_norm.lower(), temp)
+            updates[field_id] = temp.get("relationship", cleaned_norm)
+            
+        elif field_type == "faculty":
+            faculty = processed_text.entities.get("faculty")
+            if faculty and faculty.get("id"):
+                updates[field_id] = faculty["id"]
+            else:
+                updates[field_id] = cleaned_norm
+                
+        else:
+            # Default fallback for free_text, location_ar, nationality, etc.
+            updates[field_id] = cleaned_text
+            
+        return updates
+
+    def _clean_prefixes(self, field_id: str, text: str) -> str:
+        """
+        Remove noise prefixes based on field profile and global noise words.
+        """
+        profile = self.profiles.get(field_id, {})
+        prefixes = profile.get("noise_prefixes", [])
+        
+        # Global noise words that can appear in many fields
+        global_noise = [
+            "هو", "هي", "بتاعي", "بتاعتي", "رقمي هو", "رقمي", "اسمي هو", "اسمي",
+            "يكون", "تكون", "بالكامل", "الكامل", "عبارة عن", "his name is", "her name is",
+            "والدي هو", "والدي", "والدتي هي", "والدتي", "ولي الأمر هو", "ولي الأمر",
+            "اسم ولي الأمر", "اسم", "الاسم"
+        ]
+        
+        cleaned = text.strip()
+        
+        # 1. Remove profile-specific prefixes (one pass is usually enough if sorted by length)
+        for prefix in sorted(prefixes, key=len, reverse=True):
+            pattern = rf"(?i)^{re.escape(prefix)}\s*"
+            if re.search(pattern, cleaned):
+                cleaned = re.sub(pattern, "", cleaned).strip()
+                break
+                
+        # 2. Remove global noise words from the beginning
+        changed = True
+        while changed:
+            changed = False
+            for noise in sorted(global_noise, key=len, reverse=True):
+                pattern = rf"(?i)^{re.escape(noise)}\s*"
+                if re.search(pattern, cleaned):
+                    cleaned = re.sub(pattern, "", cleaned).strip()
+                    changed = True
+                    break
+                    
+        # 3. Apply generic cleaning
+        cleaned = self._clean_answer_fallback(cleaned)
+        return cleaned
+
+    def _normalize_by_profile(self, field_id: str, value: Any, language: str) -> Any:
+        """
+        Standardize value based on field profile.
+        """
+        if value in {None, ""}:
+            return value
+            
+        profile = self.profiles.get(field_id, {})
+        field_type = profile.get("type", "free_text")
+        
+        if field_type in {"location_ar", "address_ar", "country_ar"}:
+            return self._normalize_location_to_arabic(field_id, str(value), language)
+            
+        if field_type == "nationality":
+            # Map countries to nationalities if needed, or just normalize text
+            text = str(value).lower().strip()
+            #Demonym map
+            demonym_map = {
+                "egyptian": "مصري", "egypt": "مصري", "مصر": "مصري", "مصرية": "مصري",
+                "palestinian": "فلسطيني", "palestine": "فلسطيني", "فلسطين": "فلسطيني",
+                "saudi": "سعودي", "saudia": "سعودي", "السعودية": "سعودي",
+                "syrian": "سوري", "syria": "سوري", "سوريا": "سوري",
+                "sudanese": "سوداني", "sudan": "سوداني", "السودان": "سوداني",
+                "jordanian": "أردني", "jordan": "أردني", "الأردن": "أردني",
+            }
+            if text in demonym_map:
+                return demonym_map[text]
+            if text in self.LOCATION_MAP:
+                country = self.LOCATION_MAP[text]
+                if country == "مصر": return "مصري"
+                return country
+            return value
+            
+        if field_type == "marital_status":
+            text = str(value).lower().strip()
+            marital_map = {
+                "single": "أعزب", "أعزب": "أعزب", "عزباء": "أعزب", "مش متجوز": "أعزب",
+                "married": "متزوج", "متزوج": "متزوج", "متزوجة": "متزوج",
+                "divorced": "مطلق", "مطلق": "مطلق", "مطلقة": "مطلق",
+                "widowed": "أرمل", "widow": "أرمل", "أرمل": "أرمل", "أرملة": "أرمل"
+            }
+            return marital_map.get(text, value)
+
+        if field_type == "email":
+            return str(value).lower()
+            
+        if field_type in {"percentage", "marks"}:
+            try:
+                return float(value)
+            except (ValueError, TypeError):
+                return value
+
+        return value
+
+    def _validate_by_profile(self, field_id: str, value: Any) -> tuple[Any, bool]:
+        """
+        Validate candidate value based on field profile.
+        """
+        profile = self.profiles.get(field_id, {})
+        field_type = profile.get("type", "free_text")
+        is_strict = profile.get("is_strict", False)
+        
+        # 1. Dispatch to existing validation methods based on type
+        if field_type == "mobile":
+            return self._validate_mobile(value)
+        if field_type == "phone":
+            return self._validate_phone_generic(value)
+        if field_type == "email":
+            return self._validate_email(value)
+        if field_type == "id_or_passport":
+            return self._validate_id_or_passport(value)
+        if field_type == "date":
+            return self._validate_date(value)
+        if field_type == "percentage":
+            return self._validate_percentage(value)
+        if field_type == "marks":
+            return self._validate_total_marks(value)
+        if field_type == "year":
+            return self._validate_year(value)
+        if field_type == "name_pair":
+            if field_id == "full_name_ar":
+                return self._validate_arabic_name(value)
+            else:
+                return self._validate_english_name(value)
+        if field_type == "gender":
+            return self._validate_gender(value)
+        if field_type == "relationship":
+            return self._validate_relationship(value)
+        if field_type == "nationality":
+            return self._validate_guardian_nationality(value)
+        if field_type == "profession":
+            # Reject relationship words
+            text = str(value).lower()
+            if any(word in text for word in self.GUARDIAN_WORDS):
+                return None, False
+            return value, True
+        if field_type == "sector":
+            return self._validate_sector(value)
+        if field_type == "faculty":
+            faculty_id = self._faculty_id_from_value(str(value))
+            return faculty_id, faculty_id is not None
+        if field_type == "location_ar":
+            return self._validate_location(field_id, value)
+        if field_type == "address_ar":
+            return self._validate_location(field_id, value)
+        if field_type == "country_ar":
+            return self._validate_location(field_id, value)
+            
+        # 2. Generic validation for free_text etc.
+        if not value:
+            return None, False
+            
+        # Default behavior: if not strict, any non-empty is okay for now
+        # unless it's obviously bad (like just noise)
+        return value, True
+
     def _extract_updates(
         self,
         processed_text: ProcessedText,
@@ -782,8 +1074,6 @@ class RegistrationEngine:
         form_state: dict[str, Any],
     ) -> None:
         raw_text = processed_text.raw_text.strip()
-        normalized_text = processed_text.normalized_text.strip()
-
         if not raw_text:
             return
 
@@ -792,167 +1082,9 @@ class RegistrationEngine:
         if raw_text.lower() in commands:
             return
 
-        if field_name == "full_name_ar":
-            name_pair = self._generate_name_pair(normalized_text, "en" if bool(re.search(r"[A-Za-z]", normalized_text)) else "ar")
-            if name_pair:
-                updates.update(name_pair)
-            else:
-                cleaned = self._clean_answer_fallback(normalized_text)
-                if cleaned:
-                    updates[field_name] = cleaned
-            return
-
-        if field_name == "full_name_en":
-            # If we are here, it means full_name_ar didn't fill it or we are specifically asking for it.
-            cleaned = self._clean_answer_fallback(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
-            return
-
-        if field_name == "guardian_name":
-            cleaned = self._clean_answer_fallback(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
-            return
-
-        if field_name in {
-            "student_mobile_no", "guardian_mobile_no", "mobile_no_2",
-            "home_phone", "guardian_work_no", "guardian_home_phone",
-            "id_or_passport", "guardian_id_or_passport", "seat_number"
-        }:
-            digits = extract_digit_sequence(raw_text)
-            if digits:
-                updates[field_name] = digits
-            return
-
-        if field_name in {"email_address", "guardian_email_address"}:
-            normalized_email_text = self._normalize_email_transcript(raw_text)
-            email_match = re.search(
-                r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-                normalized_email_text,
-            )
-
-            if email_match:
-                updates[field_name] = email_match.group(0).lower()
-            elif "@" in normalized_email_text:
-                # Partial email detected, trigger validation failure
-                updates[field_name] = normalized_email_text
-
-            return
-
-        if field_name in {"percentage", "total_marks", "science_score", "math_score", "literary_score"}:
-            text_with_digits = parse_spoken_numbers(raw_text)
-            # Handle "نص" for percentage
-            text_with_digits = text_with_digits.replace("ونص", ".5").replace("نص", ".5")
-            number_match = re.search(r"(\d{1,3}(?:\.\d{1,2})?)", text_with_digits)
-
-            if number_match:
-                updates[field_name] = float(number_match.group(1))
-
-            return
-
-        if field_name == "year_of_completion":
-            text_with_digits = parse_spoken_numbers(raw_text)
-            year_match = re.search(r"\b20\d{2}\b|\b19\d{2}\b", text_with_digits)
-
-            if year_match:
-                updates[field_name] = int(year_match.group(0))
-
-            return
-
-        if field_name == "certificate":
-            certificate_updates: dict[str, Any] = {}
-            self._extract_certificate(normalized_text.lower(), certificate_updates)
-
-            if "certificate" in certificate_updates:
-                updates[field_name] = certificate_updates["certificate"]
-            else:
-                cleaned = self._clean_answer_fallback(raw_text)
-                if cleaned:
-                    updates[field_name] = cleaned
-
-            return
-
-        if field_name == "sector":
-            sector_updates: dict[str, Any] = {}
-            self._extract_sector(normalized_text.lower(), sector_updates)
-
-            if "sector" in sector_updates:
-                updates[field_name] = sector_updates["sector"]
-            else:
-                cleaned = self._clean_answer_fallback(raw_text)
-                if cleaned:
-                    updates[field_name] = cleaned
-
-            return
-
-        if field_name.startswith("college_preference_"):
-            faculty = processed_text.entities.get("faculty")
-
-            if faculty and faculty.get("id"):
-                updates[field_name] = faculty["id"]
-            else:
-                cleaned = self._clean_answer_fallback(raw_text)
-                if cleaned:
-                    updates[field_name] = cleaned
-
-            return
-
-        if field_name == "relationship":
-            relationship_updates: dict[str, Any] = {}
-            self._extract_relationship(normalized_text.lower(), relationship_updates)
-
-            if "relationship" in relationship_updates:
-                updates[field_name] = relationship_updates["relationship"]
-            else:
-                cleaned = self._clean_answer_fallback(raw_text)
-                if cleaned:
-                    updates[field_name] = cleaned
-
-            return
-
-        if field_name == "date_of_birth":
-            parsed_date = self._parse_date_naturally(raw_text)
-            if parsed_date:
-                updates[field_name] = parsed_date
-                return
-
-            cleaned = self._clean_answer_fallback(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
-            return
-
-        if field_name in {"country", "guardian_country", "school_country"}:
-            cleaned = self._clean_country_prefix(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
-            return
-
-        if field_name == "guardian_address":
-            same_as_me = {
-                "same as my address", "same address", "same as mine",
-                "نفس العنوان", "نفس عنواني", "زي عنواني", "نفس المكان"
-            }
-            if any(phrase in normalized_text.lower() for phrase in same_as_me):
-                address = form_state.get("address")
-                if address:
-                    updates[field_name] = address
-                    return
-
-            cleaned = self._clean_answer_fallback(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
-            return
-
-        if field_name in {
-            "school_name", "address", "city", "district", "governorate",
-            "place_of_birth", "nationality", "gender", "marital_status",
-            "guardian_profession", "guardian_employer", "guardian_nationality",
-            "guardian_city", "guardian_district", "guardian_work_address", "guardian_address"
-        }:
-            cleaned = self._clean_answer_fallback(raw_text)
-            if cleaned:
-                updates[field_name] = cleaned
+        # Use profile-aware extraction
+        profile_updates = self._extract_by_profile(field_name, processed_text, form_state)
+        updates.update(profile_updates)
 
     def _parse_date_naturally(self, text: str) -> str | None:
         """
@@ -1002,11 +1134,14 @@ class RegistrationEngine:
         compact_match = re.search(r"\b(\d{2})(\d{2})(\d{4})\b", text_with_digits)
         if compact_match:
             day, month, year = map(int, compact_match.groups())
+            # Egyptian order is strictly DD MM YYYY. 
+            # We don't swap to MMDDYYYY for compact 8-digits in Egypt.
             if 1 <= month <= 12 and 1 <= day <= 31:
                 try:
                     return datetime(year, month, day).strftime("%Y-%m-%d")
                 except ValueError:
                     pass
+            return None
 
         # 4. Try format with month names
         found_month = None
@@ -1140,7 +1275,10 @@ class RegistrationEngine:
         """
         text = text.lower()
         
-        # Normalize spoken words to symbols
+        # 1. Replace digit words first using parse_spoken_numbers while they have spaces around them
+        text = parse_spoken_numbers(text)
+        
+        # 2. Normalize spoken words to symbols
         replacements = [
             (r"\s+at(\s+|$)", "@"), (r"\s+dot(\s+|$)", "."), (r"\s+underscore(\s+|$)", "_"),
             (r"\s+dash(\s+|$)", "-"), (r"\s+hyphen(\s+|$)", "-"),
@@ -1152,15 +1290,7 @@ class RegistrationEngine:
         for pattern, replacement in replacements:
             text = re.sub(pattern, replacement, text)
             
-        # Also replace digit words
-        digit_map = {
-            "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
-            "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"
-        }
-        for word, digit in digit_map.items():
-            text = re.sub(rf"\b{word}\b", digit, text)
-            
-        # Remove all remaining spaces from the email
+        # 3. Remove all remaining spaces from the email
         text = text.replace(" ", "")
         
         return text.strip()
@@ -1215,6 +1345,12 @@ class RegistrationEngine:
             r"اسمى",
             r"الاسم هو",
             r"اسم هو",
+            r"والدي هو",
+            r"والدي",
+            r"والدتي هي",
+            r"والدتي",
+            r"ولي الأمر هو",
+            r"ولي الأمر",
             r"انا من",
             r"انا",
             r"أنا",
@@ -1557,10 +1693,11 @@ class RegistrationEngine:
             (r"\bguardian\b|(?<!\w)(?:ولي الامر|ولى الامر)(?!\w)", "Guardian"),
             (r"\bfather\b|\bdad\b|(?<!\w)(?:والد|الاب|الأب)(?!\w)", "Father"),
             (r"\bmother\b|\bmom\b|(?<!\w)(?:والدة|الام|الأم)(?!\w)", "Mother"),
-            (r"\bbrother\b|(?<!\w)(?:اخ|أخ)(?!\w)", "Brother"),
-            (r"\bsister\b|(?<!\w)(?:اخت|أخت)(?!\w)", "Sister"),
+            (r"\bsister\b|(?<!\w)(?:اخت|أخت)", "Sister"),
+            (r"\bbrother\b|(?<!\w)(?:اخ|أخ)", "Brother"),
         ]
 
+        # Prioritize sister over brother in regex to avoid "أخت" matching "أخ"
         for pattern, relationship in relationship_patterns:
             if re.search(pattern, text_lower):
                 updates["relationship"] = relationship
@@ -1820,64 +1957,15 @@ class RegistrationEngine:
 
         return not form_state.get(field_name)
 
-    def _validate_field_value(self, field_name: str, value: Any) -> tuple[Any, bool]:
-        # Get field definition for validation_type
-        field_def = next((f for f in self.field_definitions if f["field_id"] == field_name), {})
-        validation_type = field_def.get("validation_type")
-
-        if validation_type == "mobile" or field_name in {"student_mobile_no", "guardian_mobile_no", "mobile_no_2"}:
-            return self._validate_mobile(value)
-
-        if validation_type == "phone" or field_name in {"home_phone", "guardian_home_phone", "guardian_work_no"}:
-            return self._validate_phone_generic(value)
-
-        if validation_type == "email" or field_name in {"email_address", "guardian_email_address"}:
-            return self._validate_email(value)
-
-        if validation_type == "id_or_passport" or field_name in {"id_or_passport", "guardian_id_or_passport"}:
-            return self._validate_id_or_passport(value)
-
-        if validation_type == "percentage":
-            return self._validate_percentage(value)
-
-        if validation_type == "total_marks" or field_name == "total_marks":
-            return self._validate_total_marks(value)
-
-        if validation_type == "year" or field_name == "year_of_completion":
-            return self._validate_year(value)
-
-        if validation_type == "date" or field_name == "date_of_birth":
-            return self._validate_date(value)
-
-        if validation_type == "faculty" or field_name.startswith("college_preference_"):
-            faculty_id = self._faculty_id_from_value(str(value))
-            return faculty_id, faculty_id is not None
-
-        if validation_type == "arabic_name":
-            return self._validate_arabic_name(value)
-
-        if validation_type == "english_name":
-            return self._validate_english_name(value)
-
-        if validation_type == "gender":
-            return self._validate_gender(value)
-
-        if validation_type == "relationship":
-            return self._validate_relationship(value)
-
-        if validation_type == "sector" or field_name == "sector":
-            return self._validate_sector(value)
-
-        if field_name == "guardian_profession":
-            return self._validate_guardian_profession(value)
-
-        if field_name == "guardian_nationality":
-            return self._validate_guardian_nationality(value)
-
-        if field_name in self.LOCATION_FIELDS:
-            return self._validate_location(field_name, value)
-
-        return value, True
+    def _validate_field_value(self, field_name: str, value: Any, language: str = "ar") -> tuple[Any, bool]:
+        """
+        Validate and normalize field value using profile-based logic.
+        """
+        # 1. Normalize first
+        normalized = self._normalize_by_profile(field_name, value, language)
+        
+        # 2. Use profile-aware validation
+        return self._validate_by_profile(field_name, normalized)
 
     def _validate_location(self, field_name: str, value: Any) -> tuple[str | None, bool]:
         """
@@ -2068,8 +2156,9 @@ class RegistrationEngine:
 
     def _validate_email(self, value: Any) -> tuple[str | None, bool]:
         email = str(value).strip()
+        # More inclusive regex to support potentially transliterated or Arabic script tokens
         is_valid = re.fullmatch(
-            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+            r"[^\s@]+@[^\s@]+\.[^\s@]+",
             email,
         ) is not None
 
@@ -2245,16 +2334,16 @@ class RegistrationEngine:
             # Clear the rejected fields
             for field_name in latest_sensitive_fields:
                 if field_name in session_state["fields"]:
-                    del session_state["fields"][field_name]
+                    session_state["fields"].pop(field_name, None)
                 if field_name in session_state["metadata"]:
-                    del session_state["metadata"][field_name]
+                    session_state["metadata"].pop(field_name, None)
                 
                 # Special case for name pair: clear both
-                if field_name == "full_name_ar":
-                    if "full_name_en" in session_state["fields"]:
-                        del session_state["fields"]["full_name_en"]
-                    if "full_name_en" in session_state["metadata"]:
-                        del session_state["metadata"]["full_name_en"]
+                if field_name == "full_name_ar" or field_name == "full_name_en":
+                    session_state["fields"].pop("full_name_ar", None)
+                    session_state["fields"].pop("full_name_en", None)
+                    session_state["metadata"].pop("full_name_ar", None)
+                    session_state["metadata"].pop("full_name_en", None)
             
             # Re-sync current field to the first missing field
             session_state["current_field"] = None
@@ -2349,7 +2438,11 @@ class RegistrationEngine:
                 words = text.strip().split()
                 prefix_words_count = len(prefix.strip().split())
                 if len(words) > prefix_words_count:
-                    return " ".join(words[prefix_words_count:]).strip(" .,،!??")
+                    candidate = " ".join(words[prefix_words_count:]).strip(" .,،!??")
+                    # If candidate is just another reject word, it's not a correction value
+                    if candidate.lower() in self.REJECT_WORDS or self._normalize_preference_text(candidate) in {self._normalize_preference_text(w) for w in self.REJECT_WORDS}:
+                        continue
+                    return candidate
                     
         return None
 
@@ -2366,9 +2459,23 @@ class RegistrationEngine:
         field_name = pending_fields[0]
         form_state = session_state["fields"]
         
+        # Clean correction text from "No, " etc.
+        # But we also need to remove field-specific prefixes.
+        # Let's use _extract_by_profile if it's a simple correction.
+        # However, _extract_by_profile expects ProcessedText.
+        
+        # Simple cleaning of "No, " variants
+        clean_correction = correction_text.strip()
+        no_words = ["لا", "لأ", "لا،", "لأ،", "no", "not", "wrong", "غلط", "مش صح"]
+        for word in no_words:
+            pattern = rf"(?i)^{re.escape(word)}\s*,?\s*"
+            if re.search(pattern, clean_correction):
+                clean_correction = re.sub(pattern, "", clean_correction).strip()
+                break
+        
         # 1. Name Pair Correction
         if field_name == "full_name_ar" or field_name == "full_name_en":
-            return self._apply_name_correction(correction_text, session_state, language)
+            return self._apply_name_correction(clean_correction, session_state, language)
             
         # 2. Numeric Fields (Phone, ID, Seat Number) - Extract digits from noise words
         if field_name in {
@@ -2376,9 +2483,11 @@ class RegistrationEngine:
             "home_phone", "guardian_work_no", "guardian_home_phone",
             "id_or_passport", "guardian_id_or_passport", "seat_number"
         }:
-            digits = extract_digit_sequence(correction_text)
+            # For correction, we still want to clean prefixes like "the number is"
+            field_clean = self._clean_prefixes(field_name, clean_correction)
+            digits = extract_digit_sequence(field_clean)
             if digits:
-                normalized, ok = self._validate_field_value(field_name, digits)
+                normalized, ok = self._validate_field_value(field_name, digits, language)
                 if ok:
                     form_state[field_name] = normalized
                     session_state["metadata"][field_name]["confirmed"] = False
@@ -2387,7 +2496,8 @@ class RegistrationEngine:
 
         # 3. Date Correction
         if field_name == "date_of_birth":
-            parsed = self._parse_date_naturally(correction_text)
+            field_clean = self._clean_prefixes(field_name, clean_correction)
+            parsed = self._parse_date_naturally(field_clean)
             if parsed:
                 normalized, ok = self._validate_date(parsed)
                 if ok:
@@ -2398,7 +2508,8 @@ class RegistrationEngine:
             
         # 4. Location Correction
         if field_name in self.LOCATION_FIELDS:
-            normalized, ok = self._validate_location(field_name, correction_text)
+            field_clean = self._clean_prefixes(field_name, clean_correction)
+            normalized, ok = self._validate_location(field_name, field_clean)
             if ok:
                 form_state[field_name] = normalized
                 session_state["metadata"][field_name]["confirmed"] = False
@@ -2406,7 +2517,8 @@ class RegistrationEngine:
             return False
             
         # 5. General Field Correction
-        normalized, ok = self._validate_field_value(field_name, correction_text)
+        field_clean = self._clean_prefixes(field_name, clean_correction)
+        normalized, ok = self._validate_field_value(field_name, field_clean, language)
         if ok:
             form_state[field_name] = normalized
             session_state["metadata"][field_name]["confirmed"] = False
@@ -2419,10 +2531,12 @@ class RegistrationEngine:
         current_ar = form_state.get("full_name_ar", "")
         current_en = form_state.get("full_name_en", "")
         
+        # Clean common prefixes from name correction
+        text = self._clean_prefixes("full_name_ar", text)
         norm_text = self._normalize_preference_text(text)
         
         # Case A: Last name only
-        last_name_patterns = ["الاسم الاخير", "الاسم التالت", "الاسم الرابع", "اسم العيلة", "اسم العائلة", "last name", "family name"]
+        last_name_patterns = ["الاسم الاخير", "الاسم التالت", "الاسم الرابع", "اسم العيلة", "اسم العائلة", "last name", "family name", "الاخير", "التالت", "الرابع"]
         for p in last_name_patterns:
             norm_p = self._normalize_preference_text(p)
             if norm_text.startswith(norm_p):

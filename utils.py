@@ -21,6 +21,7 @@ def parse_spoken_numbers(text: str) -> str:
         "تمانية": 8, "تمانيه": 8, "ثمانية": 8, "تمنية": 8, "ثامن": 8, "الثامن": 8,
         "تسعة": 9, "تسعه": 9, "تاسع": 9, "التاسع": 9,
         "عشرة": 10, "عشره": 10, "عاشر": 10, "العاشر": 10,
+        "زيرو": 0,
         "احداشر": 11, "حداشر": 11, "احدى عشر": 11, "إحدى عشر": 11,
         "اتناشر": 12, "اثناشر": 12, "اثني عشر": 12, "اثنى عشر": 12,
         "تلتاشر": 13, "ثلاثة عشر": 13,
@@ -32,6 +33,12 @@ def parse_spoken_numbers(text: str) -> str:
         "تسعتاشر": 19, "تسعة عشر": 19,
         "عشرين": 20,
         "تلاتين": 30, "ثلاثين": 30,
+        "اربعين": 40, "أربعين": 40,
+        "خمسين": 50,
+        "ستين": 60,
+        "سبعين": 70,
+        "تمانين": 80, "ثمانين": 80,
+        "تسعين": 90,
     }
 
     # English Numbers Map
@@ -49,7 +56,8 @@ def parse_spoken_numbers(text: str) -> str:
         "eleven": 11, "twelve": 12, "thirteen": 13,
         "fourteen": 14, "fifteen": 15, "sixteen": 16,
         "seventeen": 17, "eighteen": 18, "nineteen": 19,
-        "twenty": 20, "thirty": 30,
+        "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+        "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
     }
 
     # Year specific words
@@ -62,7 +70,7 @@ def parse_spoken_numbers(text: str) -> str:
     # Normalize text
     text = text.lower()
     
-    # Handle compound numbers like "واحد وعشرين" (21)
+    # Handle compound numbers like "واحد وعشرين" (21) or "خمسة وتسعين" (95)
     def replace_compound_ar(match):
         ones = arabic_map.get(match.group(1))
         tens = arabic_map.get(match.group(2))
@@ -70,20 +78,28 @@ def parse_spoken_numbers(text: str) -> str:
             return str(tens + ones)
         return match.group(0)
 
-    text = re.sub(r"(\w+)\s+و\s*(عشرين|تلاتين|ثلاثين)", replace_compound_ar, text)
+    text = re.sub(r"(\w+)\s+و\s*(عشرين|تلاتين|ثلاثين|اربعين|أربعين|خمسين|ستين|سبعين|تمانين|ثمانين|تسعين)", replace_compound_ar, text)
 
     # Handle years like "ألفين وخمسة" or "الف وتسعمية خمسة وتسعين"
     def replace_year_ar(match):
         base_text = match.group(1)
         base = year_map.get(base_text)
         offset_text = match.group(2)
-        offset = arabic_map.get(offset_text)
+        
+        # Check if offset is already digits
+        if offset_text.isdigit():
+            offset = int(offset_text)
+        else:
+            offset = arabic_map.get(offset_text)
         
         if base is not None and offset is not None:
             return str(base + offset)
         return match.group(0)
 
-    # First handle years with "و" (and)
+    # First handle compound numbers like "اربعة وعشرين" -> "24"
+    text = re.sub(r"(\w+)\s+و\s*(عشرين|تلاتين|ثلاثين|اربعين|أربعين|خمسين|ستين|سبعين|تمانين|ثمانين|تسعين)", replace_compound_ar, text)
+
+    # Then handle years with "و" (and)
     text = re.sub(r"(ألفين|الفين|ألف وتسعمية|الف وتسعمية|الف وتسعمائه|ألف وتسعمئة)\s+و\s*(\w+)", replace_year_ar, text)
     # Then handle years without "و"
     text = re.sub(r"(ألفين|الفين|ألف وتسعمية|الف وتسعمية|الف وتسعمائه|ألف وتسعمئة)\s+(\w+)", replace_year_ar, text)
