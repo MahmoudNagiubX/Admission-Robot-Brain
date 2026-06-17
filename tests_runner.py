@@ -21,6 +21,14 @@ from stt_engine import STTEngine
 REGISTRATION_FIELDS_PATH = Path("data/registration_fields.json")
 
 
+import unittest
+from confirmation_location_tests import TestUniversalConfirmation, TestArabicLocationStorage
+
+def run_unittest_suite(test_class):
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
+    result = unittest.TextTestRunner(verbosity=0).run(suite)
+    return result.wasSuccessful()
+
 def run_test(name: str, check) -> bool:
     try:
         check()
@@ -478,15 +486,15 @@ def test_guided_start_returns_first_question() -> None:
 def test_guardian_address_same_as_me() -> None:
     brain = ECUBrain()
     session_id = "same-address-session"
-    # Fill student address first
-    process_text(brain, "My address is 123 Main St", mode="registration", session_id=session_id)
+    # Fill student address first (using Arabic to ensure it's saved)
+    process_text(brain, "عنواني 20 شارع النصر", mode="registration", session_id=session_id, language="ar")
     
     # Set current field to guardian_address
     brain.registration_engine.sessions[session_id]["current_field"] = "guardian_address"
     brain.registration_engine.sessions[session_id]["guided_flow"] = True
     
-    output = process_text(brain, "same as my address", mode="registration", session_id=session_id)
-    assert output.form_updates.get("guardian_address") == "123 Main St"
+    output = process_text(brain, "نفس عنواني", mode="registration", session_id=session_id, language="ar")
+    assert output.form_updates.get("guardian_address") == "20 شارع النصر"
 
 
 def test_governorate_normalization() -> None:
@@ -496,13 +504,13 @@ def test_governorate_normalization() -> None:
     brain.registration_engine.sessions[session_id_1] = {"fields": {}, "metadata": {}, "latest_sensitive_fields": [], "current_field": "governorate", "guided_flow": True, "skipped_fields": set()}
     output = process_text(brain, "I live in Cairo", mode="registration", session_id=session_id_1)
     gov = output.form_updates.get("governorate")
-    assert gov == "Cairo", f"Expected Cairo, got {gov}"
+    assert gov == "القاهرة", f"Expected القاهرة, got {gov}"
     
     session_id_2 = "gov-norm-ar"
     brain.registration_engine.sessions[session_id_2] = {"fields": {}, "metadata": {}, "latest_sensitive_fields": [], "current_field": "governorate", "guided_flow": True, "skipped_fields": set()}
     output = process_text(brain, "ساكن في الجيزة", mode="registration", session_id=session_id_2, language="ar")
     gov = output.form_updates.get("governorate")
-    assert gov == "Giza", f"Expected Giza, got {gov}"
+    assert gov == "الجيزة", f"Expected الجيزة, got {gov}"
 
 
 def test_stt_engine_imports_and_fails_safely_without_voice() -> None:
@@ -518,7 +526,9 @@ def test_guided_order_after_full_name_ar_next_is_date_of_birth() -> None:
     assert output.form_updates.get("full_name_ar") == "محمود محمد نجيب"
     # New behavior: both names filled, skip full_name_en
     assert output.form_updates.get("full_name_en") == "Mahmoud Mohamed Nagib"
-    assert output.next_question == brain.registration_engine.prompts["date_of_birth"]["ar"]
+    assert output.needs_confirmation is True
+    assert "محمود محمد نجيب" in output.next_question
+    assert "Mahmoud Mohamed Nagib" in output.next_question
 
 
 def test_name_intake_english_phrase_extracts_name_only() -> None:
@@ -722,7 +732,7 @@ def test_misspelled_governorate_cairo_normalizes_hard() -> None:
     session_id = "gov-miss-hard"
     brain.registration_engine.sessions.setdefault(session_id, {"fields": {}, "metadata": {}, "latest_sensitive_fields": [], "current_field": "governorate", "guided_flow": True, "skipped_fields": set()})
     output = process_text(brain, "القاهره", mode="registration", session_id=session_id, language="ar")
-    assert output.form_updates.get("governorate") == "Cairo"
+    assert output.form_updates.get("governorate") == "القاهرة"
 
 
 def test_certificate_arabic_thanaweya_normalizes_hard() -> None:
@@ -944,6 +954,8 @@ def main() -> int:
         ("Frontend camelCase export", test_frontend_camel_case_export),
         ("Export limit to 39 + auto", test_export_contains_only_39_fields_plus_auto_fields),
         ("Full 39-field flow still completes", test_fake_full_39_field_flow_completes),
+        ("Universal Confirmation Suite", lambda: run_unittest_suite(TestUniversalConfirmation)),
+        ("Arabic Location Storage Suite", lambda: run_unittest_suite(TestArabicLocationStorage)),
     ]
     results = [run_test(name, check) for name, check in tests]
     passed = sum(1 for result in results if result)

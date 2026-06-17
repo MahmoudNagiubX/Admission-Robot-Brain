@@ -59,6 +59,54 @@ class RegistrationEngine:
         "mahmoud": ("Mahmoud", "محمود"),
     }
 
+    # Location and Address Mappings for Arabic Storage
+    LOCATION_MAP = {
+        # Countries
+        "egypt": "مصر", "masr": "مصر", "misr": "مصر", "مصر": "مصر",
+        
+        # Governorates
+        "cairo": "القاهرة", "giza": "الجيزة", "alexandria": "الإسكندرية",
+        "dakahlia": "الدقهلية", "sharqia": "الشرقية", "gharbia": "الغربية",
+        "monufia": "المنوفية", "menofia": "المنوفية", "qalyubia": "القليوبية",
+        "beheira": "البحيرة", "fayoum": "الفيوم", "beni suef": "بني سويف",
+        "minya": "المنيا", "assiut": "أسيوط", "sohag": "سوهاج", "qena": "قنا",
+        "luxor": "الأقصر", "aswan": "أسوان", "red sea": "البحر الأحمر",
+        "new valley": "الوادي الجديد", "matrouh": "مطروح", "north sinai": "شمال سيناء",
+        "south sinai": "جنوب سيناء", "port said": "بورسعيد", "suez": "السويس",
+        "ismailia": "الإسماعيلية", "damietta": "دمياط", "kafr el sheikh": "كفر الشيخ",
+
+        # Arabic variants for governorates
+        "القاهره": "القاهرة", "الجيزه": "الجيزة", "الاسكندرية": "الإسكندرية",
+        "الاسكندريه": "الإسكندرية", "اسكندرية": "الإسكندرية", "اسكندريه": "الإسكندرية",
+        "الدقهليه": "الدقهلية", "الشرقيه": "الشرقية", "الغربيه": "الغربية",
+        "المنوفيه": "المنوفية", "القليوبيه": "القليوبية", "البحيره": "البحيرة",
+        "الفيوم": "الفيوم", "بنى سويف": "بني سويف", "المنيا": "المنيا",
+        "اسيوط": "أسيوط", "سوهاج": "سوهاج", "قنا": "قنا", "الاقصر": "الأقصر",
+        "اسوان": "أسوان", "الاسماعيلية": "الإسماعيلية", "الاسماعيليه": "الإسماعيلية",
+        "دمياط": "دمياط", "كفر الشيخ": "كفر الشيخ",
+
+        # Common Cairo/Giza districts/cities
+        "nasr city": "مدينة نصر", "new cairo": "القاهرة الجديدة",
+        "fifth settlement": "التجمع الخامس", "first settlement": "التجمع الأول",
+        "heliopolis": "مصر الجديدة", "maadi": "المعادي", "zamalek": "الزمالك",
+        "downtown": "وسط البلد", "shubra": "شبرا", "abbasiya": "العباسية",
+        "mokattam": "المقطم", "6th of october": "السادس من أكتوبر",
+        "sheikh zayed": "الشيخ زايد", "haram": "الهرم", "faisal": "فيصل",
+        "dokki": "الدقي", "mohandessin": "المهندسين", "agouza": "العجوزة",
+        "imbaba": "إمبابة",
+    }
+
+    ADDRESS_WORDS_MAP = {
+        "street": "شارع", "st": "شارع", "district": "الحي", "area": "منطقة",
+        "building": "عمارة", "floor": "الدور", "apartment": "شقة", "tower": "برج",
+        "square": "ميدان", "road": "طريق", "no": "رقم",
+    }
+
+    LOCATION_FIELDS = {
+        "place_of_birth", "country", "governorate", "district", "city", "address",
+        "guardian_country", "guardian_district", "guardian_address", "guardian_work_address"
+    }
+
     LLM_ALLOWED_FIELDS = {
         "full_name_en",
         "full_name_ar",
@@ -340,10 +388,14 @@ class RegistrationEngine:
             form_state[field_name] = normalized_value
             form_updates[field_name] = normalized_value
             
+            # Universal confirmation for all guided fields
+            is_guided = session_state.get("guided_flow", False)
+            requires_confirmation = is_guided or field_name in self.sensitive_fields or is_transliterated
+            
             field_metadata = self._build_field_state(
                 value=normalized_value,
                 confidence=0.90,
-                needs_confirmation=field_name in self.sensitive_fields or is_transliterated,
+                needs_confirmation=requires_confirmation,
                 source="registration_extraction",
                 source_text=processed_text.raw_text,
             )
@@ -353,7 +405,7 @@ class RegistrationEngine:
             session_state["metadata"][field_name] = field_metadata
             route_notes.append(f"field_filled:{field_name}")
 
-            if field_name in self.sensitive_fields or is_transliterated:
+            if requires_confirmation:
                 needs_confirmation = True
                 latest_sensitive_fields.append(field_name)
                 route_notes.append(f"confirmation_needed:{field_name}")
@@ -534,15 +586,16 @@ class RegistrationEngine:
         form_state = session_state.get("fields", {})
         metadata = session_state.get("metadata", {})
         missing_required_fields = self._missing_required_fields(form_state)
+        unconfirmed_fields = self._unconfirmed_fields(form_state, metadata)
+        unconfirmed_sensitive_fields = self._unconfirmed_sensitive_fields(form_state, metadata)
+        completion_percentage = self._completion_percentage(form_state)
 
         return {
-            "is_basic_registration_complete": not missing_required_fields,
-            "completion_percentage": self._completion_percentage(form_state),
+            "is_basic_registration_complete": self._is_registration_complete(form_state, metadata),
+            "completion_percentage": completion_percentage,
             "missing_required_fields": missing_required_fields,
-            "unconfirmed_sensitive_fields": self._unconfirmed_sensitive_fields(
-                form_state,
-                metadata,
-            ),
+            "unconfirmed_fields": unconfirmed_fields,
+            "unconfirmed_sensitive_fields": unconfirmed_sensitive_fields,
         }
 
     def get_form_debug_view(self, session_id: str) -> dict[str, Any]:
@@ -550,20 +603,21 @@ class RegistrationEngine:
         form_state = session_state.get("fields", {})
         metadata = session_state.get("metadata", {})
         missing_required_fields = self._missing_required_fields(form_state)
+        unconfirmed_fields = self._unconfirmed_fields(form_state, metadata)
+        unconfirmed_sensitive_fields = self._unconfirmed_sensitive_fields(form_state, metadata)
+        completion_percentage = self._completion_percentage(form_state)
 
         return {
             "filled_fields": dict(form_state),
             "missing_required_fields": missing_required_fields,
-            "unconfirmed_sensitive_fields": self._unconfirmed_sensitive_fields(
-                form_state,
-                metadata,
-            ),
-            "completion_percentage": self._completion_percentage(form_state),
+            "unconfirmed_fields": unconfirmed_fields,
+            "unconfirmed_sensitive_fields": unconfirmed_sensitive_fields,
+            "completion_percentage": completion_percentage,
             "latest_sensitive_fields": list(
                 session_state.get("latest_sensitive_fields", [])
             ),
             "current_field": session_state.get("current_field"),
-            "is_basic_registration_complete": not missing_required_fields,
+            "is_basic_registration_complete": self._is_registration_complete(form_state, metadata),
         }
 
     def get_review_summary(self, session_id: str, language: str) -> str:
@@ -622,6 +676,59 @@ class RegistrationEngine:
                 "skipped_fields": set(),
             },
         )
+
+    def _normalize_location_to_arabic(self, field_id: str, value: str, language: str) -> str:
+        """
+        Normalize location and address fields to Arabic.
+        """
+        if not value:
+            return ""
+            
+        text = value.strip().lower()
+        
+        # 1. Check direct mapping
+        if text in self.LOCATION_MAP:
+            return self.LOCATION_MAP[text]
+            
+        # 2. Handle address words if it's an address field
+        if field_id in {"address", "guardian_address", "guardian_work_address"}:
+            words = text.split()
+            normalized_words = []
+            for word in words:
+                # Check mapping for each word
+                clean_word = word.strip(".,")
+                if clean_word in self.ADDRESS_WORDS_MAP:
+                    normalized_words.append(self.ADDRESS_WORDS_MAP[clean_word])
+                elif clean_word in self.LOCATION_MAP:
+                    normalized_words.append(self.LOCATION_MAP[clean_word])
+                else:
+                    normalized_words.append(word)
+            
+            res = " ".join(normalized_words)
+            # If it's mostly English and not Arabic, we might need LLM refinement
+            has_arabic = bool(re.search(r"[\u0600-\u06FF]", res))
+            if not has_arabic and ENABLE_LLM_REGISTRATION_EXTRACTION:
+                llm_res = self.llm_client.correct_registration_value(
+                    field_id=field_id,
+                    raw_text=value,
+                    language=language,
+                )
+                if llm_res and llm_res.get("candidate_value"):
+                    return llm_res["candidate_value"]
+            return res
+            
+        # 3. If no mapping found and LLM is enabled, try LLM for unknown location
+        if ENABLE_LLM_REGISTRATION_EXTRACTION:
+            llm_res = self.llm_client.correct_registration_value(
+                field_id=field_id,
+                raw_text=value,
+                language=language,
+            )
+            if llm_res and llm_res.get("candidate_value"):
+                return llm_res["candidate_value"]
+                
+        # 4. Fallback to original if no better option
+        return value
 
     def _extract_updates(
         self,
@@ -1672,10 +1779,26 @@ class RegistrationEngine:
         if field_name == "guardian_nationality":
             return self._validate_guardian_nationality(value)
 
-        if field_name == "governorate":
-            return self._normalize_governorate(value)
+        if field_name in self.LOCATION_FIELDS:
+            return self._validate_location(field_name, value)
 
         return value, True
+
+    def _validate_location(self, field_name: str, value: Any) -> tuple[str | None, bool]:
+        """
+        Validate and normalize location fields to Arabic.
+        """
+        # We don't have a specific language here, so we'll use a default or try to detect
+        # But _normalize_location_to_arabic will handle both anyway.
+        # Since we don't pass the session language here, we might need it.
+        # Actually, let's just assume Arabic target.
+        arabic_value = self._normalize_location_to_arabic(field_name, str(value), "ar")
+        
+        # Validation: Must contain Arabic letters or be an address with numbers
+        is_valid = bool(re.search(r"[\u0600-\u06FF]", arabic_value)) or \
+                   (field_name in {"address", "guardian_address", "guardian_work_address"} and bool(re.search(r"\d", arabic_value)))
+                   
+        return arabic_value if is_valid else None, is_valid
 
     def _validate_phone_generic(self, value: Any) -> tuple[str | None, bool]:
         digits = re.sub(r"\D", "", str(value))
@@ -1844,44 +1967,6 @@ class RegistrationEngine:
 
         return None, False
 
-    def _normalize_governorate(self, value: Any) -> tuple[str | None, bool]:
-        text = str(value).strip().lower()
-        gov_map = {
-            "Cairo": ["cairo", "القاهرة", "قاهره"],
-            "Giza": ["giza", "الجيزة", "جيزة"],
-            "Alexandria": ["alexandria", "الإسكندرية", "اسكندرية"],
-            "Dakahlia": ["dakahlia", "الدقهلية"],
-            "Red Sea": ["red sea", "البحر الأحمر"],
-            "Beheira": ["beheira", "البحيرة"],
-            "Fayoum": ["fayoum", "الفيوم"],
-            "Gharbiya": ["gharbiya", "الغربية"],
-            "Ismailia": ["ismailia", "الإسماعيلية"],
-            "Monufiya": ["monufiya", "المنوفية"],
-            "Minya": ["minya", "المنيا"],
-            "Qalyubiya": ["qalyubiya", "القليوبية"],
-            "New Valley": ["new valley", "الوادي الجديد"],
-            "Suez": ["suez", "السويس"],
-            "Aswan": ["aswan", "أسوان"],
-            "Assiut": ["assiut", "أسيوط"],
-            "Beni Suef": ["beni suef", "بني سويف"],
-            "Port Said": ["port said", "بورسعيد"],
-            "Damietta": ["damietta", "دمياط"],
-            "Sharkia": ["sharkia", "الشرقية"],
-            "South Sinai": ["south sinai", "جنوب سيناء"],
-            "Kafr El Sheikh": ["kafr el sheikh", "كفر الشيخ"],
-            "Matrouh": ["matrouh", "مطروح"],
-            "Luxor": ["luxor", "الأقصر"],
-            "Qena": ["qena", "قنا"],
-            "North Sinai": ["north sinai", "شمال سيناء"],
-            "Sohag": ["sohag", "سوهاج"]
-        }
-
-        for canonical, aliases in gov_map.items():
-            if text == canonical.lower() or any(alias in text for alias in aliases):
-                return canonical, True
-
-        return value, True # Allow if not in map but keep as is
-
     def _validate_mobile(self, value: Any) -> tuple[str | None, bool]:
         digits = re.sub(r"\D", "", str(value))
         is_valid = (
@@ -2046,15 +2131,39 @@ class RegistrationEngine:
 
         if command_text in self.REJECT_WORDS:
             latest_sensitive_fields = session_state.get("latest_sensitive_fields", [])
-            field_label = latest_sensitive_fields[0] if latest_sensitive_fields else "the field"
-
+            
+            # Clear the rejected fields
+            for field_name in latest_sensitive_fields:
+                if field_name in session_state["fields"]:
+                    del session_state["fields"][field_name]
+                if field_name in session_state["metadata"]:
+                    del session_state["metadata"][field_name]
+                
+                # Special case for name pair: clear both
+                if field_name == "full_name_ar":
+                    if "full_name_en" in session_state["fields"]:
+                        del session_state["fields"]["full_name_en"]
+                    if "full_name_en" in session_state["metadata"]:
+                        del session_state["metadata"]["full_name_en"]
+            
+            # Re-sync current field to the first missing field (which should be the one we just cleared)
+            session_state["current_field"] = None
+            current_field = self._sync_current_field(session_state, language)
+            
+            session_state["latest_sensitive_fields"] = []
+            
             if language == "ar":
                 next_question = "من فضلك أعد إدخال هذه المعلومة بشكل صحيح."
             else:
-                next_question = f"Please repeat {field_label} correctly."
+                next_question = "Please provide the information again."
+
+            # If we know the original question, maybe use it? 
+            # Or just let _retry_question handle it?
+            if current_field:
+                next_question = self._question_for_field(current_field, language)
 
             return {
-                "needs_confirmation": True,
+                "needs_confirmation": False,
                 "next_question": next_question,
                 "route_notes": ["registration_confirmation_rejected"],
             }
@@ -2131,10 +2240,8 @@ class RegistrationEngine:
         if not form_state.get(field_name):
             return True
 
-        if field_name in self.sensitive_fields:
-            return not metadata.get(field_name, {}).get("confirmed", False)
-
-        return False
+        # Every field now requires confirmation in guided flow
+        return not metadata.get(field_name, {}).get("confirmed", False)
 
     def _question_for_field(self, field_name: str | None, language: str) -> str | None:
         if not field_name:
@@ -2153,23 +2260,29 @@ class RegistrationEngine:
         session_state: dict[str, Any],
         language: str,
     ) -> str:
-        field_name = latest_sensitive_fields[0] if latest_sensitive_fields else "the field"
-        field_val = session_state.get("fields", {}).get(field_name)
-        field_meta = session_state.get("metadata", {}).get(field_name, {})
-        is_transliterated = field_meta.get("is_transliterated", False)
+        if not latest_sensitive_fields:
+            return "Please confirm if this is correct."
 
-        if is_transliterated and field_name in {"full_name_ar", "full_name_en"}:
+        field_name = latest_sensitive_fields[0]
+        field_val = session_state.get("fields", {}).get(field_name)
+        
+        # Special case for name pair
+        if field_name == "full_name_ar" and "full_name_en" in session_state.get("fields", {}):
+            full_name_ar = session_state["fields"].get("full_name_ar")
+            full_name_en = session_state["fields"].get("full_name_en")
             if language == "ar":
-                label = "باللغة العربية" if field_name == "full_name_ar" else "باللغة الإنجليزية"
-                return f"سمعت اسمك {label}: {field_val}. هل هذا صحيح؟ قل نعم للتأكيد أو لا للتعديل."
+                return f"سجلت اسمك كالتالي: العربي: {full_name_ar}، الإنجليزي: {full_name_en}. هل هذا صحيح؟ قل نعم للتأكيد أو لا للإعادة."
             else:
-                label = "Arabic" if field_name == "full_name_ar" else "English"
-                return f"I heard your {label} name as {field_val}. Is this correct? Say yes to confirm or no to change."
+                return f"I recorded your name as: Arabic: {full_name_ar}, English: {full_name_en}. Is this correct? Say yes to confirm or no to repeat."
+
+        # Get label for other fields
+        field_def = next((f for f in self.field_definitions if f["field_id"] == field_name), {})
+        label = field_def.get("label_ar" if language == "ar" else "label_en", field_name)
 
         if language == "ar":
-            return "هل هذه المعلومة صحيحة؟ قل نعم للتأكيد أو لا للتعديل."
-
-        return f"Please confirm {field_name}. Say confirm if it is correct."
+            return f"سجلت {label} كالتالي: {field_val}. هل هذا صحيح؟ قل نعم للتأكيد أو لا للإعادة."
+        else:
+            return f"I recorded {label} as: {field_val}. Is this correct? Say yes to confirm or no to repeat."
 
     def _form_state_with_auto_fields(self, form_state: dict[str, Any]) -> dict[str, Any]:
         values = dict(form_state)
@@ -2189,7 +2302,7 @@ class RegistrationEngine:
         missing_fields: list[str] = []
 
         if not any(form_state.get(field_name) for field_name in self.REQUIRED_NAME_FIELDS):
-            missing_fields.append("full_name_en")
+            missing_fields.append("full_name_ar")
 
         missing_fields.extend(
             field_name
@@ -2205,27 +2318,50 @@ class RegistrationEngine:
 
         return round((filled_count / required_count) * 100)
 
-    def _unconfirmed_sensitive_fields(
+    def _unconfirmed_fields(
         self,
         form_state: dict[str, Any],
         metadata: dict[str, Any],
     ) -> list[str]:
-        unconfirmed_fields: list[str] = []
+        unconfirmed: list[str] = []
 
-        for field_name in self.sensitive_fields:
+        # Check all filled fields in the order they appear in field_order
+        for field_name in self.field_order:
             if field_name not in form_state:
                 continue
 
             field_metadata = metadata.get(field_name, {})
 
             if not field_metadata.get("confirmed", False):
-                unconfirmed_fields.append(field_name)
+                unconfirmed.append(field_name)
 
-        return [
-            field_name
-            for field_name in self.field_order
-            if field_name in unconfirmed_fields
-        ]
+        return unconfirmed
+
+    def _unconfirmed_sensitive_fields(
+        self,
+        form_state: dict[str, Any],
+        metadata: dict[str, Any],
+    ) -> list[str]:
+        # For backward compatibility, return all unconfirmed fields for now if simple, 
+        # or specifically the ones marked sensitive.
+        # The prompt says: it is okay to return both unconfirmed_fields and unconfirmed_sensitive_fields.
+        unconfirmed = self._unconfirmed_fields(form_state, metadata)
+        return [f for f in unconfirmed if f in self.sensitive_fields]
+
+    def _is_registration_complete(self, form_state: dict[str, Any], metadata: dict[str, Any]) -> bool:
+        missing = self._missing_required_fields(form_state)
+        if missing:
+            return False
+            
+        # Check if all required fields are confirmed
+        unconfirmed = self._unconfirmed_fields(form_state, metadata)
+        required_set = set(self.required_core_fields) | set(self.REQUIRED_NAME_FIELDS)
+        
+        for field in unconfirmed:
+            if field in required_set:
+                return False
+                
+        return True
 
     def _english_review_summary(
         self,
