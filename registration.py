@@ -15,6 +15,7 @@ from typing import Any
 from config import ENABLE_LLM_REGISTRATION_EXTRACTION, FACULTY_ALIASES
 from llm_client import LLMClient
 from models import ProcessedText
+from utils import parse_spoken_numbers, extract_digit_sequence
 
 
 class RegistrationEngine:
@@ -41,8 +42,16 @@ class RegistrationEngine:
         "والدتي",
     }
 
-    CONFIRM_WORDS = {"confirm", "yes", "correct", "تمام", "ايوه", "نعم", "صح"}
-    REJECT_WORDS = {"no", "wrong", "incorrect", "لا", "غلط", "مش صح"}
+    CONFIRM_WORDS = {
+        "confirm", "yes", "correct", "تمام", "ايوه", "نعم", "صح", "مظبوط", 
+        "اكيد", "أكيد", "ماشي", "تمام كده", "كده صح", "اه صح", "آه", "اه", "صحيح",
+        "yep", "yeah", "confirmed", "ok", "okay", "right", "true", "that's correct", "it is correct"
+    }
+    REJECT_WORDS = {
+        "no", "wrong", "incorrect", "لا", "غلط", "مش صح", "غير صحيح", "لأ",
+        "لا غلط", "لا مش كده", "اعد", "اعيد", "كرر", "قول تاني", "رجع", "عدله", "غيره",
+        "not correct", "repeat", "retry", "again", "change it", "edit it", "redo"
+    }
     CORRECTION_WORDS = REJECT_WORDS.union(
         {"change", "update", "replace", "غير", "عدل"}
     )
@@ -811,8 +820,7 @@ class RegistrationEngine:
             "home_phone", "guardian_work_no", "guardian_home_phone",
             "id_or_passport", "guardian_id_or_passport", "seat_number"
         }:
-            normalized_digits = self._normalize_digits(raw_text)
-            digits = re.sub(r"\D", "", normalized_digits)
+            digits = extract_digit_sequence(raw_text)
             if digits:
                 updates[field_name] = digits
             return
@@ -833,8 +841,10 @@ class RegistrationEngine:
             return
 
         if field_name in {"percentage", "total_marks", "science_score", "math_score", "literary_score"}:
-            normalized_digits = self._normalize_digits(raw_text)
-            number_match = re.search(r"(\d{1,3}(?:\.\d{1,2})?)", normalized_digits)
+            text_with_digits = parse_spoken_numbers(raw_text)
+            # Handle "نص" for percentage
+            text_with_digits = text_with_digits.replace("ونص", ".5").replace("نص", ".5")
+            number_match = re.search(r"(\d{1,3}(?:\.\d{1,2})?)", text_with_digits)
 
             if number_match:
                 updates[field_name] = float(number_match.group(1))
@@ -842,8 +852,8 @@ class RegistrationEngine:
             return
 
         if field_name == "year_of_completion":
-            normalized_digits = self._normalize_digits(raw_text)
-            year_match = re.search(r"\b20\d{2}\b", normalized_digits)
+            text_with_digits = parse_spoken_numbers(raw_text)
+            year_match = re.search(r"\b20\d{2}\b|\b19\d{2}\b", text_with_digits)
 
             if year_match:
                 updates[field_name] = int(year_match.group(0))
@@ -902,12 +912,11 @@ class RegistrationEngine:
             return
 
         if field_name == "date_of_birth":
-            # Extract date formats from raw text
-            date_match = re.search(r"(\d{1,2}[/-]\d{1,2}[/-]\d{4})|(\d{4}-\d{1,2}-\d{1,2})", raw_text)
-            if date_match:
-                updates[field_name] = date_match.group(0)
+            parsed_date = self._parse_date_naturally(raw_text)
+            if parsed_date:
+                updates[field_name] = parsed_date
                 return
-            
+
             cleaned = self._clean_answer_fallback(raw_text)
             if cleaned:
                 updates[field_name] = cleaned
@@ -929,7 +938,7 @@ class RegistrationEngine:
                 if address:
                     updates[field_name] = address
                     return
-            
+
             cleaned = self._clean_answer_fallback(raw_text)
             if cleaned:
                 updates[field_name] = cleaned
@@ -945,6 +954,92 @@ class RegistrationEngine:
             if cleaned:
                 updates[field_name] = cleaned
 
+    def _parse_date_naturally(self, text: str) -> str | None:
+        """
+        Smart date parser for spoken Arabic/English.
+        Returns YYYY-MM-DD.
+        Priority:
+        1. ISO date: YYYY-MM-DD
+        2. Date with separators: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+        3. Date with spaces: DD MM YYYY
+        4. Compact 8 digits: DDMMYYYY
+        5. Month name forms: DD month YYYY
+        6. Spoken Arabic/Egyptian forms
+        """
+        month_map = {
+            "يناير": 1, "فبراير": 2, "مارس": 3, "ابريل": 4, "أبريل": 4,
+            "مايو": 5, "يونيو": 6, "يوليو": 7, "اغسطس": 8, "أغسطس": 8,
+            "سبتمبر": 9, "أكتوبر": 10, "اكتوبر": 10, "نوفمبر": 11, "ديسمبر": 12,
+            "january": 1, "february": 2, "march": 3, "april": 4, "may": 5,
+            "june": 6, "july": 7, "august": 8, "september": 9, "october": 10,
+            "november": 11, "december": 12
+        }
+
+        # 1. ISO already valid
+        iso_match = re.search(r"(\d{4})-(\d{2})-(\d{2})", text)
+        if iso_match:
+            try:
+                year, month, day = map(int, iso_match.groups())
+                return datetime(year, month, day).strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+
+        # First parse spoken numbers for subsequent steps
+        text_with_digits = parse_spoken_numbers(text)
+
+        # 2. Try numeric formats with separators (DD/MM/YYYY etc.)
+        sep_match = re.search(r"(\d{1,2})[\s\-/.](\d{1,2})[\s\-/.](\d{4})", text_with_digits)
+        if sep_match:
+            day, month, year = map(int, sep_match.groups())
+            # Egyptian order: day month year
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                try:
+                    return datetime(year, month, day).strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
+
+        # 3. Compact 8 digits: DDMMYYYY
+        compact_match = re.search(r"\b(\d{2})(\d{2})(\d{4})\b", text_with_digits)
+        if compact_match:
+            day, month, year = map(int, compact_match.groups())
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                try:
+                    return datetime(year, month, day).strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
+
+        # 4. Try format with month names
+        found_month = None
+        for month_name, month_num in month_map.items():
+            if month_name in text.lower():
+                found_month = month_num
+                break
+
+        if found_month:
+            digits = re.findall(r"\d+", text_with_digits)
+            if len(digits) >= 2:
+                day = int(digits[0])
+                year = int(digits[1])
+                if day > 31 and year <= 31:
+                    day, year = year, day
+                if 1 <= day <= 31:
+                    try:
+                        return datetime(year, found_month, day).strftime("%Y-%m-%d")
+                    except ValueError:
+                        pass
+
+        # 5. Last resort: just 3 numbers in a row
+        digits = re.findall(r"\d+", text_with_digits)
+        if len(digits) == 3:
+            day, month, year = map(int, digits)
+            if len(str(year)) == 4:
+                if 1 <= month <= 12 and 1 <= day <= 31:
+                    try:
+                        return datetime(year, month, day).strftime("%Y-%m-%d")
+                    except ValueError:
+                        pass
+
+        return None
     def _clean_answer_fallback(self, text: str) -> str:
         """
         Clean common answer prefixes for current field fallback extraction.
@@ -1845,28 +1940,23 @@ class RegistrationEngine:
 
     def _validate_date(self, value: Any) -> tuple[str | None, bool]:
         text = str(value).strip()
-        # Supported formats: DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD
-        patterns = [
-            r"(\d{1,2})[/-](\d{1,2})[/-](\d{4})",
-            r"(\d{4})-(\d{1,2})-(\d{1,2})"
-        ]
+        # If it's already ISO format
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            try:
+                dt = datetime.strptime(text, "%Y-%m-%d")
+                if dt.year < 1950 or dt.year > datetime.now().year:
+                    return None, False
+                return text, True
+            except ValueError:
+                return None, False
 
-        for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                groups = match.groups()
-                if len(groups[0]) == 4: # YYYY-MM-DD
-                    year, month, day = map(int, groups)
-                else: # DD/MM/YYYY
-                    day, month, year = map(int, groups)
-                
-                try:
-                    dt = datetime(year, month, day)
-                    if dt > datetime.now():
-                        return None, False
-                    return dt.strftime("%Y-%m-%d"), True
-                except ValueError:
-                    continue
+        # Fallback for other formats if they somehow reach here
+        parsed = self._parse_date_naturally(text)
+        if parsed:
+            dt = datetime.strptime(parsed, "%Y-%m-%d")
+            if dt.year < 1950 or dt.year > datetime.now().year:
+                return None, False
+            return parsed, True
         
         return None, False
 
@@ -2023,25 +2113,25 @@ class RegistrationEngine:
         return year if is_valid else None, is_valid
 
     def _retry_question(self, field_name: str, language: str) -> str:
-        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
+        if field_name == "date_of_birth":
             if language == "ar":
-                return "الرقم القومي يجب أن يكون 14 رقمًا، أو أدخل رقم جواز سفر صحيح."
-            return "National ID must be 14 digits, or enter a valid passport number."
+                return "تاريخ الميلاد غير واضح. يمكنك قوله مثل: 11 12 2005 أو 11122005 أو 12 نوفمبر 2005."
+            return "Date of birth is unclear. You can say it like: 11 12 2005, 11122005, or 12 November 2005."
             
         if field_name in {"student_mobile_no", "guardian_mobile_no"}:
             if language == "ar":
-                return "لم أسمع رقم موبايل صحيح. من فضلك قل 11 رقم يبدأ بـ 010 أو 011 أو 012 أو 015."
-            return "I did not hear a valid mobile number. Please say 11 digits starting with 010, 011, 012, or 015."
+                return "رقم الموبايل غير واضح. من فضلك قل 11 رقم ببطء، مثل: صفر واحد صفر واحد اتنين تلاتة أربعة خمسة ستة سبعة تمانية."
+            return "Mobile number is unclear. Please say the 11 digits slowly, for example: zero one zero one two three four five six seven eight."
             
+        if field_name in {"id_or_passport", "guardian_id_or_passport"}:
+            if language == "ar":
+                return "رقم البطاقة غير واضح. من فضلك قل 14 رقم ببطء أو اكتبه يدويًا."
+            return "National ID is unclear. Please say the 14 digits slowly or type it manually."
+
         if field_name in {"email_address", "guardian_email_address"}:
             if language == "ar":
                 return "البريد الإلكتروني غير كامل أو غير صحيح. من فضلك قل البريد مرة أخرى مثل name at gmail dot com."
             return "The email address is incomplete or incorrect. Please say it again like: name at gmail dot com."
-            
-        if field_name == "date_of_birth":
-            if language == "ar":
-                return "تاريخ الميلاد غير واضح. من فضلك قل التاريخ مثل 15/08/2005."
-            return "Date of birth is unclear. Please say it like: 15/08/2005."
 
         if field_name in {"percentage", "science_score", "math_score", "literary_score"}:
             if language == "ar":
@@ -2101,11 +2191,100 @@ class RegistrationEngine:
         session_state: dict[str, Any],
         language: str,
     ) -> dict[str, Any] | None:
-        command_text = normalized_text.strip().lower()
+        latest_sensitive_fields = session_state.get("latest_sensitive_fields", [])
+        if not latest_sensitive_fields:
+            return None
 
-        if command_text in self.CONFIRM_WORDS:
-            latest_sensitive_fields = session_state.get("latest_sensitive_fields", [])
+        # Robust normalization for matching
+        command_text = self._normalize_preference_text(normalized_text)
+        
+        # 1. Check for explicit correction with value
+        correction_value = self._extract_correction_value(normalized_text, language)
+        if correction_value:
+            # Try to apply correction
+            success = self._apply_correction_to_pending_fields(
+                correction_value, 
+                latest_sensitive_fields, 
+                session_state, 
+                language
+            )
+            if success:
+                # Ask confirmation again
+                next_question = self._confirmation_question(latest_sensitive_fields, session_state, language)
+                return {
+                    "needs_confirmation": True,
+                    "next_question": next_question,
+                    "route_notes": ["registration_correction_applied"],
+                }
+            else:
+                # If we detected correction intent but couldn't parse/validate value,
+                # we should ask field-specific retry.
+                if "full_name_ar" in latest_sensitive_fields:
+                    if language == "ar":
+                        next_question = "لم أستطع فهم تصحيح الاسم. من فضلك قل الاسم الكامل مرة أخرى."
+                    else:
+                        next_question = "I could not understand the name correction. Please say the full name again."
+                else:
+                    next_question = self._retry_question(latest_sensitive_fields[0], language)
+                
+                return {
+                    "needs_confirmation": True,
+                    "next_question": next_question,
+                    "route_notes": ["registration_correction_failed"],
+                }
 
+        # 2. Check if it's a clear reject (no value)
+        is_reject = False
+        for word in self.REJECT_WORDS:
+            norm_word = self._normalize_preference_text(word)
+            if re.search(rf"(?<!\w){re.escape(norm_word)}(?!\w)", command_text):
+                is_reject = True
+                break
+
+        if is_reject:
+            # Clear the rejected fields
+            for field_name in latest_sensitive_fields:
+                if field_name in session_state["fields"]:
+                    del session_state["fields"][field_name]
+                if field_name in session_state["metadata"]:
+                    del session_state["metadata"][field_name]
+                
+                # Special case for name pair: clear both
+                if field_name == "full_name_ar":
+                    if "full_name_en" in session_state["fields"]:
+                        del session_state["fields"]["full_name_en"]
+                    if "full_name_en" in session_state["metadata"]:
+                        del session_state["metadata"]["full_name_en"]
+            
+            # Re-sync current field to the first missing field
+            session_state["current_field"] = None
+            current_field = self._sync_current_field(session_state, language)
+            
+            session_state["latest_sensitive_fields"] = []
+            
+            if current_field:
+                next_question = self._question_for_field(current_field, language)
+            else:
+                if language == "ar":
+                    next_question = "من فضلك أعد إدخال هذه المعلومة بشكل صحيح."
+                else:
+                    next_question = "Please provide the information again."
+
+            return {
+                "needs_confirmation": False,
+                "next_question": next_question,
+                "route_notes": ["registration_confirmation_rejected"],
+            }
+
+        # 3. Check if it's a clear confirm
+        is_confirm = False
+        for word in self.CONFIRM_WORDS:
+            norm_word = self._normalize_preference_text(word)
+            if re.search(rf"(?<!\w){re.escape(norm_word)}(?!\w)", command_text):
+                is_confirm = True
+                break
+        
+        if is_confirm:
             for field_name in latest_sensitive_fields:
                 metadata = session_state["metadata"].setdefault(field_name, {})
                 metadata["confirmed"] = True
@@ -2129,46 +2308,173 @@ class RegistrationEngine:
                 ],
             }
 
-        if command_text in self.REJECT_WORDS:
-            latest_sensitive_fields = session_state.get("latest_sensitive_fields", [])
-            
-            # Clear the rejected fields
-            for field_name in latest_sensitive_fields:
-                if field_name in session_state["fields"]:
-                    del session_state["fields"][field_name]
-                if field_name in session_state["metadata"]:
-                    del session_state["metadata"][field_name]
-                
-                # Special case for name pair: clear both
-                if field_name == "full_name_ar":
-                    if "full_name_en" in session_state["fields"]:
-                        del session_state["fields"]["full_name_en"]
-                    if "full_name_en" in session_state["metadata"]:
-                        del session_state["metadata"]["full_name_en"]
-            
-            # Re-sync current field to the first missing field (which should be the one we just cleared)
-            session_state["current_field"] = None
-            current_field = self._sync_current_field(session_state, language)
-            
-            session_state["latest_sensitive_fields"] = []
-            
-            if language == "ar":
-                next_question = "من فضلك أعد إدخال هذه المعلومة بشكل صحيح."
-            else:
-                next_question = "Please provide the information again."
+        # 4. If confirmation is pending but input is ambiguous
+        if language == "ar":
+            next_question = "هل تريد تأكيد هذه المعلومة أم تعديلها؟ قل نعم للتأكيد، لا للإعادة، أو قل صححها إلى القيمة الصحيحة."
+        else:
+            next_question = "Do you want to confirm or correct this value? Say yes to confirm, no to repeat, or say correct it to the right value."
 
-            # If we know the original question, maybe use it? 
-            # Or just let _retry_question handle it?
-            if current_field:
-                next_question = self._question_for_field(current_field, language)
+        return {
+            "needs_confirmation": True,
+            "next_question": next_question,
+            "route_notes": ["registration_confirmation_ambiguous"],
+        }
 
-            return {
-                "needs_confirmation": False,
-                "next_question": next_question,
-                "route_notes": ["registration_confirmation_rejected"],
-            }
-
+    def _extract_correction_value(self, text: str, language: str) -> str | None:
+        """
+        Extract the new value from a correction phrase.
+        """
+        prefixes_ar = [
+            "صححه الى", "صححها الى", "عدله الى", "عدلها الى", "غيره الى", "غيرها الى",
+            "خليه", "خليها", "لا الصحيح", "لا هو", "لا هي", 
+            "لا الرقم", "لا التاريخ", "لا المدينة", "لا العنوان", "لا المحافظة", "لا الحي",
+            "لا", "لأ", "غلط", "مش صح"
+        ]
+        prefixes_en = [
+            "correct it to", "change it to", "update it to", "replace it with",
+            "no it is", "no the correct value is", "wrong it should be", "edit",
+            "no the number", "no the date", "no the city", "no the address"
+        ]
+        
+        # Sort by length descending to match longest first
+        all_prefixes = sorted(prefixes_ar + prefixes_en, key=len, reverse=True)
+        
+        norm_text = self._normalize_preference_text(text)
+        
+        for prefix in all_prefixes:
+            norm_prefix = self._normalize_preference_text(prefix)
+            # Match prefix at the start followed by space and something
+            if norm_text.startswith(norm_prefix + " "):
+                # Extract everything after the prefix in the original text if possible
+                words = text.strip().split()
+                prefix_words_count = len(prefix.strip().split())
+                if len(words) > prefix_words_count:
+                    return " ".join(words[prefix_words_count:]).strip(" .,،!??")
+                    
         return None
+
+    def _apply_correction_to_pending_fields(
+        self,
+        correction_text: str,
+        pending_fields: list[str],
+        session_state: dict[str, Any],
+        language: str
+    ) -> bool:
+        if not pending_fields:
+            return False
+            
+        field_name = pending_fields[0]
+        form_state = session_state["fields"]
+        
+        # 1. Name Pair Correction
+        if field_name == "full_name_ar" or field_name == "full_name_en":
+            return self._apply_name_correction(correction_text, session_state, language)
+            
+        # 2. Numeric Fields (Phone, ID, Seat Number) - Extract digits from noise words
+        if field_name in {
+            "student_mobile_no", "guardian_mobile_no", "mobile_no_2",
+            "home_phone", "guardian_work_no", "guardian_home_phone",
+            "id_or_passport", "guardian_id_or_passport", "seat_number"
+        }:
+            digits = extract_digit_sequence(correction_text)
+            if digits:
+                normalized, ok = self._validate_field_value(field_name, digits)
+                if ok:
+                    form_state[field_name] = normalized
+                    session_state["metadata"][field_name]["confirmed"] = False
+                    return True
+            return False
+
+        # 3. Date Correction
+        if field_name == "date_of_birth":
+            parsed = self._parse_date_naturally(correction_text)
+            if parsed:
+                normalized, ok = self._validate_date(parsed)
+                if ok:
+                    form_state[field_name] = normalized
+                    session_state["metadata"][field_name]["confirmed"] = False
+                    return True
+            return False
+            
+        # 4. Location Correction
+        if field_name in self.LOCATION_FIELDS:
+            normalized, ok = self._validate_location(field_name, correction_text)
+            if ok:
+                form_state[field_name] = normalized
+                session_state["metadata"][field_name]["confirmed"] = False
+                return True
+            return False
+            
+        # 5. General Field Correction
+        normalized, ok = self._validate_field_value(field_name, correction_text)
+        if ok:
+            form_state[field_name] = normalized
+            session_state["metadata"][field_name]["confirmed"] = False
+            return True
+            
+        return False
+
+    def _apply_name_correction(self, text: str, session_state: dict[str, Any], language: str) -> bool:
+        form_state = session_state["fields"]
+        current_ar = form_state.get("full_name_ar", "")
+        current_en = form_state.get("full_name_en", "")
+        
+        norm_text = self._normalize_preference_text(text)
+        
+        # Case A: Last name only
+        last_name_patterns = ["الاسم الاخير", "الاسم التالت", "الاسم الرابع", "اسم العيلة", "اسم العائلة", "last name", "family name"]
+        for p in last_name_patterns:
+            norm_p = self._normalize_preference_text(p)
+            if norm_text.startswith(norm_p):
+                # Extract last part
+                new_last_part = text.strip().split()[-1]
+                ar_parts = current_ar.split()
+                if ar_parts:
+                    ar_parts[-1] = new_last_part
+                    new_full_ar = " ".join(ar_parts)
+                    pair = self._generate_name_pair(new_full_ar, "ar")
+                    if pair:
+                        form_state.update(pair)
+                        for f in ["full_name_ar", "full_name_en"]:
+                            if f in session_state["metadata"]:
+                                session_state["metadata"][f]["confirmed"] = False
+                        return True
+        
+        # Case B: Specific English correction
+        if "انجليزي" in norm_text or "انجلش" in norm_text or "english" in norm_text.lower():
+            # Try to find Latin part
+            parts = text.split()
+            latin_parts = [p for p in parts if re.search(r"[A-Za-z]", p)]
+            if latin_parts:
+                new_en = " ".join(latin_parts)
+                # If only one word, maybe it's just the last name
+                if len(latin_parts) == 1 and len(current_en.split()) > 1:
+                    en_parts = current_en.split()
+                    en_parts[-1] = new_en.capitalize()
+                    new_en = " ".join(en_parts)
+                
+                pair = self._generate_name_pair(new_en, "en")
+                if pair:
+                    form_state.update(pair)
+                    for f in ["full_name_ar", "full_name_en"]:
+                        if f in session_state["metadata"]:
+                            session_state["metadata"][f]["confirmed"] = False
+                    return True
+
+        # Case C: Full name update (fallback)
+        # Handle "الى" or "to"
+        to_parts = re.split(r"\s+الى\s+|\s+to\s+", text, flags=re.IGNORECASE)
+        val = to_parts[-1] if len(to_parts) > 1 else text
+        
+        pair = self._generate_name_pair(val, "en" if bool(re.search(r"[A-Za-z]", val)) else "ar")
+        if pair:
+            form_state.update(pair)
+            for f in ["full_name_ar", "full_name_en"]:
+                if f in session_state["metadata"]:
+                    session_state["metadata"][f]["confirmed"] = False
+            return True
+            
+        return False
 
     def _sync_current_field(
         self,

@@ -700,6 +700,29 @@ def test_date_slash_format_normalizes_to_iso_hard() -> None:
     assert output.form_updates.get("date_of_birth") == "2005-08-15"
 
 
+def test_empty_transcript_does_not_advance_flow() -> None:
+    """
+    Test that an empty text input (simulating no transcript) 
+    does not advance the registration flow and keeps the current question.
+    """
+    brain = ECUBrain()
+    session_id = "test_empty_transcript"
+
+    # Start guided form
+    brain.registration_engine.start_guided_form(session_id, "ar")
+    status = brain.registration_engine.get_form_debug_view(session_id)
+    initial_field = status.get("current_field")
+    assert initial_field is not None, "Form should have a current field."
+
+    # Process empty text
+    output = process_text(brain, "", mode="registration", session_id=session_id, language="ar")
+    
+    # Verify we are still on the same field
+    new_status = brain.registration_engine.get_form_debug_view(session_id)
+    new_field = new_status.get("current_field")
+    
+    assert new_field == initial_field, f"Expected field to remain {initial_field}, but got {new_field}"
+
 def test_future_date_is_rejected_hard() -> None:
     brain = ECUBrain()
     session_id = "date-future-hard"

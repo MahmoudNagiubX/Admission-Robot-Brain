@@ -34,6 +34,7 @@ def run_local_test() -> None:
     session_id = "test-session-001"
     language = DEFAULT_LANGUAGE
     mode = DEFAULT_MODE
+    voice_failure_counter = 0
 
     def normalize_command(text: str) -> str:
         """
@@ -226,6 +227,28 @@ def run_local_test() -> None:
 
             if transcript:
                 process_user_text(transcript)
+                voice_failure_counter = 0
+            else:
+                voice_failure_counter += 1
+                if voice_failure_counter == 1:
+                    if language == "ar":
+                        retry_msg = "لم أسمعك بوضوح. من فضلك أعد الإجابة."
+                    else:
+                        retry_msg = "I could not hear you clearly. Please repeat your answer."
+                else:
+                    if language == "ar":
+                        retry_msg = "لسه الصوت غير واضح. ممكن تكتب الإجابة يدويًا أو تقرب من الميكروفون."
+                    else:
+                        retry_msg = "The audio is still unclear. You can type the answer manually or move closer to the microphone."
+
+                if mode == "registration":
+                    current_question = brain.registration_engine.get_current_question(session_id, language)
+                    if current_question:
+                        retry_msg = f"{retry_msg} {current_question}"
+
+                print(format_for_terminal(f"\nRobot: {retry_msg}"))
+                speak_text(retry_msg, language=language)
+
             continue
 
         if user_input.startswith("lang "):
@@ -255,6 +278,7 @@ def run_local_test() -> None:
 
         # Process normal typed input
         process_user_text(user_input)
+        voice_failure_counter = 0
 
 
 def print_validation_report(report: list[dict]) -> None:
