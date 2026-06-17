@@ -133,6 +133,43 @@ class LLMClient:
         except Exception:
             return default_response
 
+    def extract_name_pair(
+        self,
+        text: str,
+        language: str = "en",
+    ) -> dict[str, Any] | None:
+        """
+        Phonetically transliterate a name into both Arabic and English.
+        Returns JSON: { "name_ar": "...", "name_en": "...", "confidence": 0.9 }
+        """
+        if not self.client or not self.api_key:
+            return None
+
+        prompt = (
+            "You are a phonetic name transliterator for ECU Admission Robot.\n"
+            "Extract the student full name from the text and provide both Arabic and English phonetic versions.\n"
+            "Rules:\n"
+            "1. PHONETIC TRANSLITERATION ONLY. Do not translate meanings (e.g., 'Nour' remains 'Nour', not 'Light').\n"
+            "2. Arabic name must be in Arabic script.\n"
+            "3. English name must be in Latin script.\n"
+            "4. Remove prefixes like 'my name is', 'اسمي', etc.\n"
+            "5. Return JSON only. No markdown.\n"
+            "Format:\n"
+            "{\n"
+            '  "name_ar": "...",\n'
+            '  "name_en": "...",\n'
+            '  "confidence": 0.0\n'
+            "}\n\n"
+            f"User text: {text}\n"
+            f"Source language: {language}"
+        )
+
+        try:
+            response_text = self._call_text_model(prompt)
+            return self._parse_json_object(response_text)
+        except Exception:
+            return None
+
     def _call_text_model(self, prompt: str) -> str | None:
         if self.provider == "groq":
             response = self.client.chat.completions.create(
@@ -258,6 +295,18 @@ class LLMClient:
         text: str,
         language: str,
     ) -> str:
+        transliteration_instruction = ""
+        if field_id == "full_name_ar":
+            transliteration_instruction = (
+                "SPECIAL RULE: If the user provided an Arabic name in English letters (transliteration), "
+                "YOU MUST convert it to proper Arabic letters. Example: 'Mohammed' -> 'محمد'.\n"
+            )
+        elif field_id == "full_name_en":
+            transliteration_instruction = (
+                "SPECIAL RULE: If the user provided an Arabic name in Arabic letters, "
+                "YOU MUST convert it to proper English letters (transliteration). Example: 'محمد' -> 'Mohamed'.\n"
+            )
+
         return (
             "You are a registration data cleaner for ECU Admission Robot.\n"
             "Your job is to extract or correct a SINGLE field from messy text.\n"
@@ -268,6 +317,7 @@ class LLMClient:
             "1. Return JSON only. No explanation.\n"
             "2. If the text contains a correction for the field, extract it.\n"
             "3. Normalize names, certificates, and job titles.\n"
+            f"{transliteration_instruction}"
             "4. For dates, return YYYY-MM-DD.\n"
             "5. If you cannot find a valid value for this specific field, return null for candidate_value.\n"
             "6. DO NOT invent IDs, phone numbers, or emails. If they are missing or too short, return null.\n"

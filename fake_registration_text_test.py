@@ -22,8 +22,7 @@ FAKE_REGISTRATION_INPUTS = [
     "start form",
 
     # 1. Personal Data
-    "محمود محمد نجيب",          # full_name_ar
-    "Mahmoud Mohamed Nagib",   # full_name_en
+    "محمود محمد نجيب",          # full_name_ar (fills both ar and en)
     "15/08/2005",              # date_of_birth
     "القاهرة",                 # place_of_birth
     "مصري",                    # nationality

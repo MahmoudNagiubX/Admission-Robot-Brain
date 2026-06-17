@@ -7,6 +7,7 @@ core registration fields using deterministic rules.
 
 import json
 import re
+import difflib
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -49,6 +50,13 @@ class RegistrationEngine:
     PROFESSION_WORDS = {
         "مهندس", "طبيب", "دكتور", "مدرس", "معلم", "محاسب", "مدير", "عامل", "فني",
         "engineer", "doctor", "teacher", "accountant", "manager", "worker", "technician"
+    }
+
+    # Local safe name correction map for common Egyptian/Arabic names (Emergency fallback only).
+    NAME_CORRECTION_MAP = {
+        "mohamed": ("Mohamed", "محمد"),
+        "ahmed": ("Ahmed", "أحمد"),
+        "mahmoud": ("Mahmoud", "محمود"),
     }
 
     LLM_ALLOWED_FIELDS = {
@@ -145,6 +153,57 @@ class RegistrationEngine:
 
         self.sessions: dict[str, dict[str, Any]] = {}
         self.llm_client = LLMClient()
+        
+        # Load Name Lexicon
+        self.name_lexicon = self._load_name_lexicon()
+        self.name_lookup_en = {} # Normalized EN -> (Primary EN, Primary AR)
+        self.name_lookup_ar = {} # Normalized AR -> (Primary EN, Primary AR)
+        self._build_lexicon_lookups()
+
+    def _load_name_lexicon(self) -> dict[str, Any]:
+        lexicon_path = Path("data/name_lexicon.json")
+        if lexicon_path.exists():
+            try:
+                with open(lexicon_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                return {"entries": []}
+        return {"entries": []}
+
+    def _build_lexicon_lookups(self) -> None:
+        if not self.name_lexicon or "entries" not in self.name_lexicon:
+            return
+            
+        # First pass: All entries
+        for entry in self.name_lexicon["entries"]:
+            primary_ar = entry.get("ar")
+            primary_en = entry.get("en_primary")
+            if not primary_ar or not primary_en:
+                continue
+                
+            pair = (primary_en, primary_ar)
+            
+            for en_alias in entry.get("en_aliases", []):
+                # Don't overwrite if existing is from starter
+                if en_alias in self.name_lookup_en:
+                    # We'll handle precedence in second pass
+                    pass
+                self.name_lookup_en[en_alias] = pair
+                
+            for ar_alias in entry.get("ar_aliases", []):
+                self.name_lookup_ar[ar_alias] = pair
+                
+        # Second pass: Overwrite with starter lexicon for precedence
+        for entry in self.name_lexicon["entries"]:
+            if "starter" in entry.get("source", []):
+                primary_ar = entry.get("ar")
+                primary_en = entry.get("en_primary")
+                pair = (primary_en, primary_ar)
+                
+                for en_alias in entry.get("en_aliases", []):
+                    self.name_lookup_en[en_alias] = pair
+                for ar_alias in entry.get("ar_aliases", []):
+                    self.name_lookup_ar[ar_alias] = pair
 
     def process(
         self,
@@ -243,6 +302,7 @@ class RegistrationEngine:
             normalized_value, is_valid = self._validate_field_value(field_name, value)
 
             # 4. LLM Correction Fallback (Only for current field if deterministic fails)
+            is_transliterated = False
             if not is_valid and field_name == current_field and ENABLE_LLM_REGISTRATION_EXTRACTION:
                 route_notes.append(f"deterministic_validation_failed:{field_name}")
                 llm_correction_func = getattr(self.llm_client, "correct_registration_value", None)
@@ -258,6 +318,13 @@ class RegistrationEngine:
                         normalized_value, is_valid = self._validate_field_value(field_name, val)
                         if is_valid:
                             route_notes.append(f"llm_correction_accepted:{field_name}")
+                            # Detect if this was a transliteration for name fields
+                            if field_name in {"full_name_ar", "full_name_en"}:
+                                raw_text = processed_text.raw_text
+                                if field_name == "full_name_ar" and bool(re.search(r"[A-Za-z]", raw_text)):
+                                    is_transliterated = True
+                                elif field_name == "full_name_en" and bool(re.search(r"[\u0600-\u06FF]", raw_text)):
+                                    is_transliterated = True
                         else:
                             route_notes.append(f"llm_correction_invalid:{field_name}")
                 else:
@@ -272,16 +339,21 @@ class RegistrationEngine:
             # 5. Apply valid update
             form_state[field_name] = normalized_value
             form_updates[field_name] = normalized_value
-            session_state["metadata"][field_name] = self._build_field_state(
+            
+            field_metadata = self._build_field_state(
                 value=normalized_value,
                 confidence=0.90,
-                needs_confirmation=field_name in self.sensitive_fields,
+                needs_confirmation=field_name in self.sensitive_fields or is_transliterated,
                 source="registration_extraction",
                 source_text=processed_text.raw_text,
             )
+            if is_transliterated:
+                field_metadata["is_transliterated"] = True
+                
+            session_state["metadata"][field_name] = field_metadata
             route_notes.append(f"field_filled:{field_name}")
 
-            if field_name in self.sensitive_fields:
+            if field_name in self.sensitive_fields or is_transliterated:
                 needs_confirmation = True
                 latest_sensitive_fields.append(field_name)
                 route_notes.append(f"confirmation_needed:{field_name}")
@@ -298,7 +370,7 @@ class RegistrationEngine:
         
         # 6. Determine Next Question / Retry Prompt
         if needs_confirmation:
-            next_question = self._confirmation_question(latest_sensitive_fields, language)
+            next_question = self._confirmation_question(latest_sensitive_fields, session_state, language)
         elif validation_errors:
             # Current field failed both deterministic and LLM correction
             next_question = self._retry_question(validation_errors[0], language)
@@ -604,7 +676,24 @@ class RegistrationEngine:
         if raw_text.lower() in commands:
             return
 
-        if field_name in {"full_name_en", "full_name_ar", "guardian_name"}:
+        if field_name == "full_name_ar":
+            name_pair = self._generate_name_pair(normalized_text, "en" if bool(re.search(r"[A-Za-z]", normalized_text)) else "ar")
+            if name_pair:
+                updates.update(name_pair)
+            else:
+                cleaned = self._clean_answer_fallback(normalized_text)
+                if cleaned:
+                    updates[field_name] = cleaned
+            return
+
+        if field_name == "full_name_en":
+            # If we are here, it means full_name_ar didn't fill it or we are specifically asking for it.
+            cleaned = self._clean_answer_fallback(raw_text)
+            if cleaned:
+                updates[field_name] = cleaned
+            return
+
+        if field_name == "guardian_name":
             cleaned = self._clean_answer_fallback(raw_text)
             if cleaned:
                 updates[field_name] = cleaned
@@ -890,6 +979,237 @@ class RegistrationEngine:
                 
         return cleaned.strip(" .,،!؟?")
 
+    def _is_name_intake_field(self, field_id: str) -> bool:
+        return field_id == "full_name_ar"
+
+    def _extract_name_only_from_phrase(self, text: str) -> str:
+        """
+        Remove common prefixes and noise words from name intake phrases.
+        """
+        text = text.strip(" .,،!؟?")
+        
+        noise_patterns = [
+            # English Phrases
+            r"\bmy full name in (?:arabic|english) is\b",
+            r"\bmy full name is\b",
+            r"\bmy name is\b",
+            r"\bfull name is\b",
+            r"\bname is\b",
+            r"\bit is\b",
+            r"\bi am\b",
+            
+            # Arabic Phrases
+            r"اسمي باللغة (?:العربية|الإنجليزية)",
+            r"اسمي الكامل",
+            r"انا اسمي",
+            r"أنا اسمي",
+            r"إسمي هو",
+            r"إسمي",
+            r"اسمي هو",
+            r"اسمي",
+            r"إسمى هو",
+            r"إسمى",
+            r"اسمى هو",
+            r"اسمى",
+            r"الاسم هو",
+            r"اسم هو",
+            r"انا من",
+            r"انا",
+            r"أنا",
+            r"\bهو\b",
+            r"\bهي\b",
+            r"\bهوا\b",
+            r"\bهيا\b",
+            r"\bإذ\b",
+            r"\bاذ\b",
+
+            
+            # Transcription noise (Phonetic English-to-Arabic errors)
+            r"ماي فول نيم ان (?:اربيك|انجلش)",
+            r"ماي فول نيم",
+            r"ماي فول ني",
+            r"ماي نيم",
+            r"من (?:اربيك|أربيك)",
+            r"ان (?:اربيك|إن اربيك)",
+            r"اربك",
+            r"اربيك",
+            r"انجلش",
+            r"إنجلش",
+            r"إذ",
+            r"اذ",
+            r"از",
+            r"إز",
+            r"فقط",
+            r"only",
+        ]
+        
+        cleaned = text
+        for pattern in noise_patterns:
+            cleaned = re.sub(pattern, " ", cleaned, flags=re.IGNORECASE).strip()
+            
+        return re.sub(r"\s+", " ", cleaned).strip(" .,،!؟?")
+
+    def _normalize_ar_for_match(self, text: str) -> str:
+        if not text: return ""
+        text = re.sub(r"[\u064B-\u065F]", "", text) # Remove diacritics
+        text = text.replace("\u0640", "") # Remove tatweel
+        text = re.sub(r"[أإآٱ]", "ا", text)
+        text = text.replace("ى", "ي").replace("ؤ", "و").replace("ئ", "ي")
+        text = re.sub(r"[^\w\s]", " ", text)
+        return re.sub(r"\s+", "", text).strip() # Remove spaces for matching
+
+    def _normalize_en_for_match(self, text: str) -> str:
+        if not text: return ""
+        text = text.lower().replace("-", " ").replace("_", " ")
+        text = re.sub(r"[^a-z\s]", " ", text)
+        return re.sub(r"\s+", " ", text).strip()
+
+    def _phonetic_transliterate(self, text: str, to_language: str) -> str:
+        """
+        Simple phonetic fallback rules for unknown names.
+        """
+        if to_language == "ar":
+            # EN -> AR
+            rules = [
+                (r"sh", "ش"), (r"ch", "تش"), (r"kh", "خ"), (r"gh", "غ"),
+                (r"ph", "ف"), (r"th", "ث"), (r"ee", "ي"), (r"oo", "و"),
+                (r"ou", "و"), (r"ea", "ي"), (r"ai", "اي"), (r"ay", "اي"),
+                (r"b", "ب"), (r"t", "ت"), (r"g", "ج"), (r"d", "د"),
+                (r"r", "ر"), (r"z", "ز"), (r"s", "س"), (r"f", "ف"),
+                (r"k", "ك"), (r"q", "ق"), (r"l", "ل"), (r"m", "م"),
+                (r"n", "ن"), (r"h", "ه"), (r"w", "و"), (r"y", "ي"),
+                (r"j", "ج"), (r"p", "ب"), (r"v", "ف"), (r"x", "كس"),
+                (r"c", "ك"), (r"a", "ا"), (r"e", "ي"), (r"i", "ي"),
+                (r"o", "و"), (r"u", "و"),
+            ]
+            res = text.lower()
+            for pattern, rep in rules:
+                res = re.sub(pattern, rep, res)
+            return res
+        else:
+            # AR -> EN
+            rules = [
+                ("ش", "sh"), ("خ", "kh"), ("غ", "gh"), ("ف", "f"),
+                ("ق", "q"), ("ك", "k"), ("ج", "j"), ("ت", "t"),
+                ("د", "d"), ("ب", "b"), ("م", "m"), ("ن", "n"),
+                ("ه", "h"), ("ز", "z"), ("س", "s"), ("ر", "r"),
+                ("ل", "l"), ("ع", "a"), ("ح", "h"), ("ط", "t"),
+                ("ص", "s"), ("ض", "d"), ("و", "w"), ("ي", "y"),
+                ("ا", "a"), ("أ", "a"), ("إ", "a"), ("آ", "a"),
+                ("ئ", "y"), ("ؤ", "w"), ("ة", "h"), ("ث", "th"),
+                ("ذ", "th"),
+            ]
+            res = text
+            for ar, en in rules:
+                res = res.replace(ar, en)
+            return res.capitalize()
+
+    def _generate_name_pair(self, text: str, language: str) -> dict[str, str]:
+        """
+        Multi-layered name intake logic.
+        """
+        cleaned_name = self._extract_name_only_from_phrase(text)
+        if not cleaned_name:
+            return {}
+            
+        parts = cleaned_name.split()
+        if len(parts) < 2:
+            return {}
+            
+        names_en = []
+        names_ar = []
+        
+        # Layer 2 & 3: Lexicon & Fuzzy/Phonetic
+        idx = 0
+        while idx < len(parts):
+            found = False
+            # Try compound matching first (max 3 words)
+            for window in range(min(3, len(parts) - idx), 0, -1):
+                phrase = " ".join(parts[idx:idx+window])
+                
+                # Try exact lookup
+                en_norm = self._normalize_en_for_match(phrase)
+                ar_norm = self._normalize_ar_for_match(phrase)
+                
+                pair = self.name_lookup_en.get(en_norm) or self.name_lookup_ar.get(ar_norm)
+                
+                if not pair and idx == 0: # Try emergency map
+                    pair = self.NAME_CORRECTION_MAP.get(phrase.lower())
+                
+                if pair:
+                    names_en.append(pair[0])
+                    names_ar.append(pair[1])
+                    idx += window
+                    found = True
+                    break
+                    
+                # Try fuzzy matching if single word and no exact match
+                if window == 1:
+                    # Fuzzy match EN
+                    en_matches = difflib.get_close_matches(en_norm, self.name_lookup_en.keys(), n=1, cutoff=0.9)
+                    if en_matches:
+                        pair = self.name_lookup_en[en_matches[0]]
+                        names_en.append(pair[0])
+                        names_ar.append(pair[1])
+                        idx += 1
+                        found = True
+                        break
+                    
+                    # Fuzzy match AR
+                    ar_matches = difflib.get_close_matches(ar_norm, self.name_lookup_ar.keys(), n=1, cutoff=0.9)
+                    if ar_matches:
+                        pair = self.name_lookup_ar[ar_matches[0]]
+                        names_en.append(pair[0])
+                        names_ar.append(pair[1])
+                        idx += 1
+                        found = True
+                        break
+            
+            if not found:
+                # Layer 3: Phonetic Fallback
+                part = parts[idx]
+                is_arabic = bool(re.search(r"[\u0600-\u06FF]", part))
+                if is_arabic:
+                    names_ar.append(part)
+                    names_en.append(self._phonetic_transliterate(part, "en"))
+                else:
+                    names_en.append(part.capitalize())
+                    names_ar.append(self._phonetic_transliterate(part, "ar"))
+                idx += 1
+
+        # Layer 4: LLM Fallback (if any part was not in lexicon)
+        # Check if all parts were found in lexicon by checking sources if we kept them, 
+        # but simpler: if we used phonetic fallback, try LLM.
+        # Actually, let's always try LLM if ENABLE_LLM_REGISTRATION_EXTRACTION is true 
+        # and we have unknown parts.
+        
+        full_ar = " ".join(names_ar)
+        full_en = " ".join(names_en)
+        
+        # Validation
+        if len(names_ar) < 2:
+            return {}
+
+        if ENABLE_LLM_REGISTRATION_EXTRACTION:
+            # Check if name looks "good enough" or needs LLM refinement
+            # If phonetic fallback was used, names might be slightly off.
+            # For now, let's trust the lexicon + phonetic but allow LLM to improve.
+            llm_res = self.llm_client.extract_name_pair(text=text, language=language)
+            if llm_res and llm_res.get("name_ar") and llm_res.get("name_en"):
+                # Validate LLM result
+                ar_val, ar_ok = self._validate_arabic_name(llm_res["name_ar"])
+                en_val, en_ok = self._validate_english_name(llm_res["name_en"])
+                if ar_ok and en_ok:
+                    return {
+                        "full_name_ar": ar_val,
+                        "full_name_en": en_val,
+                    }
+
+        return {
+            "full_name_ar": full_ar,
+            "full_name_en": full_en,
+        }
+
     def _extract_protected_entities(
         self,
         entities: dict[str, Any],
@@ -1001,7 +1321,15 @@ class RegistrationEngine:
             name = self._clean_value(english_match.group(1))
 
             if name and not is_bad_name(name):
-                updates["guardian_name" if guardian_context else "full_name_en"] = name
+                if guardian_context:
+                    updates["guardian_name"] = name
+                else:
+                    # In broad extraction, try to generate pair
+                    name_pair = self._generate_name_pair(name, "en")
+                    if name_pair:
+                        updates.update(name_pair)
+                    else:
+                        updates["full_name_en"] = name
 
         arabic_match = re.search(
             r"(?:انا اسمي|اسمي)\s+(.+?)(?=\s+و(?:رقمي|مجموعي|البريد|ايميلي|مدرستي|انا|اسمي)|\s+و|\s*,|$)",
@@ -1012,7 +1340,15 @@ class RegistrationEngine:
             name = self._clean_value(arabic_match.group(1))
 
             if name and not is_bad_name(name):
-                updates["guardian_name" if guardian_context else "full_name_ar"] = name
+                if guardian_context:
+                    updates["guardian_name"] = name
+                else:
+                    # In broad extraction, try to generate pair
+                    name_pair = self._generate_name_pair(name, "ar")
+                    if name_pair:
+                        updates.update(name_pair)
+                    else:
+                        updates["full_name_ar"] = name
 
     def _extract_relationship(self, text_lower: str, updates: dict[str, Any]) -> None:
         relationship_patterns = [
@@ -1420,11 +1756,16 @@ class RegistrationEngine:
         # Reject English letters
         has_english = bool(re.search(r"[A-Za-z]", name))
         # At least 2 names
-        has_two_names = len(name.split()) >= 2
+        parts = name.split()
+        has_two_names = len(parts) >= 2
         # No numbers
         no_numbers = not any(c.isdigit() for c in name)
+        
+        # No noise words
+        noise_words = {"ماي", "فول", "نيم", "نيمز", "اربيك", "انجلش", "اسمي", "الاسم", "هو", "انا", "فقط"}
+        has_noise = any(part in noise_words for part in parts)
 
-        is_valid = is_arabic and not has_english and has_two_names and no_numbers
+        is_valid = is_arabic and not has_english and has_two_names and no_numbers and not has_noise
         return name if is_valid else None, is_valid
 
     def _validate_english_name(self, value: Any) -> tuple[str | None, bool]:
@@ -1436,11 +1777,16 @@ class RegistrationEngine:
         # Reject Arabic letters
         has_arabic = bool(re.search(r"[\u0600-\u06FF]", name))
         # At least 2 names
-        has_two_names = len(name.split()) >= 2
+        parts = name.split()
+        has_two_names = len(parts) >= 2
         # No numbers
         no_numbers = not any(c.isdigit() for c in name)
+        
+        # No noise words
+        noise_words = {"my", "name", "full", "arabic", "english", "is", "i", "am", "only"}
+        has_noise = any(part.lower() in noise_words for part in parts)
 
-        is_valid = is_english and not has_arabic and has_two_names and no_numbers
+        is_valid = is_english and not has_arabic and has_two_names and no_numbers and not has_noise
         return name if is_valid else None, is_valid
 
     def _validate_guardian_profession(self, value: Any) -> tuple[str | None, bool]:
@@ -1616,6 +1962,11 @@ class RegistrationEngine:
             if language == "ar":
                 return "النسبة يجب أن تكون رقمًا من 0 إلى 100."
             return "Percentage must be a number from 0 to 100."
+
+        if field_name == "full_name_ar":
+            if language == "ar":
+                return "من فضلك قل أو اكتب اسمك الكامل باللغة العربية."
+            return "Please say or type your full name in Arabic."
 
         if field_name == "full_name_en":
             if language == "ar":
@@ -1799,9 +2150,21 @@ class RegistrationEngine:
     def _confirmation_question(
         self,
         latest_sensitive_fields: list[str],
+        session_state: dict[str, Any],
         language: str,
     ) -> str:
         field_name = latest_sensitive_fields[0] if latest_sensitive_fields else "the field"
+        field_val = session_state.get("fields", {}).get(field_name)
+        field_meta = session_state.get("metadata", {}).get(field_name, {})
+        is_transliterated = field_meta.get("is_transliterated", False)
+
+        if is_transliterated and field_name in {"full_name_ar", "full_name_en"}:
+            if language == "ar":
+                label = "باللغة العربية" if field_name == "full_name_ar" else "باللغة الإنجليزية"
+                return f"سمعت اسمك {label}: {field_val}. هل هذا صحيح؟ قل نعم للتأكيد أو لا للتعديل."
+            else:
+                label = "Arabic" if field_name == "full_name_ar" else "English"
+                return f"I heard your {label} name as {field_val}. Is this correct? Say yes to confirm or no to change."
 
         if language == "ar":
             return "هل هذه المعلومة صحيحة؟ قل نعم للتأكيد أو لا للتعديل."

@@ -124,7 +124,7 @@ def test_registration_arabic() -> None:
         language="ar",
     )
 
-    assert output.form_updates.get("full_name_ar") == "احمد محمد"
+    assert output.form_updates.get("full_name_ar") == "أحمد محمد"
     assert output.form_updates.get("student_mobile_no") == "01012345678"
     assert output.form_updates.get("percentage") == 92.5
     assert output.form_updates.get("year_of_completion") == 2024
@@ -140,7 +140,7 @@ def test_arabic_name_does_not_consume_phone_or_percentage() -> None:
         session_id="stress-arabic-name-session",
     )
 
-    assert output.form_updates.get("full_name_ar") == "احمد محمد علي"
+    assert output.form_updates.get("full_name_ar") == "أحمد محمد علي"
     assert output.form_updates.get("student_mobile_no") == "01012345678"
     assert output.form_updates.get("percentage") == 92.5
 
@@ -472,7 +472,7 @@ def test_guided_start_returns_first_question() -> None:
         session_id="guided-start-session",
         language="en",
     )
-    assert question == "What is your full name in Arabic?"
+    assert "Please say your full name" in question
 
 
 def test_guardian_address_same_as_me() -> None:
@@ -510,26 +510,34 @@ def test_stt_engine_imports_and_fails_safely_without_voice() -> None:
     assert stt_engine.is_available() is False
 
 
-def test_guided_order_after_full_name_ar_next_is_full_name_en() -> None:
+def test_guided_order_after_full_name_ar_next_is_date_of_birth() -> None:
     brain = ECUBrain()
     session_id = "guided-order-1"
     brain.registration_engine.start_guided_form(session_id, "ar")
-    output = process_text(brain, "محمود نجيب", mode="registration", session_id=session_id, language="ar")
-    assert output.form_updates.get("full_name_ar") == "محمود نجيب"
-    assert output.next_question == brain.registration_engine.prompts["full_name_en"]["ar"]
+    output = process_text(brain, "محمود محمد نجيب", mode="registration", session_id=session_id, language="ar")
+    assert output.form_updates.get("full_name_ar") == "محمود محمد نجيب"
+    # New behavior: both names filled, skip full_name_en
+    assert output.form_updates.get("full_name_en") == "Mahmoud Mohamed Nagib"
+    assert output.next_question == brain.registration_engine.prompts["date_of_birth"]["ar"]
 
 
-def test_guided_order_after_full_name_en_next_is_date_of_birth() -> None:
+def test_name_intake_english_phrase_extracts_name_only() -> None:
     brain = ECUBrain()
-    session_id = "guided-order-2"
+    session_id = "name-intake-phrase"
     brain.registration_engine.start_guided_form(session_id, "en")
-    # Set full_name_ar as filled
-    brain.registration_engine.sessions[session_id]["fields"]["full_name_ar"] = "محمود نجيب"
-    brain.registration_engine.sessions[session_id]["current_field"] = "full_name_en"
-    
-    output = process_text(brain, "Mahmoud Nagib", mode="registration", session_id=session_id)
-    assert output.form_updates.get("full_name_en") == "Mahmoud Nagib"
-    assert output.next_question == brain.registration_engine.prompts["date_of_birth"]["en"]
+    output = process_text(brain, "My full name in Arabic is Mahmoud Ahmed Nagib", mode="registration", session_id=session_id)
+    assert output.form_updates.get("full_name_en") == "Mahmoud Ahmed Nagib"
+    assert output.form_updates.get("full_name_ar") == "محمود أحمد نجيب"
+
+
+def test_name_intake_arabic_script_english_phrase_extracts_name_only() -> None:
+    brain = ECUBrain()
+    session_id = "name-intake-ar-script-en"
+    brain.registration_engine.start_guided_form(session_id, "ar")
+    # "ماي فول ني من أربيك إذ محمود أحمد نجيب"
+    output = process_text(brain, "ماي فول ني من أربيك إذ محمود أحمد نجيب", mode="registration", session_id=session_id, language="ar")
+    assert output.form_updates.get("full_name_ar") == "محمود أحمد نجيب"
+    assert output.form_updates.get("full_name_en") == "Mahmoud Ahmed Nagib"
 
 
 def test_date_of_birth_accepts_formats() -> None:
@@ -886,8 +894,9 @@ def main() -> int:
         ("Guided voice field count is 39", test_guided_voice_field_count),
         ("Guided voice order", test_guided_voice_order),
         ("Guided start returns first question", test_guided_start_returns_first_question),
-        ("Guided order: after name_ar is name_en", test_guided_order_after_full_name_ar_next_is_full_name_en),
-        ("Guided order: after name_en is DOB", test_guided_order_after_full_name_en_next_is_date_of_birth),
+        ("Guided order: after name_ar is DOB", test_guided_order_after_full_name_ar_next_is_date_of_birth),
+        ("Name intake: English phrase", test_name_intake_english_phrase_extracts_name_only),
+        ("Name intake: Arabic script EN phrase", test_name_intake_arabic_script_english_phrase_extracts_name_only),
         ("Date of birth formats", test_date_of_birth_accepts_formats),
         ("Invalid date stays on field", test_invalid_date_does_not_advance),
         ("Strict priority prevents leakage", test_strict_field_priority_prevents_leakage),

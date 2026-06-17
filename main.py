@@ -212,7 +212,17 @@ def run_local_test() -> None:
             continue
 
         if user_input in {"listen", "voice"}:
-            transcript = run_voice_input(stt_engine, language)
+            stt_language = language
+            # If in registration mode, check current field to optimize STT language
+            if mode == "registration":
+                status = brain.registration_engine.get_form_debug_view(session_id)
+                current_field = status.get("current_field")
+                if current_field == "full_name_ar":
+                    stt_language = "ar"
+                elif current_field == "full_name_en":
+                    stt_language = "en"
+            
+            transcript = run_voice_input(stt_engine, stt_language)
 
             if transcript:
                 process_user_text(transcript)

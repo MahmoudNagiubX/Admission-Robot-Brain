@@ -9,8 +9,8 @@
     "ask_in_guided_voice": true,
     "required_for_basic_registration": true,
     "sensitive": false,
-    "question_en": "What is your full name in Arabic?",
-    "question_ar": "ما اسمك الكامل باللغة العربية؟",
+    "question_en": "Please say your full name. You can say it in Arabic or English.",
+    "question_ar": "من فضلك قل اسمك الكامل. يمكنك قوله بالعربية أو الإنجليزية.",
     "validation_type": "arabic_name"
   },
   {
