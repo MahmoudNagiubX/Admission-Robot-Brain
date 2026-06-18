@@ -204,6 +204,141 @@ Example export:
 }
 ```
 
+## Frontend-Driven Registration Integration
+
+Production registration can be driven by a frontend wizard through
+`AdmissionBrainService.process_registration_field(...)`. In this mode the AI
+Brain processes only the requested `field_id`; it does not choose the next
+question, return `next_question`, return `next_field_id`, or advance the
+frontend wizard.
+
+Frontend responsibilities:
+* Own the wizard order and current screen.
+* Display the current question and form field.
+* Open microphone or keyboard input and run STT outside the AI Brain.
+* Send `session_id`, `field_id`, transcript, language, and interaction.
+* Navigate only after `allow_frontend_next=true`.
+* Show confirmation, retry, and manual-input UI from `ui_action`.
+
+Backend responsibilities:
+* Create HTTP endpoints and keep session mapping.
+* Call `AdmissionBrainService`; do not call `main.py`.
+* Send transcript text to the AI Brain, not raw microphone audio.
+* Save final exported values to the database.
+* If audio generation is enabled, serve generated local files as media URLs.
+
+AI Brain responsibilities:
+* Validate only the requested field.
+* Normalize the value and return `form_updates`.
+* Handle confirmation, correction phrases, and manual fallback.
+* Return `response_text`, `speech_text`, confirmation/manual metadata, and
+  stable UI actions.
+* Never control frontend wizard navigation.
+
+Request shape:
+```json
+{
+  "session_id": "student-session-123",
+  "field_id": "date_of_birth",
+  "interaction": "answer",
+  "transcript": "12 November 2005",
+  "language": "en",
+  "generate_audio": false
+}
+```
+
+Successful responses use:
+```json
+{
+  "success": true,
+  "session_id": "student-session-123",
+  "data": {
+    "field_id": "date_of_birth",
+    "interaction": "answer",
+    "status": "confirmation_required",
+    "field_completed": false,
+    "allow_frontend_next": false,
+    "form_updates": {
+      "date_of_birth": "2005-11-12"
+    },
+    "normalized_value": "2005-11-12",
+    "response_text": "I recorded Date of Birth as: 2005-11-12. Is this correct? Say yes to confirm or no to repeat.",
+    "speech_text": "I recorded Date of Birth as: 2005-11-12. Is this correct? Say yes to confirm or no to repeat.",
+    "confirmation": {
+      "required": true,
+      "field_id": "date_of_birth",
+      "display_value": "2005-11-12"
+    },
+    "manual_input": {
+      "required": false,
+      "field_id": null,
+      "prompt": null,
+      "input_mode": null
+    },
+    "ui_action": "SHOW_CONFIRMATION",
+    "audio": {
+      "generated": false,
+      "path": null
+    }
+  }
+}
+```
+
+Stable `interaction` values are `answer`, `confirmation`, and `manual_input`.
+Stable `ui_action` values are `SHOW_CONFIRMATION`, `SHOW_RETRY`,
+`REQUEST_MANUAL_INPUT`, and `ALLOW_FRONTEND_NEXT`.
+
+Example usage:
+```python
+from brain_service import AdmissionBrainService
+
+service = AdmissionBrainService()
+
+session_id = service.create_session(
+    language="ar",
+    mode="registration",
+)["session_id"]
+
+result = service.process_registration_field(
+    session_id=session_id,
+    field_id="date_of_birth",
+    transcript="12 November 2005",
+    language="en",
+    interaction="answer",
+    generate_audio=False,
+)
+print(result)
+```
+
+Confirmation example:
+```python
+result = service.process_registration_field(
+    session_id=session_id,
+    field_id="date_of_birth",
+    transcript="yes",
+    language="en",
+    interaction="confirmation",
+)
+```
+
+Manual input example:
+```python
+result = service.process_registration_field(
+    session_id=session_id,
+    field_id="date_of_birth",
+    transcript="11122005",
+    language="en",
+    interaction="manual_input",
+)
+```
+
+Frontend-driven TTS behavior differs from the local CLI. The CLI may call
+`speak_text(...)` and play audio through pygame. Frontend-driven integration
+always returns `speech_text`; when `generate_audio=True`, it may generate a
+local audio file through `generate_tts_audio(...)` without playback. A backend
+should convert that local path into a served media URL before sending it to a
+browser.
+
 ## Data Files
 
 * `data/registration_fields.json`: Field definitions and questions.

@@ -338,6 +338,269 @@ class RegistrationEngine:
                 for ar_alias in entry.get("ar_aliases", []):
                     self.name_lookup_ar[ar_alias] = pair
 
+    def process_frontend_field(
+        self,
+        session_id: str,
+        field_id: str,
+        processed_text: ProcessedText,
+        language: str,
+        interaction: str,
+    ) -> dict[str, Any]:
+        """
+        Frontend-driven single-field processing. Does not auto-advance.
+        """
+        session_state = self._get_or_create_session_state(session_id)
+        form_state = session_state["fields"]
+        metadata = session_state.setdefault("metadata", {})
+
+        if field_id not in metadata:
+            metadata[field_id] = {"confirmed": False, "needs_confirmation": True}
+
+        pending_field = session_state.get("pending_frontend_field")
+        manual_field = session_state.get("manual_field")
+
+        if interaction == "confirmation":
+            if pending_field != field_id:
+                return {"error": "FIELD_STATE_MISMATCH", "message": "This field does not match the pending registration interaction."}
+
+            session_state["latest_sensitive_fields"] = [field_id]
+            confirmation_result = self._handle_confirmation_command(
+                processed_text.normalized_text,
+                session_state,
+                language,
+            )
+
+            if not confirmation_result:
+                confirmation_result = {"needs_confirmation": True, "next_question": self._retry_question(field_id, language)}
+
+            needs_confirmation = confirmation_result.get("needs_confirmation", False)
+            manual_input_req = session_state.get("manual_input_required", False)
+            is_confirmed = metadata.get(field_id, {}).get("confirmed", False)
+
+            if is_confirmed and not needs_confirmation:
+                session_state["pending_frontend_field"] = None
+                if session_state.get("manual_field") == field_id:
+                    session_state["manual_input_required"] = False
+                    session_state["manual_field"] = None
+                field_label = next((f.get("label_en") for f in self.field_definitions if f["field_id"] == field_id), field_id)
+                field_label_ar = next((f.get("label_ar") for f in self.field_definitions if f["field_id"] == field_id), field_id)
+                
+                conf_text = f"تم تأكيد {field_label_ar}." if language == "ar" else f"{field_label} confirmed."
+                return {
+                    "status": "confirmed",
+                    "field_completed": True,
+                    "allow_frontend_next": True,
+                    "form_updates": {field_id: form_state.get(field_id)},
+                    "normalized_value": form_state.get(field_id),
+                    "response_text": conf_text,
+                    "speech_text": conf_text,
+                    "confirmation": {
+                        "required": False,
+                        "field_id": None,
+                        "display_value": None
+                    },
+                    "manual_input": {
+                        "required": False,
+                        "field_id": None,
+                        "prompt": None,
+                        "input_mode": None
+                    },
+                    "ui_action": "ALLOW_FRONTEND_NEXT"
+                }
+            elif manual_input_req:
+                session_state["pending_frontend_field"] = None
+                prompt = self._manual_prompt_for_field(field_id, language)
+                return {
+                    "status": "manual_input_required",
+                    "field_completed": False,
+                    "form_updates": {},
+                    "response_text": prompt,
+                    "speech_text": prompt,
+                    "confirmation": {
+                        "required": False,
+                        "field_id": None,
+                        "display_value": None
+                    },
+                    "manual_input": {
+                        "required": True,
+                        "field_id": field_id,
+                        "prompt": prompt,
+                        "input_mode": "keyboard"
+                    },
+                    "ui_action": "REQUEST_MANUAL_INPUT"
+                }
+            elif needs_confirmation:
+                val = form_state.get(field_id)
+                msg = confirmation_result.get("next_question")
+                updates_to_return = {field_id: val} if val else {}
+                if field_id == "full_name_ar" and form_state.get("full_name_en"):
+                    updates_to_return["full_name_en"] = form_state["full_name_en"]
+                elif field_id == "full_name_en" and form_state.get("full_name_ar"):
+                    updates_to_return["full_name_ar"] = form_state["full_name_ar"]
+
+                return {
+                    "status": "confirmation_required",
+                    "field_completed": False,
+                    "form_updates": updates_to_return,
+                    "normalized_value": val,
+                    "response_text": msg,
+                    "speech_text": msg,
+                    "confirmation": {
+                        "required": True,
+                        "field_id": field_id,
+                        "display_value": val
+                    },
+                    "ui_action": "SHOW_CONFIRMATION"
+                }
+            else:
+                msg = self._retry_question(field_id, language)
+                return {
+                    "status": "retry_required",
+                    "field_completed": False,
+                    "allow_frontend_next": False,
+                    "form_updates": {},
+                    "response_text": msg,
+                    "speech_text": msg,
+                    "confirmation": {
+                        "required": False,
+                        "field_id": None,
+                        "display_value": None
+                    },
+                    "manual_input": {
+                        "required": False,
+                        "field_id": None,
+                        "prompt": None,
+                        "input_mode": None
+                    },
+                    "ui_action": "SHOW_RETRY"
+                }
+
+        elif interaction in {"answer", "manual_input"}:
+            if interaction == "manual_input":
+                if manual_field != field_id or not session_state.get("manual_input_required"):
+                    return {"error": "FIELD_STATE_MISMATCH", "message": "This field does not match the pending registration interaction."}
+
+            extracted_updates = self._extract_by_profile(field_id, processed_text, form_state)
+            value = extracted_updates.get(field_id)
+            if value is None:
+                value = processed_text.normalized_text
+
+            normalized_value, is_valid = self._validate_field_value(field_id, value, language)
+
+            if is_valid:
+                if interaction == "manual_input":
+                    session_state["manual_input_required"] = False
+                    session_state["manual_field"] = None
+
+                form_state[field_id] = normalized_value
+                metadata[field_id]["confirmed"] = False
+                metadata[field_id]["needs_confirmation"] = True
+                session_state["pending_frontend_field"] = field_id
+                session_state.setdefault("validation_failure_counts", {})[field_id] = 0
+
+                updates_to_return = {field_id: normalized_value}
+                if field_id in {"full_name_ar", "full_name_en"}:
+                    pair = self._generate_name_pair(normalized_value, "ar" if field_id == "full_name_ar" else "en")
+                    if pair:
+                        form_state.update(pair)
+                        updates_to_return.update(pair)
+
+                conf_question = self._confirmation_question([field_id], session_state, language)
+                return {
+                    "status": "confirmation_required",
+                    "field_completed": False,
+                    "form_updates": updates_to_return,
+                    "normalized_value": normalized_value,
+                    "response_text": conf_question,
+                    "speech_text": conf_question,
+                    "confirmation": {
+                        "required": True,
+                        "field_id": field_id,
+                        "display_value": normalized_value
+                    },
+                    "ui_action": "SHOW_CONFIRMATION"
+                }
+            else:
+                if interaction == "manual_input":
+                    session_state["manual_input_required"] = True
+                    session_state["manual_field"] = field_id
+                    prompt = self._manual_prompt_for_field(field_id, language)
+                    return {
+                        "status": "manual_input_required",
+                        "field_completed": False,
+                        "allow_frontend_next": False,
+                        "form_updates": {},
+                        "normalized_value": None,
+                        "response_text": prompt,
+                        "speech_text": prompt,
+                        "confirmation": {
+                            "required": False,
+                            "field_id": None,
+                            "display_value": None
+                        },
+                        "manual_input": {
+                            "required": True,
+                            "field_id": field_id,
+                            "prompt": prompt,
+                            "input_mode": "keyboard"
+                        },
+                        "ui_action": "REQUEST_MANUAL_INPUT"
+                    }
+
+                counts = session_state.setdefault("validation_failure_counts", {})
+                counts[field_id] = counts.get(field_id, 0) + 1
+
+                if counts[field_id] >= self.MANUAL_FALLBACK_AFTER_ATTEMPTS:
+                    session_state["manual_input_required"] = True
+                    session_state["manual_field"] = field_id
+                    prompt = self._manual_prompt_for_field(field_id, language)
+                    return {
+                        "status": "manual_input_required",
+                        "field_completed": False,
+                        "allow_frontend_next": False,
+                        "form_updates": {},
+                        "normalized_value": None,
+                        "response_text": prompt,
+                        "speech_text": prompt,
+                        "confirmation": {
+                            "required": False,
+                            "field_id": None,
+                            "display_value": None
+                        },
+                        "manual_input": {
+                            "required": True,
+                            "field_id": field_id,
+                            "prompt": prompt,
+                            "input_mode": "keyboard"
+                        },
+                        "ui_action": "REQUEST_MANUAL_INPUT"
+                    }
+                else:
+                    retry_question = self._retry_question(field_id, language)
+                    return {
+                        "status": "retry_required",
+                        "field_completed": False,
+                        "allow_frontend_next": False,
+                        "form_updates": {},
+                        "normalized_value": None,
+                        "response_text": retry_question,
+                        "speech_text": retry_question,
+                        "confirmation": {
+                            "required": False,
+                            "field_id": None,
+                            "display_value": None
+                        },
+                        "manual_input": {
+                            "required": False,
+                            "field_id": None,
+                            "prompt": None,
+                            "input_mode": None
+                        },
+                        "ui_action": "SHOW_RETRY"
+                    }
+
+        return {"error": "INVALID_INTERACTION", "message": "Unknown interaction type."}
+
     def process(
         self,
         session_id: str,
@@ -467,7 +730,16 @@ class RegistrationEngine:
 
             # 4. LLM Correction Fallback (Only for current field if deterministic fails)
             is_transliterated = False
-            if not is_valid and field_name == current_field and ENABLE_LLM_REGISTRATION_EXTRACTION:
+            is_clear_invalid_numeric_date = (
+                field_name == "date_of_birth"
+                and self._is_clear_numeric_date_attempt(parse_spoken_numbers(str(value)))
+            )
+            if (
+                not is_valid
+                and field_name == current_field
+                and ENABLE_LLM_REGISTRATION_EXTRACTION
+                and not is_clear_invalid_numeric_date
+            ):
                 route_notes.append(f"deterministic_validation_failed:{field_name}")
                 llm_correction_func = getattr(self.llm_client, "correct_registration_value", None)
                 if llm_correction_func:
@@ -1640,6 +1912,7 @@ class RegistrationEngine:
             
         names_en = []
         names_ar = []
+        used_phonetic_fallback = False
         
         # Layer 1 & 2: Canonical Map & Lexicon & Fuzzy/Phonetic
         idx = 0
@@ -1695,6 +1968,7 @@ class RegistrationEngine:
             
             if not found:
                 # Layer 3: Phonetic Fallback
+                used_phonetic_fallback = True
                 part = parts[idx]
                 is_arabic = bool(re.search(r"[\u0600-\u06FF]", part))
                 if is_arabic:
@@ -1718,7 +1992,15 @@ class RegistrationEngine:
         if len(names_ar) < 2:
             return {}
 
-        if ENABLE_LLM_REGISTRATION_EXTRACTION:
+        ar_val, ar_ok = self._validate_arabic_name(full_ar)
+        en_val, en_ok = self._validate_english_name(full_en)
+        if ar_ok and en_ok:
+            return {
+                "full_name_ar": ar_val,
+                "full_name_en": en_val,
+            }
+
+        if ENABLE_LLM_REGISTRATION_EXTRACTION and used_phonetic_fallback:
             # Check if name looks "good enough" or needs LLM refinement
             # If phonetic fallback was used, names might be slightly off.
             # For now, let's trust the lexicon + phonetic but allow LLM to improve.
@@ -2488,7 +2770,6 @@ class RegistrationEngine:
 
         # Robust normalization for matching
         command_text = self._normalize_preference_text(normalized_text)
-        print(f"DEBUG: command_text='{command_text}', latest_sensitive_fields={latest_sensitive_fields}")
         
         # 1. Check for explicit correction with value
         correction_value = self._extract_correction_value(normalized_text, language)

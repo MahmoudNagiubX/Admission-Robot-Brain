@@ -86,6 +86,53 @@ async def _generate_and_play(text: str, language: str) -> None:
             pass
 
 
+def generate_tts_audio(
+    text: str,
+    language: str,
+    output_dir: Path | None = None
+) -> str | None:
+    """
+    Generate speech for the given text and save it to a file.
+    Does not play the audio. Suitable for frontend-driven integration.
+    """
+    if not ENABLE_TTS or TTS_PROVIDER != "edge" or edge_tts is None:
+        return None
+
+    if not text.strip():
+        return None
+
+    try:
+        return asyncio.run(_generate_only(text, language, output_dir))
+    except Exception as error:
+        print(f"[Warning] TTS generation failed: {error}")
+        return None
+
+
+async def _generate_only(text: str, language: str, output_dir: Path | None) -> str | None:
+    """
+    Inner async helper to communicate with edge-tts and save to file.
+    """
+    voice = EDGE_TTS_VOICE_AR if language == "ar" else EDGE_TTS_VOICE_EN
+    rate = EDGE_TTS_RATE_AR if language == "ar" else EDGE_TTS_RATE
+
+    communicate = edge_tts.Communicate(text, voice, rate=rate)
+
+    if output_dir is None:
+        output_dir = Path("data/generated_audio")
+        
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    file_name = f"tts_{int(time.time() * 1000)}_{os.urandom(4).hex()}.mp3"
+    tmp_path = output_dir / file_name
+
+    try:
+        await communicate.save(str(tmp_path))
+        return str(tmp_path)
+    except Exception as e:
+        print(f"[Warning] Failed to save TTS file: {e}")
+        return None
+
+
 def _play_audio(file_path: str) -> None:
     """
     Play an audio file using pygame.
