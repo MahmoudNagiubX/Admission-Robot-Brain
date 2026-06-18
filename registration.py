@@ -338,6 +338,12 @@ class RegistrationEngine:
                 for ar_alias in entry.get("ar_aliases", []):
                     self.name_lookup_ar[ar_alias] = pair
 
+    def reset_session(self, session_id: str) -> None:
+        """
+        Clear one registration session without affecting other sessions.
+        """
+        self.sessions.pop(session_id, None)
+
     def process_frontend_field(
         self,
         session_id: str,
