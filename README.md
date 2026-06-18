@@ -26,6 +26,18 @@ It does **NOT** handle:
 * Robot navigation
 * Deployment server
 
+## Integration Ownership
+
+The React Native frontend owns screens, microphone/keyboard UI, confirmation
+controls, manual-input UI, and wizard navigation.
+
+The Flask backend owns HTTP endpoints, authentication, rate limits, session
+mapping, database persistence, and serving generated audio files as media URLs.
+
+The AI Brain owns text processing, QA, field-specific registration validation,
+normalization, confirmation state, manual fallback state, and JSON-safe service
+responses. Service methods never require microphone hardware or pygame playback.
+
 ## Installation
 
 ```bash
@@ -100,6 +112,33 @@ print(response["answer_text"]) # Next question...
 status = service.get_form_status(session_id)
 frontend_values = service.get_form_values_frontend(session_id)
 ```
+
+### Service Layer Quick Start
+
+```python
+from brain_service import AdmissionBrainService
+
+service = AdmissionBrainService()
+session = service.create_session(language="en", mode="qa")
+session_id = session["session_id"]
+
+qa_result = service.process_text(
+    session_id=session_id,
+    text="Where is engineering?",
+)
+
+field_result = service.process_registration_field(
+    session_id=session_id,
+    field_id="date_of_birth",
+    transcript="12 November 2005",
+    language="en",
+    interaction="answer",
+)
+```
+
+Local CLI mode is for demos and can play TTS through pygame when enabled.
+Service mode returns text, speech text, structured actions, and optional
+generated-audio metadata without playback.
 
 ## Flask Backend Integration Example
 
@@ -359,6 +398,13 @@ python confirmation_location_tests.py
 
 # Simulation test
 python fake_registration_text_test.py --delay 0.5
+```
+
+Integration-readiness tests:
+
+```bash
+python testing/integration_readiness_tests.py
+python testing/frontend_driven_registration_tests.py
 ```
 
 ## Notes for Backend Developer

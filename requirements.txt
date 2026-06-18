@@ -1,25 +1,16 @@
-# Core Environment & Configuration
+# Environment configuration
 python-dotenv==1.0.1
 
-# HTTP Client for General APIs (Gladia, ElevenLabs, etc.)
-requests==2.31.0
-websockets==12.0
-
-# LLM Integration (OpenAI / Gemini / Groq)
+# LLM integration for OpenAI-compatible providers (OpenAI / Groq)
 openai==1.30.1
 
-# Speech-to-Text (STT) Engines
-deepgram-sdk==3.3.0
-speechmatics==1.6.0
-
-# Text-to-Speech (TTS) Engine
+# Local CLI text-to-speech playback and optional service-side audio generation
 edge-tts==6.1.12
 pygame==2.5.2
-azure-cognitiveservices-speech==1.37.0
 
-# Hardware Audio Utilities (Microphone & Volume Tests)
+# Local CLI microphone capture
 PyAudio==0.2.14
 
-# Terminal Display (Optional for RTL text support)
+# Optional RTL terminal display support
 arabic-reshaper==3.0.0
 python-bidi==0.6.3

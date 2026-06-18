@@ -617,6 +617,9 @@ class RegistrationEngine:
         form_state = session_state["fields"]
         route_notes = ["registration_engine_checked"]
 
+        if not session_state.get("manual_input_required"):
+            session_state["manual_field"] = None
+
         # 0. Handle Manual Input Mode
         if session_state.get("manual_input_required"):
             manual_field = session_state.get("manual_field")
@@ -696,7 +699,13 @@ class RegistrationEngine:
             
             # Disable broad semantic extraction during guided flow to stay on target
             semantic_updates, semantic_route_notes = {}, []
-            if not current_field or correction_requested:
+            if (
+                not current_field
+                or (
+                    correction_requested
+                    and bool(session_state.get("latest_sensitive_fields"))
+                )
+            ):
                 semantic_updates, semantic_route_notes = self._extract_semantic_updates(
                     processed_text=processed_text,
                     form_state=form_state,
@@ -740,11 +749,27 @@ class RegistrationEngine:
                 field_name == "date_of_birth"
                 and self._is_clear_numeric_date_attempt(parse_spoken_numbers(str(value)))
             )
+            blocks_llm_correction = is_clear_invalid_numeric_date or field_name in {
+                "student_mobile_no",
+                "guardian_mobile_no",
+                "mobile_no_2",
+                "home_phone",
+                "guardian_work_no",
+                "guardian_home_phone",
+                "id_or_passport",
+                "guardian_id_or_passport",
+                "email_address",
+                "guardian_email_address",
+                "percentage",
+                "total_marks",
+                "year_of_completion",
+                "seat_number",
+            }
             if (
                 not is_valid
                 and field_name == current_field
                 and ENABLE_LLM_REGISTRATION_EXTRACTION
-                and not is_clear_invalid_numeric_date
+                and not blocks_llm_correction
             ):
                 route_notes.append(f"deterministic_validation_failed:{field_name}")
                 llm_correction_func = getattr(self.llm_client, "correct_registration_value", None)
@@ -1998,20 +2023,17 @@ class RegistrationEngine:
         if len(names_ar) < 2:
             return {}
 
-        ar_val, ar_ok = self._validate_arabic_name(full_ar)
-        en_val, en_ok = self._validate_english_name(full_en)
-        if ar_ok and en_ok:
-            return {
-                "full_name_ar": ar_val,
-                "full_name_en": en_val,
-            }
-
         if ENABLE_LLM_REGISTRATION_EXTRACTION and used_phonetic_fallback:
             # Check if name looks "good enough" or needs LLM refinement
             # If phonetic fallback was used, names might be slightly off.
             # For now, let's trust the lexicon + phonetic but allow LLM to improve.
             llm_res = self.llm_client.extract_name_pair(text=text, language=language)
-            if llm_res and llm_res.get("name_ar") and llm_res.get("name_en"):
+            if (
+                llm_res
+                and llm_res.get("name_ar")
+                and llm_res.get("name_en")
+                and float(llm_res.get("confidence", 0.0) or 0.0) >= 0.95
+            ):
                 # Validate LLM result
                 ar_val, ar_ok = self._validate_arabic_name(llm_res["name_ar"])
                 en_val, en_ok = self._validate_english_name(llm_res["name_en"])
@@ -2020,6 +2042,14 @@ class RegistrationEngine:
                         "full_name_ar": ar_val,
                         "full_name_en": en_val,
                     }
+
+        ar_val, ar_ok = self._validate_arabic_name(full_ar)
+        en_val, en_ok = self._validate_english_name(full_en)
+        if ar_ok and en_ok:
+            return {
+                "full_name_ar": ar_val,
+                "full_name_en": en_val,
+            }
 
         return {
             "full_name_ar": full_ar,

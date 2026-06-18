@@ -41,6 +41,17 @@ class TestFrontendDrivenRegistration(unittest.TestCase):
         self.assertEqual(result["data"]["status"], "confirmation_required")
         self.assertEqual(result["data"]["normalized_value"], "2005-11-12")
         self.assertEqual(result["data"]["form_updates"]["date_of_birth"], "2005-11-12")
+        self.assertEqual(result["data"]["frontend_form_updates"]["dateOfBirth"], "2005-11-12")
+
+    def test_camel_case_field_id_alias_is_accepted(self):
+        result = self.service.process_registration_field(
+            session_id=self.session_id,
+            field_id="dateOfBirth",
+            transcript="12 November 2005",
+            language="en"
+        )
+        self.assertTrue(result["success"])
+        self.assertEqual(result["data"]["field_id"], "date_of_birth")
 
     def test_field_scoped_mobile_input(self):
         result = self.service.process_registration_field(
@@ -262,7 +273,7 @@ class TestFrontendDrivenRegistration(unittest.TestCase):
 
     @patch('tts_engine._generate_only')
     def test_generate_audio_false_does_not_call_tts(self, mock_generate):
-        self.service.process_registration_field(
+        result = self.service.process_registration_field(
             session_id=self.session_id,
             field_id="city",
             transcript="Nasr City",
@@ -270,6 +281,10 @@ class TestFrontendDrivenRegistration(unittest.TestCase):
             generate_audio=False
         )
         mock_generate.assert_not_called()
+        self.assertEqual(
+            result["data"]["audio"],
+            {"generated": False, "path": None, "content_type": None}
+        )
 
     def test_speech_text_is_returned(self):
         result = self.service.process_registration_field(
